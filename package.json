@@ -3,37 +3,35 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
-	"dev": "vite dev",
-	"build": "vite build",
-	"preview": "vite preview",
-	"prepare": "svelte-kit sync || echo ''",
-	"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
-	"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
-	"start": "node build",
-	"pm2:start": "pm2 start ecosystem.config.cjs",
-	"pm2:reload": "pm2 reload ecosystem.config.cjs",
-	"deploy": "npm run build && npm run pm2:reload"
-},
-"devDependencies": {
-	"@sveltejs/adapter-auto": "^7.0.0",
-	"@sveltejs/kit": "^2.49.1",
-	"@sveltejs/vite-plugin-svelte": "^6.2.1",
-	"autoprefixer": "^10.4.23",
-	"drizzle-kit": "^0.31.8",
-	"postcss": "^8.5.6",
-	"svelte": "^5.45.6",
-	"svelte-check": "^4.3.4",
-	"tailwindcss": "^3.4.17",
-	"typescript": "^5.9.3",
-	"vite": "^7.2.6"
-},
-"dependencies": {
-	"@auth/core": "^0.41.1",
-	"@auth/drizzle-adapter": "^1.11.1",
-	"@auth/sveltekit": "^1.11.1",
-	"better-sqlite3": "^12.5.0",
-	"date-fns": "^4.1.0",
-	"drizzle-orm": "^0.45.1",
-	"flatpickr": "^4.6.13"
-}
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
+		"start": "node build"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/kit": "^2.49.1",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"autoprefixer": "^10.4.23",
+		"drizzle-kit": "^0.31.8",
+		"postcss": "^8.5.6",
+		"svelte": "^5.45.6",
+		"svelte-check": "^4.3.4",
+		"tailwindcss": "^3.4.17",
+		"typescript": "^5.9.3",
+		"vite": "^7.2.6"
+	},
+	"dependencies": {
+		"@auth/core": "^0.41.1",
+		"@auth/drizzle-adapter": "^1.11.1",
+		"@auth/sveltekit": "^1.11.1",
+		"better-sqlite3": "^12.5.0",
+		"date-fns": "^4.1.0",
+		"drizzle-orm": "^0.45.1",
+		"flatpickr": "^4.6.13"
+	}
 }

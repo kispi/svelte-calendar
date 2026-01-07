@@ -1,41 +1,46 @@
 <script>
-    import { page } from "$app/stores";
-    import { signIn, signOut } from "@auth/sveltekit/client";
     import CalendarGrid from "$lib/components/CalendarGrid.svelte";
     import EventModal from "$lib/components/EventModal.svelte";
+    import { createQuery, useQueryClient } from "@tanstack/svelte-query";
+    import { modal } from "$lib/modal.svelte.js";
 
     /** @type {{ data: import('./$types').PageData }} */
     let { data } = $props();
 
-    // State
-    let isModalOpen = $state(false);
-    let selectedEvent = $state(null);
-    /** @type {Date | null} */
-    let selectedDate = $state(null);
+    const queryClient = useQueryClient();
 
-    /** @param {Date} date */
-    function handleDateClick(date) {
+    // TanStack Query for events - Svelte 5 requires a functional options getter
+    const query = createQuery(() => ({
+        queryKey: ["events"],
+        queryFn: async () => {
+            const res = await fetch("/api/events");
+            if (!res.ok) throw new Error("Failed to fetch events");
+            return res.json();
+        },
+        enabled: !!data.session,
+    }));
+
+    /** @param {any} date */
+    async function handleDateClick(date) {
         if (!data.session) {
-            signIn("kakao");
+            openLoginPopup();
             return;
         }
-        selectedDate = date;
-        selectedEvent = null;
-        isModalOpen = true;
+
+        const result = await modal.show(EventModal, { selectedDate: date });
+        if (result?.success) {
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        }
     }
 
     /** @param {any} event */
-    function handleEventClick(event) {
+    async function handleEventClick(event) {
         if (!data.session) return;
-        selectedEvent = event;
-        selectedDate = null;
-        isModalOpen = true;
-    }
 
-    function handleCloseModal() {
-        isModalOpen = false;
-        selectedEvent = null;
-        selectedDate = null;
+        const result = await modal.show(EventModal, { event });
+        if (result?.success) {
+            queryClient.invalidateQueries({ queryKey: ["events"] });
+        }
     }
 
     async function openLoginPopup() {
@@ -61,7 +66,6 @@
 
         try {
             // 2. Get the auth URL via signIn (POST)
-            // redirect: false returns the response object containing the redirect URL
             const response = await signIn("kakao", {
                 redirect: false,
                 callbackUrl: window.location.origin + "/auth-callback",
@@ -161,11 +165,31 @@
     </div>
 
     {#if data.session}
-        <CalendarGrid
-            events={data.events}
-            onDateClick={handleDateClick}
-            onEventClick={handleEventClick}
-        />
+        {#if query.isLoading}
+            <div
+                class="h-[600px] flex items-center justify-center bg-white rounded-3xl border border-slate-100 shadow-sm animate-pulse"
+            >
+                <p class="text-slate-400 font-medium">
+                    Loading your schedule...
+                </p>
+            </div>
+        {:else if query.isError}
+            <div
+                class="h-[600px] flex flex-col items-center justify-center bg-red-50 rounded-3xl border border-red-100 shadow-sm"
+            >
+                <p class="text-red-500 font-bold mb-2">Failed to load events</p>
+                <button
+                    onclick={() => query.refetch()}
+                    class="text-red-600 underline">Try again</button
+                >
+            </div>
+        {:else}
+            <CalendarGrid
+                events={query.data || []}
+                onDateClick={handleDateClick}
+                onEventClick={handleEventClick}
+            />
+        {/if}
     {:else}
         <div class="relative">
             <div
@@ -193,11 +217,4 @@
             </div>
         </div>
     {/if}
-
-    <EventModal
-        isOpen={isModalOpen}
-        event={selectedEvent}
-        {selectedDate}
-        onClose={handleCloseModal}
-    />
 </main>

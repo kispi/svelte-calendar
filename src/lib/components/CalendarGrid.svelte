@@ -1,96 +1,91 @@
 <script>
-    import {
-        format,
-        startOfMonth,
-        endOfMonth,
-        startOfWeek,
-        endOfWeek,
-        eachDayOfInterval,
-        isSameMonth,
-        isSameDay,
-        addMonths,
-        subMonths,
-        isToday,
-        setMonth,
-        setYear,
-    } from "date-fns";
+    import dayjs from "dayjs";
+    import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+    import localeData from "dayjs/plugin/localeData";
+
+    dayjs.extend(isSameOrBefore);
+    dayjs.extend(localeData);
 
     /**
      * @typedef {Object} CalendarProps
      * @property {any[]} events
-     * @property {(date: Date) => void} onDateClick
+     * @property {(date: any) => void} onDateClick
      * @property {(event: any) => void} onEventClick
      */
 
     /** @type {CalendarProps} */
-    let { events, onDateClick, onEventClick } = $props();
+    let { events = [], onDateClick, onEventClick } = $props();
 
-    let currentDate = $state(new Date());
+    let currentDate = $state(dayjs());
 
-    // Derived state for calendar grid
-    let monthStart = $derived(startOfMonth(currentDate));
-    let monthEnd = $derived(endOfMonth(monthStart));
-    let startDate = $derived(startOfWeek(monthStart));
-    let endDate = $derived(endOfWeek(monthEnd));
+    // Derived state for calendar grid using dayjs
+    let monthStart = $derived(currentDate.startOf("month"));
+    let monthEnd = $derived(currentDate.endOf("month"));
+    let startDate = $derived(monthStart.startOf("week"));
+    let endDate = $derived(monthEnd.endOf("week"));
 
-    let days = $derived(
-        eachDayOfInterval({
-            start: startDate,
-            end: endDate,
-        }),
-    );
+    let days = $derived.by(() => {
+        let arr = [];
+        let curr = startDate;
+        while (curr.isSameOrBefore(endDate)) {
+            arr.push(curr);
+            curr = curr.add(1, "day");
+        }
+        return arr;
+    });
 
     // Navigation handlers
     function nextMonth() {
-        currentDate = addMonths(currentDate, 1);
+        currentDate = currentDate.add(1, "month");
     }
 
     function prevMonth() {
-        currentDate = subMonths(currentDate, 1);
+        currentDate = currentDate.subtract(1, "month");
     }
 
     /** @param {Event} e */
     function handleMonthChange(e) {
         // @ts-ignore
         const newMonth = parseInt(e.target.value);
-        currentDate = setMonth(currentDate, newMonth);
+        currentDate = currentDate.month(newMonth);
     }
 
     /** @param {Event} e */
     function handleYearChange(e) {
         // @ts-ignore
         const newYear = parseInt(e.target.value);
-        currentDate = setYear(currentDate, newYear);
+        currentDate = currentDate.year(newYear);
     }
 
-    /** @param {Date} day */
+    /** @param {dayjs.Dayjs} day */
     function getEventsForDay(day) {
         return events.filter((event) => {
             if (!event.startTime) return false;
-            // Handle both ISO strings (migrated) and potentially Date objects (if parsing changes)
-            const eventDate = new Date(event.startTime);
-            return isSameDay(eventDate, day);
+            const eventDate = dayjs(event.startTime);
+            return eventDate.isSame(day, "day");
         });
     }
 
     // Generate years for dropdown (current year +/- 5)
     let years = $derived(
-        Array.from({ length: 11 }, (_, i) => currentDate.getFullYear() - 5 + i),
+        Array.from({ length: 11 }, (_, i) => currentDate.year() - 5 + i),
     );
-    let months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-    ];
+    let months = dayjs.months
+        ? dayjs.months()
+        : [
+              "January",
+              "February",
+              "March",
+              "April",
+              "May",
+              "June",
+              "July",
+              "August",
+              "September",
+              "October",
+              "November",
+              "December",
+          ];
 </script>
 
 <div
@@ -103,7 +98,7 @@
         <div class="flex items-center gap-2">
             <select
                 class="bg-transparent text-2xl font-bold text-maple-orange-600 focus:outline-none focus:ring-2 focus:ring-maple-orange-200 rounded-lg cursor-pointer"
-                value={currentDate.getMonth()}
+                value={currentDate.month()}
                 onchange={handleMonthChange}
             >
                 {#each months as month, i}
@@ -112,7 +107,7 @@
             </select>
             <select
                 class="bg-transparent text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-maple-orange-200 rounded-lg cursor-pointer"
-                value={currentDate.getFullYear()}
+                value={currentDate.year()}
                 onchange={handleYearChange}
             >
                 {#each years as year}
@@ -179,7 +174,7 @@
             <div
                 class="
                     min-h-[80px] border-b border-r border-slate-50 p-2 transition-colors
-                    {isSameMonth(day, monthStart)
+                    {day.isSame(monthStart, 'month')
                     ? 'bg-white hover:bg-orange-50/30'
                     : 'bg-slate-50/30 text-slate-300'}
                     cursor-pointer relative
@@ -193,12 +188,12 @@
                     <span
                         class="
                         text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
-                        {isToday(day)
+                        {day.isSame(dayjs(), 'day')
                             ? 'bg-maple-orange-500 text-white shadow-md shadow-maple-orange-200'
                             : ''}
                     "
                     >
-                        {format(day, "d")}
+                        {day.format("D")}
                     </span>
                 </div>
 

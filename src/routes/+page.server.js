@@ -6,30 +6,16 @@ import { eq, and, gte, lte } from 'drizzle-orm';
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ locals }) {
     const session = await locals.auth();
-
-    try {
-        // If not logged in, return empty events or handle as needed
-        if (!session?.user?.id) {
-
-            return { events: [] };
-        }
-
-        const allEvents = await db.select().from(events).where(eq(events.userId, session.user.id)).all();
-
-        // Plain object serialization isn't strictly needed for arrays of objects in recent SvelteKit/Drizzle 
-        // if they are POJOs, but better-sqlite3 returns POJOs.
-        return {
-            events: allEvents
-        };
-    } catch (error) {
-        console.error("Load Error:", error);
-        return { events: [] };
-    }
+    return { session };
 }
+
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 // Helper to ensure ISO format (or null)
 /** @param {FormDataEntryValue | null} d */
-const toISO = (d) => d ? new Date(d.toString()).toISOString() : null;
+const toISO = (d) => d ? dayjs(d.toString()).toISOString() : null;
 
 /** @type {import('./$types').Actions} */
 export const actions = {

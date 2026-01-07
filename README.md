@@ -24,6 +24,7 @@ A modern, responsive personal calendar application built with SvelteKit. Manage 
 ## 💾 Database Design
 
 The database schema is standardized for readability and cross-platform compatibility:
+
 - **Naming Convention**: All tables and columns use `snake_case` (e.g., `user_id`, `created_at`).
 - **Date Storage**: Dates and times are stored as **ISO 8601 TEXT strings** (`YYYY-MM-DDTHH:mm:ss.sssZ`). This ensures:
   - Better readability when inspecting the database.
@@ -67,9 +68,10 @@ npm run dev
 
 ## 📦 Deployment (EC2)
 
-The project is configured for deployment using `@sveltejs/adapter-node`. 
+The project is configured for deployment using `@sveltejs/adapter-node`.
 
 ### Build the App
+
 ```bash
 npm run build
 ```
@@ -77,6 +79,7 @@ npm run build
 This creates a standalone Node.js server in the `build/` directory.
 
 ### Run in Production
+
 We use `dotenv` to load environment variables from a `.env` file in production:
 
 ```bash

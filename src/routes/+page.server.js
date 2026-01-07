@@ -6,16 +6,16 @@ import { eq, and, gte, lte } from 'drizzle-orm';
 /** @type {import('./$types').PageServerLoad} */
 export async function load({ locals }) {
     const session = await locals.auth();
-    console.log("Server Load Session:", session); // DEBUG
+
     try {
         // If not logged in, return empty events or handle as needed
         if (!session?.user?.id) {
-            console.log("No User ID in session");
+
             return { events: [] };
         }
 
         const allEvents = await db.select().from(events).where(eq(events.userId, session.user.id)).all();
-        console.log("Fetched Events:", allEvents); // DEBUG
+
         // Plain object serialization isn't strictly needed for arrays of objects in recent SvelteKit/Drizzle 
         // if they are POJOs, but better-sqlite3 returns POJOs.
         return {
@@ -35,7 +35,7 @@ const toISO = (d) => d ? new Date(d.toString()).toISOString() : null;
 export const actions = {
     create: async ({ request, locals }) => {
         const session = await locals.auth();
-        console.log("Action Create Session:", session); // DEBUG
+
         if (!session?.user?.id) return fail(401, { message: 'Unauthorized' });
 
         const data = await request.formData();
@@ -45,7 +45,7 @@ export const actions = {
         const startTime = data.get('startTime');
         const endTime = data.get('endTime');
 
-        console.log("Create Data:", { title, type, startTime, endTime, userId: session.user.id }); // DEBUG
+
 
         if (!title) {
             return fail(400, { missing: true });

@@ -10,7 +10,7 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
-		"start": "cross-env PORT=4004 ORIGIN=http://localhost:4004 node -r dotenv/config build"
+		"start": "node -r dotenv/config build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-node": "^5.4.0",

@@ -18,8 +18,9 @@
 - **Database**: Drizzle ORM + `better-sqlite3` (`local.db`).
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
   - **Date Types**: Use `PROPER ISO8601 TEXT` strings for dates, NOT Integers.
-- **Date Handling**: `date-fns`.
+- **Date Handling**: `dayjs`.
 - **Components**: `flatpickr` for date inputs.
+- **Client State**: `@tanstack/svelte-query` for data fetching and caching.
 
 ## 3. Coding Conventions
 
@@ -35,10 +36,16 @@
 ## 4. Feature constraints
 
 - **Responsiveness**: Mobile-first or fully reactive layout.
-- **Interactions**: Modals should close on backdrop click.
+- **Interactions**: Modals should close via 'X' button or explicit action (not backdrop click by default if it contains a form).
 - **Navigation**: Provide Year/Month jumps.
 
-## 5. Environment Variables
+## 5. Cleanup & Reliability
+
+- **Ephemeral Scripts**: Do NOT leave migration, debug, or diagnostic scripts (e.g., `migrate_*.js`, `debug_*.js`) in the project root. Delete them automatically once verified.
+- **Build Verification**: Ensure the production build (`npm run build`) is verified after significant changes.
+
+## 6. Environment Variables
 
 - Manage secrets in `.env`.
 - Do not commit `.env`. Commit `.env.example`.
+

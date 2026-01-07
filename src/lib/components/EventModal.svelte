@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms'
   import { flatpicker } from '$lib/actions/flatpickr'
   import dayjs from 'dayjs'
+  import { fade } from 'svelte/transition'
 
   /**
    * @typedef {Object} ModalProps
@@ -79,15 +80,22 @@
     method="POST"
     action={event ? '?/update' : '?/create'}
     use:enhance={({ formData }) => {
-      // Convert local strings from flatpickr to UTC ISO strings using dayjs
+      const currentType = formData.get('type')
       const startRaw = formData.get('startTime')
       const endRaw = formData.get('endTime')
 
-      if (startRaw) {
-        formData.set('startTime', dayjs(startRaw.toString()).toISOString())
-      }
-      if (endRaw) {
-        formData.set('endTime', dayjs(endRaw.toString()).toISOString())
+      if (currentType === 'diary' && startRaw) {
+        // Set to full day for diary
+        const dateOnly = dayjs(startRaw.toString()).format('YYYY-MM-DD')
+        formData.set('startTime', dayjs(`${dateOnly} 00:00:00`).toISOString())
+        formData.set('endTime', dayjs(`${dateOnly} 23:59:59`).toISOString())
+      } else {
+        if (startRaw) {
+          formData.set('startTime', dayjs(startRaw.toString()).toISOString())
+        }
+        if (endRaw) {
+          formData.set('endTime', dayjs(endRaw.toString()).toISOString())
+        }
       }
 
       return async ({ result, update }) => {
@@ -158,37 +166,43 @@
       ></textarea>
     </div>
 
-    <div class="grid grid-cols-2 gap-4">
-      <div>
-        <label
-          for="startTime"
-          class="block text-sm font-medium text-slate-700 mb-1">Start</label
-        >
-        <input
-          name="startTime"
-          id="startTime"
-          use:flatpicker={{ defaultDate: startTime }}
-          bind:value={startTime}
-          class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
-        />
+    {#if type !== 'diary'}
+      <div class="grid grid-cols-2 gap-4" transition:fade={{ duration: 150 }}>
+        <div>
+          <label
+            for="startTime"
+            class="block text-sm font-medium text-slate-700 mb-1">Start</label
+          >
+          <input
+            name="startTime"
+            id="startTime"
+            use:flatpicker={{ defaultDate: startTime }}
+            bind:value={startTime}
+            class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
+          />
+        </div>
+        <div>
+          <label
+            for="endTime"
+            class="block text-sm font-medium text-slate-700 mb-1">End</label
+          >
+          <input
+            name="endTime"
+            id="endTime"
+            use:flatpicker={{
+              defaultDate: endTime,
+              minTime: startTime.split(' ')[1]
+            }}
+            bind:value={endTime}
+            class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
+          />
+        </div>
       </div>
-      <div>
-        <label
-          for="endTime"
-          class="block text-sm font-medium text-slate-700 mb-1">End</label
-        >
-        <input
-          name="endTime"
-          id="endTime"
-          use:flatpicker={{
-            defaultDate: endTime,
-            minTime: startTime.split(' ')[1]
-          }}
-          bind:value={endTime}
-          class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
-        />
-      </div>
-    </div>
+    {:else}
+      <!-- Hidden inputs to provide base date for Diary type when time inputs are not rendered -->
+      <input type="hidden" name="startTime" value={startTime} />
+      <input type="hidden" name="endTime" value={endTime} />
+    {/if}
 
     <div class="flex justify-end gap-3 pt-4">
       {#if event}

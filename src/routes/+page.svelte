@@ -3,6 +3,7 @@
   import EventModal from '$lib/components/EventModal.svelte'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { modal } from '$lib/modal.svelte.js'
+  import { signIn, signOut } from '@auth/sveltekit/client'
 
   /** @type {{ data: import('./$types').PageData }} */
   let { data } = $props()

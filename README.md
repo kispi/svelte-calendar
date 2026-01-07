@@ -4,28 +4,33 @@ A modern, responsive personal calendar application built with SvelteKit. Manage 
 
 ## ✨ Features
 
-- **Monthly Calendar View**: Intuitive grid layout with easy navigation.
-- **Event Management**: Create, read, update, and delete events.
-- **Authentication**: Secure login via **Kakao** (Auth.js).
-- **Event Types**: Categorize events (Schedule, Anniversary, etc.).
-- **Responsive Design**: optimized for both desktop and mobile.
-- **Date Picking**: Integrated `flatpickr` for easy date/time selection.
+- **Monthly Calendar View**: Intuitive grid layout with rich styling and MapleStory-inspired orange accents.
+- **Event Management**: Full CRUD operations with modal-based creation and editing.
+- **Authentication**: Secure **Kakao Login** using Auth.js (v5).
+  - **Popup Flow**: Supports a seamless login experience via popup windows.
+- **Categorized Events**: Different colors and styles for "Schedules" and "Anniversaries".
+- **Responsive & Dynamic**: Fully optimized for mobile/tablet with touch-friendly interactions.
+- **Advanced Form Controls**: Integrated `flatpickr` for precise date and time selection.
 
 ## 🛠 Tech Stack
 
-- **Framework**: [SvelteKit 5](https://svelte.dev/) (Runes)
+- **Framework**: [SvelteKit 5](https://svelte.dev/) (utilizing Runes for state management)
 - **Styling**: [TailwindCSS](https://tailwindcss.com/)
-- **Database**: [SQLite](https://www.sqlite.org/) (via `better-sqlite3`)
+- **Database**: [SQLite](https://www.sqlite.org/) (Better-SQLite3)
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
-- **Authentication**: [Auth.js](https://authjs.dev/) (v5)
-- **Deployment**: Node Adapter + PM2
+- **Authentication**: [Auth.js](https://authjs.dev/) (Customized Drizzle Adapter)
+- **Deployment**: [Node Adapter](https://svelte.dev/docs/kit/adapter-node) + PM2
+
+## 💾 Database Design
+
+The database schema is standardized for readability and cross-platform compatibility:
+- **Naming Convention**: All tables and columns use `snake_case` (e.g., `user_id`, `created_at`).
+- **Date Storage**: Dates and times are stored as **ISO 8601 TEXT strings** (`YYYY-MM-DDTHH:mm:ss.sssZ`). This ensures:
+  - Better readability when inspecting the database.
+  - Consistent timezone handling.
+  - Easier migration to other databases (PostgreSQL, MySQL, etc.) in the future.
 
 ## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher)
-- A Kakao Developer Account (for OAuth)
 
 ### 1. Installation
 
@@ -35,75 +40,55 @@ cd svelte-calendar
 npm install
 ```
 
-### 2. Environment Configuration
+### 2. Environment Setup
 
-Create a `.env` file in the root directory:
+Create a `.env` file in the root:
 
 ```env
-# Database
 DB_PATH=local.db
-
-# Auth.js
-AUTH_SECRET=<generated_secret> # Generate with: npx auth secret
-
-# Kakao OAuth
-KAKAO_CLIENT_ID=<your_kakao_rest_api_key>
-KAKAO_CLIENT_SECRET=<your_kakao_client_secret>
+AUTH_SECRET=<your_generated_secret> # npx auth secret
+KAKAO_CLIENT_ID=<kakao_rest_api_key>
+KAKAO_CLIENT_SECRET=<kakao_client_secret>
 ```
 
-### 3. Database Setup
+### 3. Initialize Database
 
-Initialize the SQLite database schema:
+Apply the schema to your local SQLite database:
 
 ```bash
 npx drizzle-kit push
 ```
 
-### 4. Development
-
-Start the development server:
+### 4. Run Development
 
 ```bash
 npm run dev
 ```
 
-Visit `http://localhost:5173` in your browser.
+## 📦 Deployment (EC2)
 
-## 📦 Deployment (EC2 + PM2)
+The project is configured for deployment using `@sveltejs/adapter-node`. 
 
-This project is configured for deployment using `@sveltejs/adapter-node` and `pm2`.
-
-### Build
-
+### Build the App
 ```bash
 npm run build
 ```
 
 This creates a standalone Node.js server in the `build/` directory.
 
-### Run with PM2
-
-Start or reload the application using the configured `ecosystem.config.cjs`:
+### Run in Production
+We use `dotenv` to load environment variables from a `.env` file in production:
 
 ```bash
-# Start
-npm run pm2:start
+# Start directly
+npm start
 
-# Reload (Zero-downtime update)
-npm run pm2:reload
-
-# Deploy shortcut (Build + Reload)
-npm run deploy
+# Using PM2 (Recommended)
+pm2 start npm --name "svelte-calendar" -- start
 ```
 
-> **Note**: Update `ecosystem.config.cjs` with your actual `ORIGIN` (domain/IP) for proper Auth.js callback handling.
-
-## 📂 Project Structure
-
-- `src/lib/server/db`: Database schema and connection.
-- `src/routes`: SvelteKit pages and API endpoints (server actions).
-- `src/hooks.server.js`: Auth.js configuration and adapter wrapper.
-- `local.db`: SQLite database file (gitignored).
+> [!NOTE]
+> Ensure `.env` is present in the production directory with correct `ORIGIN` and `PORT` values.
 
 ## 📄 License
 

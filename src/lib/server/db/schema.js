@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core'
 
 const baseColumns = {
   id: text('id')
@@ -36,9 +36,10 @@ export const account = sqliteTable(
     session_state: text('session_state')
   },
   (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId]
-    })
+    uniqueAccount: uniqueIndex('accounts_provider_provider_account_id_unique').on(
+      account.provider,
+      account.providerAccountId
+    )
   })
 )
 
@@ -54,14 +55,16 @@ export const session = sqliteTable('sessions', {
 export const verificationToken = sqliteTable(
   'verification_tokens',
   {
+    ...baseColumns,
     identifier: text('identifier').notNull(),
     token: text('token').notNull(),
-    expires: text('expires').notNull(),
-    createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
-    updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString())
+    expires: text('expires').notNull()
   },
   (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] })
+    uniqueToken: uniqueIndex('verification_tokens_identifier_token_unique').on(
+      vt.identifier,
+      vt.token
+    )
   })
 )
 
@@ -74,4 +77,5 @@ export const event = sqliteTable('events', {
   type: text('type').notNull().default('schedule'),
   userId: text('user_id').references(() => user.id, { onDelete: 'set null' })
 })
+
 

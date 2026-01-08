@@ -12,25 +12,30 @@ A modern, responsive personal calendar application built with SvelteKit. Manage 
 - **Responsive & Dynamic**: Fully optimized for mobile/tablet with touch-friendly interactions.
 - **Advanced Form Controls**: Integrated `flatpickr` for precise date and time selection.
 
-## Database Migrations
+### 1. Simple Sync (Recommended for Dev)
+If you just want to quickly sync your local database with the schema changes:
+```bash
+npx drizzle-kit push
+```
+> [!NOTE]
+> `push` is the fastest way to sync schema during development. It ignores the migration history and applies changes directly to the database.
 
-This project uses **Drizzle ORM**. For production deployments, follow these steps to manage schema changes:
-
-### 1. Generate Migrations
-Whenever you modify `src/lib/server/db/schema.js`, run:
+### 2. Formally Generating Migrations
+Whenever you modify `src/lib/server/db/schema.js` and want to track it for production:
 ```bash
 npx drizzle-kit generate
 ```
 This creates a SQL migration file in the `drizzle` folder.
 
-### 2. Apply Migrations
+### 3. Applying Migrations (Production)
 To apply the changes to your production database:
 ```bash
 npx drizzle-kit migrate
 ```
 
-> [!IMPORTANT]
-> Always backup your `local.db` before running migrations in production.
+> [!WARNING]
+> 만약 제가 직접 마이그레이션 스크립트를 실행해 드린 경우, DB는 이미 최신 상태이지만 `drizzle-kit`의 마이그레이션 이력에는 기록되지 않았을 수 있습니다. 이럴 때는 `npx drizzle-kit push` 명령어를 사용하여 강제로 싱크를 맞추는 것이 가장 안전합니다.
+
 
 ---
 

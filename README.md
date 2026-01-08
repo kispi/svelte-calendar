@@ -12,6 +12,28 @@ A modern, responsive personal calendar application built with SvelteKit. Manage 
 - **Responsive & Dynamic**: Fully optimized for mobile/tablet with touch-friendly interactions.
 - **Advanced Form Controls**: Integrated `flatpickr` for precise date and time selection.
 
+## Database Migrations
+
+This project uses **Drizzle ORM**. For production deployments, follow these steps to manage schema changes:
+
+### 1. Generate Migrations
+Whenever you modify `src/lib/server/db/schema.js`, run:
+```bash
+npx drizzle-kit generate
+```
+This creates a SQL migration file in the `drizzle` folder.
+
+### 2. Apply Migrations
+To apply the changes to your production database:
+```bash
+npx drizzle-kit migrate
+```
+
+> [!IMPORTANT]
+> Always backup your `local.db` before running migrations in production.
+
+---
+
 ## 🛠 Tech Stack
 
 - **Framework**: [SvelteKit 5](https://svelte.dev/) (utilizing Runes for state management)

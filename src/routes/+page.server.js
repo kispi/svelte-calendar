@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db'
-import { events } from '$lib/server/db/schema'
+import { event } from '$lib/server/db/schema'
 import { fail } from '@sveltejs/kit'
 import { eq, and } from 'drizzle-orm'
 
@@ -36,7 +36,7 @@ export const actions = {
     }
 
     try {
-      await db.insert(events).values({
+      await db.insert(event).values({
         title: title.toString(),
         description: description ? description.toString() : null,
         type: type.toString(),
@@ -64,11 +64,11 @@ export const actions = {
 
     try {
       await db
-        .delete(events)
+        .delete(event)
         .where(
           and(
-            eq(events.id, parseInt(id.toString())),
-            eq(events.userId, session.user.id)
+            eq(event.id, id.toString()),
+            eq(event.userId, session.user.id)
           )
         )
       return { success: true }
@@ -96,7 +96,7 @@ export const actions = {
 
     try {
       await db
-        .update(events)
+        .update(event)
         .set({
           title: title.toString(),
           description: description ? description.toString() : null,
@@ -106,8 +106,8 @@ export const actions = {
         })
         .where(
           and(
-            eq(events.id, parseInt(id.toString())),
-            eq(events.userId, session.user.id)
+            eq(event.id, id.toString()),
+            eq(event.userId, session.user.id)
           )
         )
       return { success: true }

@@ -1,24 +1,32 @@
 import { sqliteTable, text, integer, primaryKey } from 'drizzle-orm/sqlite-core'
 
-export const users = sqliteTable('user', {
+const baseColumns = {
   id: text('id')
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
+  updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
+  deletedAt: text('deleted_at')
+}
+
+export const user = sqliteTable('users', {
+  ...baseColumns,
   name: text('name'),
   email: text('email').unique(),
-  emailVerified: text('email_verified'), // Int -> Text, Camel -> Snake
+  emailVerified: text('email_verified'),
   image: text('image')
 })
 
-export const accounts = sqliteTable(
-  'account',
+export const account = sqliteTable(
+  'accounts',
   {
-    userId: text('user_id') // Camel -> Snake
+    ...baseColumns,
+    userId: text('user_id')
       .notNull()
-      .references(() => users.id, { onDelete: 'cascade' }),
+      .references(() => user.id, { onDelete: 'cascade' }),
     type: text('type').notNull(),
     provider: text('provider').notNull(),
-    providerAccountId: text('provider_account_id').notNull(), // Camel -> Snake
+    providerAccountId: text('provider_account_id').notNull(),
     refresh_token: text('refresh_token'),
     access_token: text('access_token'),
     expires_at: integer('expires_at'),
@@ -34,32 +42,36 @@ export const accounts = sqliteTable(
   })
 )
 
-export const sessions = sqliteTable('session', {
-  sessionToken: text('session_token').primaryKey(), // Camel -> Snake
-  userId: text('user_id') // Camel -> Snake
+export const session = sqliteTable('sessions', {
+  ...baseColumns,
+  sessionToken: text('session_token').unique().notNull(), // standard for Auth.js
+  userId: text('user_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  expires: text('expires').notNull() // Int -> Text
+    .references(() => user.id, { onDelete: 'cascade' }),
+  expires: text('expires').notNull()
 })
 
-export const verificationTokens = sqliteTable(
-  'verification_token',
+export const verificationToken = sqliteTable(
+  'verification_tokens',
   {
     identifier: text('identifier').notNull(),
     token: text('token').notNull(),
-    expires: text('expires').notNull() // Int -> Text
+    expires: text('expires').notNull(),
+    createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
+    updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString())
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] })
   })
 )
 
-export const events = sqliteTable('events', {
-  id: integer('id').primaryKey({ autoIncrement: true }),
+export const event = sqliteTable('events', {
+  ...baseColumns,
   title: text('title').notNull(),
   description: text('description'),
   startTime: text('start_time'),
   endTime: text('end_time'),
   type: text('type').notNull().default('schedule'),
-  userId: text('user_id').references(() => users.id, { onDelete: 'set null' })
+  userId: text('user_id').references(() => user.id, { onDelete: 'set null' })
 })
+

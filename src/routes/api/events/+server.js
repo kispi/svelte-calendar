@@ -1,5 +1,5 @@
 import { db } from '$lib/server/db'
-import { events } from '$lib/server/db/schema'
+import { event } from '$lib/server/db/schema'
 import { json, error } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
 
@@ -13,8 +13,8 @@ export async function GET({ locals }) {
   try {
     const allEvents = await db
       .select()
-      .from(events)
-      .where(eq(events.userId, session.user.id))
+      .from(event)
+      .where(eq(event.userId, session.user.id))
       .all()
     return json(allEvents)
   } catch (e) {

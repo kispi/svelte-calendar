@@ -5,18 +5,18 @@ import { db } from '$lib/server/db'
 import { env } from '$env/dynamic/private'
 
 import {
-  users,
-  accounts,
-  sessions,
-  verificationTokens
+  user,
+  account,
+  session,
+  verificationToken
 } from '$lib/server/db/schema'
 
 // @ts-ignore
 const drizzleAdapter = DrizzleAdapter(db, {
-  usersTable: users,
-  accountsTable: accounts,
-  sessionsTable: sessions,
-  verificationTokensTable: verificationTokens
+  usersTable: user,
+  accountsTable: account,
+  sessionsTable: session,
+  verificationTokensTable: verificationToken
 })
 
 /** @type {import("@auth/sveltekit").SvelteKitAuthConfig["adapter"]} */

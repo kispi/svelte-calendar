@@ -2,6 +2,8 @@
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
   import NotesView from '$lib/components/NotesView.svelte'
   import EventModal from '$lib/components/EventModal.svelte'
+  import ChatBot from '$lib/components/ChatBot.svelte'
+  import dayjs from 'dayjs'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { modal } from '$lib/modal.svelte.js'
   import { signIn, signOut } from '@auth/sveltekit/client'
@@ -11,6 +13,13 @@
   let { data } = $props()
 
   let activeTab = $state('calendar') // 'calendar' | 'notes'
+  let currentDate = $state(dayjs())
+
+  /** @param {string} dateStr */
+  function handleMoveToDate(dateStr) {
+    activeTab = 'calendar'
+    currentDate = dayjs(dateStr)
+  }
 
   // Persist tab selection
   $effect(() => {
@@ -233,6 +242,7 @@
     {:else}
       {#if activeTab === 'calendar'}
         <CalendarGrid
+          bind:currentDate
           events={query.data || []}
           onDateClick={handleDateClick}
           onEventClick={handleEventClick}
@@ -291,5 +301,9 @@
         />
       </div>
     </div>
+  {/if}
+
+  {#if data.session}
+    <ChatBot onMoveToDate={handleMoveToDate} />
   {/if}
 </main>

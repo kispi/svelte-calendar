@@ -11,12 +11,16 @@
    * @property {any[]} events
    * @property {(date: any) => void} onDateClick
    * @property {(event: any) => void} onEventClick
+   * @property {import('dayjs').Dayjs} currentDate
    */
 
   /** @type {CalendarProps} */
-  let { events = [], onDateClick, onEventClick } = $props()
-
-  let currentDate = $state(dayjs())
+  let {
+    events = [],
+    onDateClick,
+    onEventClick,
+    currentDate = $bindable()
+  } = $props()
 
   // Derived state for calendar grid using dayjs
   let monthStart = $derived(currentDate.startOf('month'))

@@ -61,7 +61,7 @@ export const POST = async ({ request, locals }) => {
     ]
 
     const model = genAI.getGenerativeModel({
-        model: 'gemini-3.0-flash-preview',
+        model: 'gemini-3-flash-preview',
         tools
     })
 

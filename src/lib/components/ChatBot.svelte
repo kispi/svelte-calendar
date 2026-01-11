@@ -20,6 +20,12 @@
   let isLoading = $state(false)
   let chatContainer = $state()
 
+  $effect(() => {
+    if (isOpen) {
+      scrollToBottom()
+    }
+  })
+
   async function sendMessage() {
     if (!inputMessage.trim() || isLoading) return
 
@@ -69,6 +75,7 @@
     }, 50)
   }
 
+  /** @param {KeyboardEvent} e */
   function handleKeydown(e) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
@@ -97,6 +104,7 @@
         </div>
         <button
           onclick={() => (isOpen = false)}
+          aria-label="Close Chat"
           class="text-white/80 hover:text-white p-1 rounded-md transition-colors"
         >
           <svg
@@ -166,6 +174,7 @@
           <button
             onclick={sendMessage}
             disabled={!inputMessage.trim() || isLoading}
+            aria-label="Send Message"
             class="bg-justodo-green-600 hover:bg-justodo-green-700 disabled:bg-slate-300 text-white p-2.5 rounded-md transition-all shadow-sm active:scale-95 shrink-0"
           >
             <svg

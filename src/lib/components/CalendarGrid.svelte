@@ -19,7 +19,7 @@
     events = [],
     onDateClick,
     onEventClick,
-    currentDate = $bindable()
+    currentDate = $bindable(dayjs())
   } = $props()
 
   // Derived state for calendar grid using dayjs

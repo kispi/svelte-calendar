@@ -295,6 +295,7 @@
       <!-- Blurred preview -->
       <div class="filter blur-sm pointer-events-none opacity-50 select-none">
         <CalendarGrid
+          bind:currentDate
           events={[]}
           onDateClick={() => {}}
           onEventClick={() => {}}

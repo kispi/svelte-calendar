@@ -96,7 +96,6 @@ export const POST = async ({ request, locals }) => {
     })
 
     const lastMessage = messages[messages.length - 1].content
-    console.log('[AI Chat] User Message:', lastMessage)
     const result = await chat.sendMessage(lastMessage)
     let response = result.response
 
@@ -107,7 +106,6 @@ export const POST = async ({ request, locals }) => {
 
     if (call) {
         const { name, args } = call
-        console.log(`[AI Chat] Tool Call: ${name}`, args)
 
         if (name === 'get_events') {
             const { startDate, endDate } = /** @type {any} */ (args)
@@ -122,8 +120,6 @@ export const POST = async ({ request, locals }) => {
                     )
                 )
                 .orderBy(asc(eventTable.startTime))
-
-            console.log(`[AI Chat] Found ${events.length} events in range ${startDate} to ${endDate}`)
 
             const toolResponse = await chat.sendMessage([
                 {

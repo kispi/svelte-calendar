@@ -28,6 +28,9 @@ export function flatpicker(node, options) {
   return {
     /** @param {import('flatpickr/dist/types/options').Options} newOptions */
     update(newOptions) {
+      if (newOptions.defaultDate) {
+        fp.setDate(newOptions.defaultDate, false)
+      }
       // @ts-ignore
       fp.set(newOptions)
     },

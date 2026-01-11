@@ -1,7 +1,7 @@
 import { db } from '$lib/server/db'
 import { event } from '$lib/server/db/schema'
 import { json, error } from '@sveltejs/kit'
-import { eq } from 'drizzle-orm'
+import { eq, asc } from 'drizzle-orm'
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals }) {
@@ -15,6 +15,7 @@ export async function GET({ locals }) {
       .select()
       .from(event)
       .where(eq(event.userId, session.user.id))
+      .orderBy(asc(event.startTime))
       .all()
     return json(allEvents)
   } catch (e) {

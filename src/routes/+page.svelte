@@ -1,12 +1,28 @@
 <script>
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
+  import NotesView from '$lib/components/NotesView.svelte'
   import EventModal from '$lib/components/EventModal.svelte'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { modal } from '$lib/modal.svelte.js'
   import { signIn, signOut } from '@auth/sveltekit/client'
+  import { untrack } from 'svelte'
 
   /** @type {{ data: import('./$types').PageData }} */
   let { data } = $props()
+
+  let activeTab = $state('calendar') // 'calendar' | 'notes'
+
+  // Persist tab selection
+  $effect(() => {
+    const saved = localStorage.getItem('last_active_tab')
+    if (saved && (saved === 'calendar' || saved === 'notes')) {
+      untrack(() => (activeTab = saved))
+    }
+  })
+
+  $effect(() => {
+    localStorage.setItem('last_active_tab', activeTab)
+  })
 
   const queryClient = useQueryClient()
 
@@ -100,20 +116,51 @@
 </script>
 
 <svelte:head>
-  <title>Antigravity Calendar</title>
+  <title>Justodo | Calendar & Notes</title>
 </svelte:head>
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
   <div
-    class="mb-8 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-4"
+    class="mb-10 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-6"
   >
-    <div>
-      <h1 class="text-4xl font-extrabold text-slate-800 tracking-tight">
-        Antigravity <span class="text-maple-orange-500">Scheduler</span>
-      </h1>
-      <p class="mt-2 text-slate-500 text-lg">
-        Manage your schedule with zero gravity.
-      </p>
+    <div class="flex flex-col sm:flex-row items-center gap-6">
+      <div class="flex items-center gap-3">
+        <img
+          src="/favicon.png"
+          alt="Logo"
+          class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all"
+        />
+        <h1 class="text-3xl font-black tracking-tight">
+          <span class="text-justodo-green-600">Justodo</span>
+          <span class="text-slate-400 font-light">Planner</span>
+        </h1>
+      </div>
+
+      {#if data.session}
+        <!-- Desktop Navigation -->
+        <nav
+          class="hidden sm:flex items-center bg-slate-100 p-1 rounded border border-slate-200"
+        >
+          <button
+            onclick={() => (activeTab = 'calendar')}
+            class="px-4 py-1.5 text-xs font-black rounded transition-all
+                   {activeTab === 'calendar'
+              ? 'bg-white text-slate-800 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'}"
+          >
+            CALENDAR
+          </button>
+          <button
+            onclick={() => (activeTab = 'notes')}
+            class="px-4 py-1.5 text-xs font-black rounded transition-all
+                   {activeTab === 'notes'
+              ? 'bg-white text-slate-800 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'}"
+          >
+            NOTES
+          </button>
+        </nav>
+      {/if}
     </div>
 
     <div>
@@ -125,22 +172,24 @@
             <img
               src={data.session.user.image}
               alt="User"
-              class="w-9 h-9 rounded-sm border border-slate-100"
+              class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all border border-slate-100"
             />
           {/if}
           <div class="text-left hidden sm:block">
-            <p class="text-sm font-bold text-slate-700 leading-tight">
+            <p
+              class="text-[11px] font-black text-slate-800 leading-none uppercase tracking-tighter"
+            >
               {data.session.user?.name}
             </p>
             <button
               onclick={() => signOut()}
-              class="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
+              class="text-[10px] text-slate-400 hover:text-red-500 font-bold transition-colors uppercase"
               >Sign Out</button
             >
           </div>
           <button
             onclick={() => signOut()}
-            class="sm:hidden text-xs text-slate-400 hover:text-red-500 font-medium px-2 transition-colors"
+            class="sm:hidden text-xs text-slate-400 hover:text-red-500 font-bold px-2 transition-colors"
             >Sign Out</button
           >
         </div>
@@ -182,11 +231,41 @@
         >
       </div>
     {:else}
-      <CalendarGrid
-        events={query.data || []}
-        onDateClick={handleDateClick}
-        onEventClick={handleEventClick}
-      />
+      {#if activeTab === 'calendar'}
+        <CalendarGrid
+          events={query.data || []}
+          onDateClick={handleDateClick}
+          onEventClick={handleEventClick}
+        />
+      {:else}
+        <NotesView />
+      {/if}
+
+      <!-- Bottom Tab Bar -->
+      <div class="mt-8 flex justify-center sm:hidden">
+        <div
+          class="inline-flex bg-slate-100 p-1 rounded border border-slate-200"
+        >
+          <button
+            onclick={() => (activeTab = 'calendar')}
+            class="px-6 py-2 text-sm font-bold rounded transition-all
+                   {activeTab === 'calendar'
+              ? 'bg-white text-slate-800 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'}"
+          >
+            Calendar
+          </button>
+          <button
+            onclick={() => (activeTab = 'notes')}
+            class="px-6 py-2 text-sm font-bold rounded transition-all
+                   {activeTab === 'notes'
+              ? 'bg-white text-slate-800 shadow-sm'
+              : 'text-slate-400 hover:text-slate-600'}"
+          >
+            Notes
+          </button>
+        </div>
+      </div>
     {/if}
   {:else}
     <div class="relative">

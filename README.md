@@ -1,10 +1,10 @@
-# Antigravity Calendar 📅
+# Justodo 📅
 
-A modern, responsive personal calendar application built with SvelteKit. Manage your schedule effectively with a zero-gravity experience.
+A modern, responsive personal calendar and notes application built with SvelteKit. Manage your schedule effectively with a seamless and professional experience.
 
 ## ✨ Features
 
-- **Monthly Calendar View**: Intuitive grid layout with rich styling and MapleStory-inspired orange accents.
+- **Monthly Calendar View & Notes**: Intuitive layout with rich styling and sophisticated Evergreen green accents.
 - **Event Management**: Full CRUD operations with modal-based creation and editing.
 - **Authentication**: Secure **Kakao Login** using Auth.js (v5).
   - **Popup Flow**: Supports a seamless login experience via popup windows.

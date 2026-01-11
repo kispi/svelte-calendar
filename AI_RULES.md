@@ -2,9 +2,9 @@
 
 ## 1. Project Overview
 
-**Antigravity** is a calendar scheduler web application built with SvelteKit.
+**Justodo** is a calendar scheduler & note-taking web application built with SvelteKit.
 
-- **Vibe**: MapleStory-inspired, Warm Orange (`#FF8A00`), Modern, Round, Soft shadows.
+- **Vibe**: Sophisticated Evergreen green (`#059669`), Modern, Professional, Rounded (4px), Soft shadows.
 - **Goals**: Intuitive UX, lightweight, visually premium.
 
 ## 2. Tech Stack (Strict)
@@ -14,7 +14,7 @@
   - 🚫 NO legacy stores (`writable`, `readable`).
   - ✅ USE `$state`, `$derived`, `$effect`, `$props`.
 - **Styling**: Tailwind CSS (v3).
-  - Custom colors defined in `tailwind.config.js` (`maple-orange`).
+  - Custom colors defined in `tailwind.config.js` (`justodo-green`).
 - **Database**: Drizzle ORM + `better-sqlite3` (`local.db`).
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
   - **Date Types**: Use `PROPER ISO8601 TEXT` strings for dates, NOT Integers.

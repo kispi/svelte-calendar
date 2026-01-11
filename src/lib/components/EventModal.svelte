@@ -116,7 +116,7 @@
     >
   </button>
 
-  <h2 class="text-2xl font-bold text-maple-orange-600 mb-2">
+  <h2 class="text-2xl font-bold text-justodo-green-600 mb-2">
     {event ? 'Edit Event' : 'New Event'}
   </h2>
   <div class="mb-6 flex items-center gap-2 text-slate-500">
@@ -202,7 +202,7 @@
         id="title"
         bind:value={title}
         required
-        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all"
+        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all"
         placeholder="Title"
       />
     </div>
@@ -216,7 +216,7 @@
             name="type"
             value="schedule"
             bind:group={type}
-            class="text-maple-orange-600 focus:ring-maple-orange-500"
+            class="text-justodo-green-600 focus:ring-justodo-green-500"
           />
           <span class="text-sm text-slate-600">Schedule</span>
         </label>
@@ -242,7 +242,7 @@
         name="description"
         id="description"
         bind:value={description}
-        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all resize-none h-24"
+        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all resize-none h-24"
         placeholder="Add details..."
       ></textarea>
     </div>
@@ -265,7 +265,7 @@
               allowInput: true
             }}
             bind:value={startTime}
-            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
+            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all text-sm"
           />
         </div>
         <div>
@@ -284,7 +284,7 @@
               allowInput: true
             }}
             bind:value={endTime}
-            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
+            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all text-sm"
           />
         </div>
       </div>

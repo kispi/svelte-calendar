@@ -91,7 +91,7 @@
 <div class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden">
   <!-- Header -->
   <div
-    class="p-6 flex flex-col sm:flex-row items-center justify-between bg-gradient-to-r from-orange-50 to-white border-b border-orange-100 gap-4"
+    class="p-6 flex flex-col sm:flex-row items-center justify-between bg-gradient-to-r from-justodo-green-50 to-white border-b border-justodo-green-100 gap-4"
   >
     <div class="flex items-center gap-2">
       <select
@@ -171,7 +171,7 @@
         class="
                     min-h-[80px] border-b border-r border-slate-50 p-2 transition-colors
                     {day.isSame(monthStart, 'month')
-          ? 'bg-white hover:bg-orange-50/30'
+          ? 'bg-white hover:bg-justodo-green-50/30'
           : 'bg-slate-50/30 text-slate-300'}
                     cursor-pointer relative
                 "
@@ -185,7 +185,7 @@
             class="
                         text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
                         {day.isSame(dayjs(), 'day')
-              ? 'bg-maple-orange-500 text-white shadow-md shadow-maple-orange-200'
+              ? 'bg-justodo-green-500 text-white shadow-md shadow-justodo-green-200'
               : ''}
                     "
           >
@@ -230,7 +230,7 @@
     background: transparent;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background-color: #fed7aa;
+    background-color: #a7f3d0;
     border-radius: 20px;
   }
 </style>

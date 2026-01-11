@@ -78,4 +78,11 @@ export const event = sqliteTable('events', {
   userId: text('user_id').references(() => user.id, { onDelete: 'set null' })
 })
 
+export const note = sqliteTable('notes', {
+  ...baseColumns,
+  title: text('title'),
+  content: text('content'),
+  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' })
+})
+
 

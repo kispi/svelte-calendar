@@ -1,5 +1,6 @@
 <script>
   import { slide, fade } from 'svelte/transition'
+  import dayjs from 'dayjs'
 
   /**
    * @typedef {Object} ChatProps
@@ -11,10 +12,15 @@
 
   let isOpen = $state(false)
   let inputMessage = $state('')
+  // Using Gemini's official Content structure for history
   let messages = $state([
     {
-      role: 'assistant',
-      content: 'Hello! I am your Justodo Assistant. How can I help you today?'
+      role: 'model',
+      parts: [
+        {
+          text: 'Hello! I am your Justodo Assistant. How can I help you today?'
+        }
+      ]
     }
   ])
   let isLoading = $state(false)
@@ -29,8 +35,11 @@
   async function sendMessage() {
     if (!inputMessage.trim() || isLoading) return
 
-    const userMsg = { role: 'user', content: inputMessage }
-    messages = [...messages, userMsg]
+    const userMsg = { role: 'user', parts: [{ text: inputMessage }] }
+    const currentMessages = [...messages, userMsg]
+
+    // Optimistically update AI history with user message
+    messages = currentMessages
     const currentInput = inputMessage
     inputMessage = ''
     isLoading = true
@@ -41,14 +50,20 @@
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
+        body: JSON.stringify({
+          messages: currentMessages,
+          clientDate: dayjs().toISOString() // Pass client local time
+        })
       })
 
       if (!response.ok) throw new Error('Chat failed')
 
       const data = await response.json()
 
-      messages = [...messages, { role: 'assistant', content: data.content }]
+      // Replace history with the full turn-by-turn history from the server
+      if (data.history) {
+        messages = data.history
+      }
 
       if (data.moveToDate) {
         onMoveToDate(data.moveToDate)
@@ -57,8 +72,8 @@
       messages = [
         ...messages,
         {
-          role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.'
+          role: 'model',
+          parts: [{ text: 'Sorry, I encountered an error. Please try again.' }]
         }
       ]
     } finally {
@@ -81,6 +96,14 @@
       e.preventDefault()
       sendMessage()
     }
+  }
+
+  // Helper to get text from parts for UI rendering
+  function getMessageText(msg) {
+    return msg.parts
+      .filter((p) => p.text)
+      .map((p) => p.text)
+      .join('\n')
   }
 </script>
 
@@ -128,19 +151,24 @@
         class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 scroll-smooth custom-scrollbar"
       >
         {#each messages as msg}
-          <div
-            class="flex {msg.role === 'user' ? 'justify-end' : 'justify-start'}"
-            in:fade
-          >
+          {@const text = getMessageText(msg)}
+          {#if text}
             <div
-              class="max-w-[85%] px-4 py-2.5 rounded-lg text-sm shadow-sm
-                     {msg.role === 'user'
-                ? 'bg-justodo-green-600 text-white rounded-br-none'
-                : 'bg-white text-slate-700 border border-slate-100 rounded-bl-none'}"
+              class="flex {msg.role === 'user'
+                ? 'justify-end'
+                : 'justify-start'}"
+              in:fade
             >
-              {msg.content}
+              <div
+                class="max-w-[85%] px-4 py-2.5 rounded-lg text-sm shadow-sm
+                       {msg.role === 'user'
+                  ? 'bg-justodo-green-600 text-white rounded-br-none'
+                  : 'bg-white text-slate-700 border border-slate-100 rounded-bl-none'}"
+              >
+                {text}
+              </div>
             </div>
-          </div>
+          {/if}
         {/each}
         {#if isLoading}
           <div class="flex justify-start" in:fade>

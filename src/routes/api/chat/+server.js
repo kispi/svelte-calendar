@@ -18,7 +18,7 @@ export const POST = async ({ request, locals }) => {
     }
 
     const userId = session.user.id
-    const { messages } = await request.json()
+    const { messages, clientDate } = await request.json()
 
     // Define tools for Gemini
     const tools = [
@@ -61,22 +61,22 @@ export const POST = async ({ request, locals }) => {
     ]
 
     const model = genAI.getGenerativeModel({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.5-flash-lite',
         tools
     })
 
-    // Convert message history to Google's format
-    // Gemini's history must start with a 'user' role message.
+    // Map history ensuring it adheres to Gemini's Content structure
+    // We expect messages to follow { role, parts: [{ text: string } | { functionCall: ... } | { functionResponse: ... }] }
     /** @type {import('@google/generative-ai').Content[]} */
     const history = messages
         .slice(0, -1)
         .map((/** @type {any} */ m) => ({
-            role: m.role === 'user' ? 'user' : 'model',
-            parts: [{ text: m.content }]
+            role: m.role,
+            parts: m.parts
         }))
         .filter((/** @type {any} */ msg, /** @type {number} */ index) => {
-            // Skip leading 'model' messages to satisfy Gemini's startChat requirements
-            if (index === 0 && msg.role === 'model') return false;
+            // Gemini history MUST start with 'user' role
+            if (index === 0 && msg.role !== 'user') return false;
             return true;
         })
 
@@ -85,62 +85,78 @@ export const POST = async ({ request, locals }) => {
         systemInstruction: {
             parts: [{
                 text: `You are Justodo Assistant, a helpful AI built into the Justodo Planner. 
-      You help users manage their calendar and notes.
-      Today is ${dayjs().format('YYYY-MM-DD dddd')}.
+      Today is ${dayjs(clientDate || undefined).format('YYYY-MM-DD dddd')}.
       - Use get_events to check the user's schedule. 
-      - Use move_to_date when a user asks to see a specific date, month, or year.
-      - ALWAYS restrict data access to the current user (you don't need to ask for user ID, it's handled on the server).
+      - Use move_to_date when a user asks to see a specific date/month.
+      - ALWAYS restrict data access to the current user.
       - Be concise and professional.
-      - NEVER allow creating, editing, or deleting events. Strictly READ-ONLY for data.` }]
+      - Never modify data (READ-ONLY).` }]
         }
     })
 
-    const lastMessage = messages[messages.length - 1].content
-    const result = await chat.sendMessage(lastMessage)
+    const lastMessage = messages[messages.length - 1]
+    // lastMessage should be { role: 'user', parts: [{ text: '...' }] }
+    const result = await chat.sendMessage(lastMessage.parts)
     let response = result.response
 
-    // Handle function calls
-    const candidate = response.candidates?.[0]
-    const part = candidate?.content?.parts?.find((p) => p.functionCall)
-    const call = part?.functionCall
+    // Handle function calls in a loop (for complex multi-step queries)
+    let callCount = 0
+    while (response.candidates?.[0]?.content?.parts?.some(p => p.functionCall) && callCount < 5) {
+        callCount++
+        const parts = response.candidates[0].content.parts
+        const toolResponses = []
 
-    if (call) {
-        const { name, args } = call
+        for (const part of parts) {
+            if (part.functionCall) {
+                const { name, args } = part.functionCall
+                if (name === 'get_events') {
+                    const { startDate, endDate } = /** @type {any} */ (args)
+                    const events = await db
+                        .select()
+                        .from(eventTable)
+                        .where(
+                            and(
+                                eq(eventTable.userId, userId),
+                                gte(eventTable.startTime, dayjs(startDate).startOf('day').toISOString()),
+                                lte(eventTable.startTime, dayjs(endDate).endOf('day').toISOString())
+                            )
+                        )
+                        .orderBy(asc(eventTable.startTime))
 
-        if (name === 'get_events') {
-            const { startDate, endDate } = /** @type {any} */ (args)
-            const events = await db
-                .select()
-                .from(eventTable)
-                .where(
-                    and(
-                        eq(eventTable.userId, userId),
-                        gte(eventTable.startTime, dayjs(startDate).startOf('day').toISOString()),
-                        lte(eventTable.startTime, dayjs(endDate).endOf('day').toISOString())
-                    )
-                )
-                .orderBy(asc(eventTable.startTime))
-
-            const toolResponse = await chat.sendMessage([
-                {
-                    functionResponse: {
-                        name: 'get_events',
-                        response: { events }
-                    }
+                    toolResponses.push({
+                        functionResponse: {
+                            name: 'get_events',
+                            response: { events }
+                        }
+                    })
+                } else if (name === 'move_to_date') {
+                    const { date } = /** @type {any} */ (args)
+                    toolResponses.push({
+                        functionResponse: {
+                            name: 'move_to_date',
+                            response: { success: true, movedTo: date }
+                        }
+                    })
                 }
-            ])
-            response = toolResponse.response
-        } else if (name === 'move_to_date') {
-            // Just confirm and return the signal
-            const { date } = /** @type {any} */ (args)
-            return json({
-                content: `Moving calendar to ${date}...`,
-                moveToDate: date
-            })
+            }
+        }
+
+        if (toolResponses.length > 0) {
+            const toolResult = await chat.sendMessage(toolResponses)
+            response = toolResult.response
         }
     }
 
+    // Capture the full updated history from the chat session
+    const fullHistory = await chat.getHistory()
+
+    // Check if move_to_date was called in the chain to signal the UI
+    const allParts = fullHistory.flatMap(h => h.parts)
+    const moveCall = allParts.find(p => p.functionCall?.name === 'move_to_date')
+
     return json({
-        content: response.text()
+        content: response.text(),
+        history: fullHistory, // Return the full rich history turns
+        moveToDate: moveCall?.functionCall?.args?.date
     })
 }

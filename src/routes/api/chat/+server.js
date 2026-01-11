@@ -1,11 +1,14 @@
 import { json, error } from '@sveltejs/kit'
 import { env } from '$env/dynamic/private'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
 import { db } from '$lib/server/db'
 import { event as eventTable } from '$lib/server/db/schema'
 import { eq, and, gte, lte, asc } from 'drizzle-orm'
 import dayjs from 'dayjs'
 
+if (!env.GOOGLE_AI_API_KEY) {
+    console.error('[AI Chat] GOOGLE_AI_API_KEY is missing in environment variables!');
+}
 const genAI = new GoogleGenerativeAI(env.GOOGLE_AI_API_KEY || '')
 
 export const POST = async ({ request, locals }) => {
@@ -25,14 +28,14 @@ export const POST = async ({ request, locals }) => {
                     name: 'get_events',
                     description: 'Fetch events for the current user within a specific time range.',
                     parameters: {
-                        type: 'OBJECT',
+                        type: SchemaType.OBJECT,
                         properties: {
                             startDate: {
-                                type: 'STRING',
+                                type: SchemaType.STRING,
                                 description: 'ISO 8601 date string (YYYY-MM-DD)'
                             },
                             endDate: {
-                                type: 'STRING',
+                                type: SchemaType.STRING,
                                 description: 'ISO 8601 date string (YYYY-MM-DD)'
                             }
                         },
@@ -43,10 +46,10 @@ export const POST = async ({ request, locals }) => {
                     name: 'move_to_date',
                     description: 'Signal the calendar UI to move to a specific date or month.',
                     parameters: {
-                        type: 'OBJECT',
+                        type: SchemaType.OBJECT,
                         properties: {
                             date: {
-                                type: 'STRING',
+                                type: SchemaType.STRING,
                                 description: 'ISO 8601 date string (YYYY-MM-DD) or just YYYY-MM'
                             }
                         },
@@ -58,7 +61,7 @@ export const POST = async ({ request, locals }) => {
     ]
 
     const model = genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3-flash-preview',
         tools
     })
 

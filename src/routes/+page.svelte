@@ -119,40 +119,40 @@
     <div>
       {#if data.session}
         <div
-          class="flex items-center gap-4 bg-white p-2 pr-4 rounded-full shadow-sm border border-slate-100"
+          class="flex items-center gap-4 bg-white p-1.5 rounded border border-slate-200 shadow-sm"
         >
           {#if data.session.user?.image}
             <img
               src={data.session.user.image}
               alt="User"
-              class="w-10 h-10 rounded-full border border-slate-200"
+              class="w-9 h-9 rounded-sm border border-slate-100"
             />
           {/if}
           <div class="text-left hidden sm:block">
-            <p class="text-sm font-bold text-slate-700">
+            <p class="text-sm font-bold text-slate-700 leading-tight">
               {data.session.user?.name}
             </p>
             <button
               onclick={() => signOut()}
-              class="text-xs text-red-500 hover:text-red-600 font-medium"
+              class="text-xs text-slate-400 hover:text-red-500 font-medium transition-colors"
               >Sign Out</button
             >
           </div>
           <button
             onclick={() => signOut()}
-            class="sm:hidden text-xs text-red-500 hover:text-red-600 font-medium px-2"
+            class="sm:hidden text-xs text-slate-400 hover:text-red-500 font-medium px-2 transition-colors"
             >Sign Out</button
           >
         </div>
       {:else}
         <button
           onclick={openLoginPopup}
-          class="flex items-center gap-2 bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] px-6 py-3 rounded-xl font-bold transition-all shadow-sm hover:shadow-md active:scale-95"
+          class="flex items-center gap-2 bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] px-5 py-2.5 rounded font-bold transition-all shadow-sm hover:shadow-md active:scale-95 border border-[#FDD835]/50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="currentColor"
             ><path
@@ -168,13 +168,13 @@
   {#if data.session}
     {#if query.isLoading}
       <div
-        class="h-[600px] flex items-center justify-center bg-white rounded-3xl border border-slate-100 shadow-sm animate-pulse"
+        class="h-[600px] flex items-center justify-center bg-white rounded border border-slate-100 shadow-sm animate-pulse"
       >
         <p class="text-slate-400 font-medium">Loading your schedule...</p>
       </div>
     {:else if query.isError}
       <div
-        class="h-[600px] flex flex-col items-center justify-center bg-red-50 rounded-3xl border border-red-100 shadow-sm"
+        class="h-[600px] flex flex-col items-center justify-center bg-red-50 rounded border border-red-100 shadow-sm"
       >
         <p class="text-red-500 font-bold mb-2">Failed to load events</p>
         <button onclick={() => query.refetch()} class="text-red-600 underline"
@@ -191,14 +191,14 @@
   {:else}
     <div class="relative">
       <div
-        class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded-3xl border border-slate-100"
+        class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded border border-slate-100"
       >
-        <p class="text-xl font-bold text-slate-400 mb-4">
+        <p class="text-xl font-bold text-slate-400 mb-6">
           Please login to manage your schedule
         </p>
         <button
           onclick={openLoginPopup}
-          class="bg-maple-orange-500 hover:bg-maple-orange-600 text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-orange-200 transition-all hover:-translate-y-1"
+          class="bg-slate-800 hover:bg-slate-900 text-white px-10 py-3.5 rounded font-bold shadow-lg shadow-slate-200 transition-all hover:-translate-y-0.5"
         >
           Get Started
         </button>

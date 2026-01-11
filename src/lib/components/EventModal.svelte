@@ -2,7 +2,9 @@
   import { enhance } from '$app/forms'
   import { untrack } from 'svelte'
   import { flatpicker } from '$lib/actions/flatpickr'
+  import ConfirmModal from './ConfirmModal.svelte'
   import dayjs from 'dayjs'
+  import { modal } from '$lib/modal.svelte.js'
 
   /**
    * @typedef {Object} ModalProps
@@ -67,6 +69,25 @@
       }
     })
   })
+
+  let deleteForm = $state()
+  /**
+   * @param {MouseEvent} e
+   */
+  async function handleDelete(e) {
+    e.preventDefault()
+    const confirmed = await modal.show(ConfirmModal, {
+      title: 'Delete Event',
+      message:
+        'Are you sure you want to delete this event? This action cannot be undone.',
+      confirmText: 'Delete',
+      confirmClass: 'bg-red-600 hover:bg-red-700 text-white'
+    })
+
+    if (confirmed) {
+      deleteForm.requestSubmit()
+    }
+  }
 </script>
 
 <div class="relative p-6" role="document">
@@ -128,9 +149,13 @@
   </div>
 
   <form
+    bind:this={deleteForm}
     method="POST"
     action={event ? '?/update' : '?/create'}
-    use:enhance={({ formData }) => {
+    use:enhance={({ formData, action }) => {
+      // If it's a delete action, no need for date processing
+      if (action.search.includes('delete')) return
+
       const currentType = formData.get('type')
       const startRaw = formData.get('startTime')
       const endRaw = formData.get('endTime')
@@ -177,7 +202,7 @@
         id="title"
         bind:value={title}
         required
-        class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all"
+        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all"
         placeholder="Title"
       />
     </div>
@@ -217,7 +242,7 @@
         name="description"
         id="description"
         bind:value={description}
-        class="w-full px-4 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all resize-none h-24"
+        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all resize-none h-24"
         placeholder="Add details..."
       ></textarea>
     </div>
@@ -240,7 +265,7 @@
               allowInput: true
             }}
             bind:value={startTime}
-            class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
+            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
           />
         </div>
         <div>
@@ -259,7 +284,7 @@
               allowInput: true
             }}
             bind:value={endTime}
-            class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
+            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-maple-orange-400 focus:ring-2 focus:ring-maple-orange-200 outline-none transition-all text-sm"
           />
         </div>
       </div>
@@ -274,20 +299,18 @@
         <button
           type="submit"
           formaction="?/delete"
-          class="px-4 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded-lg transition-colors mr-auto"
-          onclick={(e) => {
-            if (!confirm('Delete this event?')) e.preventDefault()
-          }}
+          class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-all mr-auto"
+          onclick={handleDelete}
         >
           Delete
         </button>
       {/if}
       <button
         type="submit"
-        class="px-8 py-2 text-sm font-bold text-white rounded-xl shadow-md hover:shadow-lg transform active:scale-95 transition-all
+        class="px-8 py-2.5 text-sm font-bold text-white rounded shadow-sm hover:shadow-md transform active:scale-95 transition-all
                 {type === 'diary'
-          ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:to-purple-700'
-          : 'bg-gradient-to-r from-maple-orange-500 to-maple-orange-600 hover:to-maple-orange-700'}
+          ? 'bg-purple-600 hover:bg-purple-700'
+          : 'bg-slate-800 hover:bg-slate-900'}
                 "
       >
         Save Event

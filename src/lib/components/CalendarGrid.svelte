@@ -88,16 +88,14 @@
       ]
 </script>
 
-<div
-  class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100"
->
+<div class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden">
   <!-- Header -->
   <div
     class="p-6 flex flex-col sm:flex-row items-center justify-between bg-gradient-to-r from-orange-50 to-white border-b border-orange-100 gap-4"
   >
     <div class="flex items-center gap-2">
       <select
-        class="bg-transparent text-2xl font-bold text-maple-orange-600 focus:outline-none focus:ring-2 focus:ring-maple-orange-200 rounded-lg cursor-pointer"
+        class="bg-transparent text-2xl font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
         value={currentDate.month()}
         onchange={handleMonthChange}
       >
@@ -106,7 +104,7 @@
         {/each}
       </select>
       <select
-        class="bg-transparent text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-maple-orange-200 rounded-lg cursor-pointer"
+        class="bg-transparent text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
         value={currentDate.year()}
         onchange={handleYearChange}
       >
@@ -119,7 +117,7 @@
       <button
         onclick={prevMonth}
         aria-label="Previous Month"
-        class="p-2 hover:bg-orange-100/50 rounded-full transition-colors text-maple-orange-500"
+        class="p-2 hover:bg-slate-100 rounded transition-colors text-slate-400 hover:text-slate-600"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +135,7 @@
       <button
         onclick={nextMonth}
         aria-label="Next Month"
-        class="p-2 hover:bg-orange-100/50 rounded-full transition-colors text-maple-orange-500"
+        class="p-2 hover:bg-slate-100 rounded transition-colors text-slate-400 hover:text-slate-600"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -200,16 +198,21 @@
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <div
-              class="px-2 py-1 text-xs font-medium rounded-md truncate transition-colors shadow-sm cursor-pointer border
+              class="px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
                             {event.type === 'diary'
-                ? 'bg-purple-100 text-purple-800 border-purple-200 hover:bg-purple-200'
-                : 'bg-orange-100 text-orange-800 border-orange-200 hover:bg-orange-200'}"
+                ? 'bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100'
+                : 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200'}"
               role="button"
               onclick={(e) => {
                 e.stopPropagation()
                 onEventClick(event)
               }}
             >
+              {#if event.type === 'schedule' && event.startTime}
+                <span class="hidden sm:inline opacity-60 mr-1"
+                  >[{dayjs(event.startTime).format('HH:mm')}]</span
+                >
+              {/if}
               {event.title}
             </div>
           {/each}

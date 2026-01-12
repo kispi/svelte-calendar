@@ -268,7 +268,7 @@
   <meta name="twitter:image" content="/logo.png" />
 </svelte:head>
 
-<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
   <div
     class="mb-10 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left"
   >
@@ -324,77 +324,85 @@
       {/if}
 
       <!-- Bottom Navigation Dock -->
-      <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100]">
-        <div
-          class="bg-white/80 backdrop-blur-xl p-1.5 rounded-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex items-center gap-1"
-        >
-          <button
-            onclick={() => (activeTab = 'calendar')}
-            class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
+      <div
+        class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-7xl px-4 sm:px-6 lg:px-8"
+      >
+        <div class="relative">
+          <div class="absolute bottom-0 left-0">
+            <div
+              class="bg-white/80 backdrop-blur-xl p-1.5 rounded-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex items-center gap-1"
+            >
+              <button
+                onclick={() => (activeTab = 'calendar')}
+                class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
                    {activeTab === 'calendar'
-              ? 'bg-slate-900 text-white shadow-lg scale-105'
-              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-calendar-days"
-              ><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line
-                x1="16"
-                x2="16"
-                y1="2"
-                y2="6"
-              /><line x1="8" x2="8" y1="2" y2="6" /><line
-                x1="3"
-                x2="21"
-                y1="10"
-                y2="10"
-              /><path d="M8 14h.01" /><path d="M12 14h.01" /><path
-                d="M16 14h.01"
-              /><path d="M8 18h.01" /><path d="M12 18h.01" /><path
-                d="M16 18h.01"
-              /></svg
-            >
-            <span class="text-[10px] font-black uppercase tracking-tighter"
-              >{i18n.t('nav.calendar')}</span
-            >
-          </button>
+                  ? 'bg-slate-900 text-white shadow-lg scale-105'
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-calendar-days"
+                  ><rect
+                    width="18"
+                    height="18"
+                    x="3"
+                    y="4"
+                    rx="2"
+                    ry="2"
+                  /><line x1="16" x2="16" y1="2" y2="6" /><line
+                    x1="8"
+                    x2="8"
+                    y1="2"
+                    y2="6"
+                  /><line x1="3" x2="21" y1="10" y2="10" /><path
+                    d="M8 14h.01"
+                  /><path d="M12 14h.01" /><path d="M16 14h.01" /><path
+                    d="M8 18h.01"
+                  /><path d="M12 18h.01" /><path d="M16 18h.01" /></svg
+                >
+                <span class="text-[10px] font-black uppercase tracking-tighter"
+                  >{i18n.t('nav.calendar')}</span
+                >
+              </button>
 
-          <button
-            onclick={() => (activeTab = 'notes')}
-            class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
+              <button
+                onclick={() => (activeTab = 'notes')}
+                class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
                    {activeTab === 'notes'
-              ? 'bg-slate-900 text-white shadow-lg scale-105'
-              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="lucide lucide-sticky-note"
-              ><path
-                d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"
-              /><path d="M15 3v5h6" /><path d="M7 11h10" /><path
-                d="M7 15h10"
-              /></svg
-            >
-            <span class="text-[10px] font-black uppercase tracking-tighter"
-              >{i18n.t('nav.notes')}</span
-            >
-          </button>
+                  ? 'bg-slate-900 text-white shadow-lg scale-105'
+                  : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-sticky-note"
+                  ><path
+                    d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"
+                  /><path d="M15 3v5h6" /><path d="M7 11h10" /><path
+                    d="M7 15h10"
+                  /></svg
+                >
+                <span class="text-[10px] font-black uppercase tracking-tighter"
+                  >{i18n.t('nav.notes')}</span
+                >
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -25,6 +25,57 @@
   let baseDate = $state('')
   let startTime = $state('')
   let endTime = $state('')
+  let searchResults = $state([])
+  let showDropdown = $state(false)
+  /** @type {ReturnType<typeof setTimeout>} */
+  let searchTimeout
+
+  async function performSearch(query) {
+    if (!query.trim()) {
+      searchResults = []
+      showDropdown = false
+      return
+    }
+
+    try {
+      const res = await fetch(
+        `/api/places/search?query=${encodeURIComponent(query)}`
+      )
+      if (res.ok) {
+        const data = await res.json()
+        searchResults = data.documents
+        showDropdown = true
+      }
+    } catch (err) {
+      console.error('Search failed', err)
+    }
+  }
+
+  /** @param {Event} e */
+  function handleLocationInput(e) {
+    const target = /** @type {HTMLInputElement} */ (e.target)
+    const query = target.value
+    // location is bound, no need to set manually
+
+    if (searchTimeout) clearTimeout(searchTimeout)
+
+    searchTimeout = setTimeout(() => {
+      performSearch(query)
+    }, 300)
+  }
+
+  function handleFocus() {
+    if (location && location.trim()) {
+      performSearch(location)
+    }
+  }
+
+  /** @param {any} place */
+  function handleSelectLocation(place) {
+    location = `${place.road_address_name || place.address_name} (${place.place_name})`
+    showDropdown = false
+    if (searchTimeout) clearTimeout(searchTimeout)
+  }
 
   $effect(() => {
     if (event) {
@@ -116,6 +167,14 @@
       ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
     >
   </button>
+
+  {#if showDropdown}
+    <div
+      class="fixed inset-0 z-0"
+      onclick={() => (showDropdown = false)}
+      role="presentation"
+    ></div>
+  {/if}
 
   <form
     bind:this={deleteForm}
@@ -252,7 +311,7 @@
     </div>
 
     <!-- Location Section -->
-    <div class="flex items-center gap-4">
+    <div class="flex items-center gap-4 relative z-20">
       <div class="text-slate-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -272,15 +331,39 @@
           /></svg
         >
       </div>
-      <input
-        type="text"
-        name="location"
-        id="location"
-        bind:value={location}
-        class="flex-1 px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300"
-        placeholder={i18n.t('event.location')}
-        aria-label={i18n.t('event.location')}
-      />
+      <div class="flex-1 relative">
+        <input
+          type="text"
+          name="location"
+          id="location"
+          bind:value={location}
+          oninput={handleLocationInput}
+          onfocus={handleFocus}
+          autocomplete="off"
+          class="w-full px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300"
+          placeholder={i18n.t('event.location')}
+          aria-label={i18n.t('event.location')}
+        />
+        {#if showDropdown && searchResults.length > 0}
+          <div
+            class="absolute top-full left-0 w-full bg-white rounded-lg shadow-xl border border-slate-100 mt-1 max-h-48 overflow-y-auto z-50"
+          >
+            {#each searchResults as place}
+              <button
+                type="button"
+                onmousedown={(e) => e.preventDefault()}
+                onclick={() => handleSelectLocation(place)}
+                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
+              >
+                <div class="font-bold text-slate-800">{place.place_name}</div>
+                <div class="text-xs text-slate-400 truncate">
+                  {place.road_address_name || place.address_name}
+                </div>
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
     </div>
 
     <!-- Type Section -->

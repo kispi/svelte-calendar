@@ -20,4 +20,4 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            bash ~/web/svelte-calendar/deploy.sh
+            bash -l ~/web/svelte-calendar/deploy.sh

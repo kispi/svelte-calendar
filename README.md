@@ -1,66 +1,33 @@
 # Justodo 📅
 
-A modern, responsive personal calendar and notes application built with SvelteKit. Manage your schedule effectively with a seamless and professional experience.
+SvelteKit으로 제작된 모던하고 직관적인 개인용 캘린더 & 노트 애플리케이션입니다.
+깔끔한 인터페이스와 효율적인 일정 관리 기능을 제공합니다.
 
-## ✨ Features
+## ✨ 주요 기능
 
-- **Monthly Calendar View & Notes**: Intuitive layout with rich styling and sophisticated Evergreen green accents.
-- **Event Management**: Full CRUD operations with modal-based creation and editing.
-- **Authentication**: Secure **Kakao Login** using Auth.js (v5).
-  - **Popup Flow**: Supports a seamless login experience via popup windows.
-- **Categorized Events**: Different colors and styles for "Schedules" and "Anniversaries".
-- **Responsive & Dynamic**: Fully optimized for mobile/tablet with touch-friendly interactions.
-- **Advanced Form Controls**: Integrated `flatpickr` for precise date and time selection.
-
-### 1. Simple Sync (Recommended for Dev)
-If you just want to quickly sync your local database with the schema changes:
-```bash
-npx drizzle-kit push
-```
-> [!NOTE]
-> `push` is the fastest way to sync schema during development. It ignores the migration history and applies changes directly to the database.
-
-### 2. Formally Generating Migrations
-Whenever you modify `src/lib/server/db/schema.js` and want to track it for production:
-```bash
-npx drizzle-kit generate
-```
-This creates a SQL migration file in the `drizzle` folder.
-
-### 3. Applying Migrations (Production)
-To apply the changes to your production database:
-```bash
-npx drizzle-kit migrate
-```
-
-> [!WARNING]
-> 만약 제가 직접 마이그레이션 스크립트를 실행해 드린 경우, DB는 이미 최신 상태이지만 `drizzle-kit`의 마이그레이션 이력에는 기록되지 않았을 수 있습니다. 이럴 때는 `npx drizzle-kit push` 명령어를 사용하여 강제로 싱크를 맞추는 것이 가장 안전합니다.
-
+- **통합 캘린더 & 노트**: 세련된 에버그린 테마의 직관적인 레이아웃
+- **편리한 일정 관리**: 클릭 한 번으로 일정을 생성하고 관리하는 모달 기반 편집기
+- **간편한 로그인**: Auth.js(v5) 기반의 카카오 계정 로그인 지원
+- **카테고리 분류**: '일정'과 '기념일'을 색상으로 구분하여 한눈에 파악 가능
+- **반응형 디자인**: 모바일과 태블릿 환경에 최적화된 UX/UI
+- **정밀한 날짜 선택**: `flatpickr`를 활용한 세밀한 날짜 및 시간 설정
 
 ---
 
-## 🛠 Tech Stack
+## 🛠 기술 스택
 
-- **Framework**: [SvelteKit 5](https://svelte.dev/) (utilizing Runes for state management)
+- **Framework**: [SvelteKit 5](https://svelte.dev/)
 - **Styling**: [TailwindCSS](https://tailwindcss.com/)
 - **Database**: [SQLite](https://www.sqlite.org/) (Better-SQLite3)
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
-- **Authentication**: [Auth.js](https://authjs.dev/) (Customized Drizzle Adapter)
-- **Deployment**: [Node Adapter](https://svelte.dev/docs/kit/adapter-node) + PM2
+- **Authentication**: [Auth.js](https://authjs.dev/)
+- **Deployment**: [Node Adapter](https://svelte.dev/docs/kit/adapter-node) + PM2 + GitHub Actions
 
-## 💾 Database Design
+---
 
-The database schema is standardized for readability and cross-platform compatibility:
+## 🚀 시작하기
 
-- **Naming Convention**: All tables and columns use `snake_case` (e.g., `user_id`, `created_at`).
-- **Date Storage**: Dates and times are stored as **ISO 8601 TEXT strings** (`YYYY-MM-DDTHH:mm:ss.sssZ`). This ensures:
-  - Better readability when inspecting the database.
-  - Consistent timezone handling.
-  - Easier migration to other databases (PostgreSQL, MySQL, etc.) in the future.
-
-## 🚀 Getting Started
-
-### 1. Installation
+### 1. 설치 및 의존성 설치
 
 ```bash
 git clone <repository-url>
@@ -68,9 +35,9 @@ cd svelte-calendar
 npm install
 ```
 
-### 2. Environment Setup
+### 2. 환경 변수 설정
 
-Create a `.env` file in the root:
+루트 디렉토리에 `.env` 파일을 생성하고 아래 내용을 입력합니다:
 
 ```env
 DB_PATH=local.db
@@ -79,47 +46,44 @@ KAKAO_CLIENT_ID=<kakao_rest_api_key>
 KAKAO_CLIENT_SECRET=<kakao_client_secret>
 ```
 
-### 3. Initialize Database
+### 3. 데이터베이스 초기화
 
-Apply the schema to your local SQLite database:
+Drizzle을 사용하여 로컬 SQLite 데이터베이스를 생성하고 스키마를 동기화합니다:
 
 ```bash
 npx drizzle-kit push
 ```
 
-### 4. Run Development
+### 4. 개발 서버 실행
 
 ```bash
 npm run dev
 ```
 
-## 📦 Deployment (EC2)
+---
 
-The project is configured for deployment using `@sveltejs/adapter-node`.
+## 📦 배포 및 자동화 (EC2)
 
-### Build the App
+이 프로젝트는 EC2 환경에서 PM2와 GitHub Actions를 이용한 자동 배포가 설정되어 있습니다.
+
+### 빌드 및 실행
 
 ```bash
+# 빌드
 npm run build
+
+# PM2 실행 (최초 1회)
+pm2 start build/index.js --name "svelte-calendar" --node-args="-r dotenv/config"
+
+# 재시작
+pm2 restart svelte-calendar
 ```
 
-This creates a standalone Node.js server in the `build/` directory.
+### GitHub Actions를 통한 자동 배포
+`main` 브랜치에 푸시하면 `.github/workflows/deploy.yml` 워크플로우가 실행되어 서버에 코드를 배포하고 애플리케이션을 자동으로 재시작합니다.
 
-### Run in Production
+---
 
-We use `dotenv` to load environment variables from a `.env` file in production:
-
-```bash
-# Start directly
-npm start
-
-# Using PM2 (Recommended)
-pm2 start npm --name "svelte-calendar" -- start
-```
-
-> [!NOTE]
-> Ensure `.env` is present in the production directory with correct `ORIGIN` and `PORT` values.
-
-## 📄 License
+## 📄 라이선스
 
 MIT

@@ -1,12 +1,20 @@
 #!/bin/bash
+set -e # Exit immediately if a command exits with a non-zero status
 
 # Configuration
-# Note: Update PROJECT_DIR if your project is in a different path on the server
 PROJECT_DIR="/home/ubuntu/web/svelte-calendar" 
 
-echo "🚀 Starting deployment..."
+# Load environment (NVM, PM2, etc.)
+# This ensures that non-interactive shells have access to the correct Node version
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # Load nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # Load nvm bash_completion
 
-cd $PROJECT_DIR || { echo "❌ Project directory not found"; exit 1; }
+# If using zsh, you can also source .zshrc but NVM is usually the key
+# source ~/.zshrc
+
+echo "🚀 Starting deployment..."
+cd $PROJECT_DIR
 
 echo "📥 Pulling latest changes from main..."
 git pull origin main

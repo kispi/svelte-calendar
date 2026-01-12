@@ -47,3 +47,12 @@
     {/each}
   </div>
 {/if}
+
+<svelte:window
+  onkeydown={(e) => {
+    if (e.key === 'Escape' && modal.stack.length > 0) {
+      const topModal = modal.stack[modal.stack.length - 1]
+      topModal.resolve(false)
+    }
+  }}
+/>

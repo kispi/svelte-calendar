@@ -1,11 +1,13 @@
 <script>
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
-  import NotesView from '$lib/components/NotesView.svelte'
+  import { modal } from '$lib/modal.svelte.js'
+  import { toast } from '$lib/toast.svelte.js'
   import EventModal from '$lib/components/EventModal.svelte'
+  import ConfirmModal from '$lib/components/ConfirmModal.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
+  import NotesView from '$lib/components/NotesView.svelte' // This import was not in the provided snippet, but was in the original code. Keeping it.
   import dayjs from 'dayjs'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
-  import { modal } from '$lib/modal.svelte.js'
   import { signIn, signOut } from '@auth/sveltekit/client'
   import { untrack } from 'svelte'
 
@@ -53,7 +55,11 @@
       return
     }
 
-    const result = await modal.show(EventModal, { selectedDate: date })
+    const result = await modal.show(
+      EventModal,
+      { selectedDate: date },
+      { preventCloseOnClickBackdrop: true }
+    )
     if (result?.success) {
       queryClient.invalidateQueries({ queryKey: ['events'] })
     }
@@ -63,7 +69,11 @@
   async function handleEventClick(event) {
     if (!data.session) return
 
-    const result = await modal.show(EventModal, { event })
+    const result = await modal.show(
+      EventModal,
+      { event },
+      { preventCloseOnClickBackdrop: true }
+    )
     if (result?.success) {
       queryClient.invalidateQueries({ queryKey: ['events'] })
     }
@@ -124,7 +134,16 @@
   }
 
   async function handleExport() {
+    const events = query.data || []
+    if (events.length === 0) {
+      toast.info('No events to export')
+      return
+    }
+
     window.location.href = '/api/events/export'
+    toast.success(`Successfully exported ${events.length} events!`, {
+      position: 'top'
+    })
   }
 
   let fileInput = $state()
@@ -158,33 +177,21 @@
       alert('Error importing events')
     } finally {
       target.value = ''
-      isSettingsOpen = false
     }
   }
 
-  let isSettingsOpen = $state(false)
-  let settingsContainer = $state()
+  async function confirmSignOut() {
+    const confirmed = await modal.show(ConfirmModal, {
+      title: 'Sign Out',
+      message: 'Are you sure you want to sign out?',
+      confirmText: 'Sign Out',
+      confirmClass: 'bg-slate-800 hover:bg-slate-900 text-white'
+    })
 
-  // Click outside handler for dropdown
-  $effect(() => {
-    /** @param {MouseEvent} e */
-    function handleClickOutside(e) {
-      if (
-        settingsContainer &&
-        !settingsContainer.contains(/** @type {Node} */ (e.target))
-      ) {
-        isSettingsOpen = false
-      }
+    if (confirmed) {
+      signOut()
     }
-
-    if (isSettingsOpen) {
-      document.addEventListener('click', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('click', handleClickOutside)
-    }
-  })
+  }
 </script>
 
 <svelte:head>
@@ -218,16 +225,38 @@
   <div
     class="mb-10 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-6"
   >
-    <div class="flex items-center gap-3">
-      <img
-        src="/favicon.png"
-        alt="Logo"
-        class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all"
-      />
-      <h1 class="text-3xl font-black tracking-tight">
-        <span class="text-justodo-green-600">Justodo</span>
-        <span class="text-slate-400 font-light">Planner</span>
-      </h1>
+    <div class="flex flex-col gap-1 items-center sm:items-start">
+      <div class="flex items-center gap-3">
+        <h1 class="text-3xl font-black tracking-tight">
+          <span class="text-justodo-green-600">Justodo</span>
+          <span class="text-slate-400 font-light">Planner</span>
+        </h1>
+      </div>
+
+      {#if data.session}
+        <div class="flex items-center gap-3 mt-1 sm:ml-11">
+          <input
+            type="file"
+            accept=".ics"
+            bind:this={fileInput}
+            onchange={onFileSelected}
+            class="hidden"
+          />
+          <button
+            onclick={handleImport}
+            class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
+          >
+            Import
+          </button>
+          <span class="text-[10px] text-slate-200">|</span>
+          <button
+            onclick={handleExport}
+            class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
+          >
+            Export
+          </button>
+        </div>
+      {/if}
     </div>
 
     <div class="flex items-center gap-4">
@@ -249,104 +278,6 @@
               >
                 {data.session.user?.name}
               </p>
-            </div>
-
-            <!-- Settings Dropdown -->
-            <div class="relative" bind:this={settingsContainer}>
-              <button
-                onclick={() => (isSettingsOpen = !isSettingsOpen)}
-                class="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-50 rounded transition-all"
-                aria-label="Settings"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-settings"
-                  ><path
-                    d="M12.22 2h-.44a2 2 0 0 0-2 2a2 2 0 0 1-2 2a2 2 0 0 0-2 2a2 2 0 0 1-2 2a2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2a2 2 0 0 1 2 2a2 2 0 0 0 2 2a2 2 0 0 1 2 2a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2a2 2 0 0 1 2-2a2 2 0 0 0 2-2a2 2 0 0 1 2-2a2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2a2 2 0 0 1-2-2a2 2 0 0 0-2-2a2 2 0 0 1-2-2a2 2 0 0 0-2-2z"
-                  ></path><circle cx="12" cy="12" r="3"></circle></svg
-                >
-              </button>
-
-              {#if isSettingsOpen}
-                <div
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-slate-200 shadow-xl py-2 z-50 origin-top-right transition-all"
-                >
-                  <!-- Navigation Section -->
-                  <div
-                    class="px-4 py-1 pb-2 border-b border-slate-100 mb-1 hidden sm:block"
-                  >
-                    <p
-                      class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1"
-                    >
-                      Navigation
-                    </p>
-                    <button
-                      onclick={() => {
-                        activeTab = 'calendar'
-                        isSettingsOpen = false
-                      }}
-                      class="w-full text-left py-1 text-xs font-bold transition-colors
-                             {activeTab === 'calendar'
-                        ? 'text-justodo-green-600'
-                        : 'text-slate-600 hover:text-slate-800'}"
-                    >
-                      Calendar
-                    </button>
-                    <button
-                      onclick={() => {
-                        activeTab = 'notes'
-                        isSettingsOpen = false
-                      }}
-                      class="w-full text-left py-1 text-xs font-bold transition-colors
-                             {activeTab === 'notes'
-                        ? 'text-justodo-green-600'
-                        : 'text-slate-600 hover:text-slate-800'}"
-                    >
-                      Notes
-                    </button>
-                  </div>
-
-                  <input
-                    type="file"
-                    accept=".ics"
-                    bind:this={fileInput}
-                    onchange={onFileSelected}
-                    class="hidden"
-                  />
-                  <button
-                    onclick={() => {
-                      handleImport()
-                    }}
-                    class="w-full text-left px-4 py-2 text-xs font-bold text-slate-600 hover:bg-justodo-green-50 hover:text-justodo-green-600 transition-colors uppercase tracking-wider"
-                  >
-                    Import Calendar
-                  </button>
-                  <button
-                    onclick={() => {
-                      handleExport()
-                      isSettingsOpen = false
-                    }}
-                    class="w-full text-left px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors uppercase tracking-wider"
-                  >
-                    Export Calendar
-                  </button>
-                  <div class="my-1 border-t border-slate-100"></div>
-                  <button
-                    onclick={() => signOut()}
-                    class="w-full text-left px-4 py-2 text-xs font-bold text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors uppercase tracking-wider"
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              {/if}
             </div>
           </div>
         </div>
@@ -399,30 +330,105 @@
         <NotesView />
       {/if}
 
-      <!-- Bottom Tab Bar -->
-      <div class="mt-8 flex justify-center sm:hidden">
+      <!-- Bottom Navigation Dock -->
+      <div class="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100]">
         <div
-          class="inline-flex bg-slate-100 p-1 rounded border border-slate-200"
+          class="bg-white/80 backdrop-blur-xl p-1.5 rounded-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex items-center gap-1"
         >
           <button
             onclick={() => (activeTab = 'calendar')}
-            class="px-6 py-2 text-sm font-bold rounded transition-all
+            class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
                    {activeTab === 'calendar'
-              ? 'bg-white text-slate-800 shadow-sm'
-              : 'text-slate-400 hover:text-slate-600'}"
+              ? 'bg-slate-900 text-white shadow-lg scale-105'
+              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
           >
-            Calendar
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-calendar-days"
+              ><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line
+                x1="16"
+                x2="16"
+                y1="2"
+                y2="6"
+              /><line x1="8" x2="8" y1="2" y2="6" /><line
+                x1="3"
+                x2="21"
+                y1="10"
+                y2="10"
+              /><path d="M8 14h.01" /><path d="M12 14h.01" /><path
+                d="M16 14h.01"
+              /><path d="M8 18h.01" /><path d="M12 18h.01" /><path
+                d="M16 18h.01"
+              /></svg
+            >
+            <span class="text-[10px] font-black uppercase tracking-tighter"
+              >Calendar</span
+            >
           </button>
+
           <button
             onclick={() => (activeTab = 'notes')}
-            class="px-6 py-2 text-sm font-bold rounded transition-all
+            class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
                    {activeTab === 'notes'
-              ? 'bg-white text-slate-800 shadow-sm'
-              : 'text-slate-400 hover:text-slate-600'}"
+              ? 'bg-slate-900 text-white shadow-lg scale-105'
+              : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
           >
-            Notes
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-sticky-note"
+              ><path
+                d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"
+              /><path d="M15 3v5h6" /><path d="M7 11h10" /><path
+                d="M7 15h10"
+              /></svg
+            >
+            <span class="text-[10px] font-black uppercase tracking-tighter"
+              >Notes</span
+            >
           </button>
         </div>
+      </div>
+
+      <!-- Sign Out Action (In-flow) -->
+      <div class="mt-8 mb-8 flex justify-end">
+        <button
+          onclick={confirmSignOut}
+          class="text-[10px] font-black text-slate-300 hover:text-red-400 transition-all uppercase tracking-[0.3em] flex items-center gap-2 group px-4 py-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-log-out group-hover:translate-x-1 transition-transform"
+          >
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Sign Out
+        </button>
       </div>
     {/if}
   {:else}

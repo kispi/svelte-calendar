@@ -14,6 +14,7 @@
   })
 
   import ModalProvider from '$lib/components/ModalProvider.svelte'
+  import ToastProvider from '$lib/components/ToastProvider.svelte'
 </script>
 
 <svelte:head>
@@ -23,4 +24,5 @@
 <QueryClientProvider client={queryClient}>
   {@render children()}
   <ModalProvider />
+  <ToastProvider />
 </QueryClientProvider>

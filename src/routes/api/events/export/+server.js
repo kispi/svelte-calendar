@@ -22,59 +22,70 @@ export async function GET({ locals }) {
             .where(eq(event.userId, session.user.id))
             .all()
 
-        const icsEvents = /** @type {any[]} */ (allEvents
-            .map((e) => {
-                const start = dayjs(e.startTime)
-                let end = dayjs(e.endTime)
-                const created = dayjs(e.createdAt)
-                const updated = dayjs(e.updatedAt)
+        const icsEvents = /** @type {any[]} */ (allEvents.map((e) => {
+            let start = dayjs(e.startTime)
+            let end = dayjs(e.endTime)
+            const created = dayjs(e.createdAt)
+            const updated = dayjs(e.updatedAt)
 
-                // Skip events with invalid start dates or missing titles
-                if (!start.isValid() || !e.title) return null
+            // Fallback for missing/invalid start time: start of today
+            if (!start.isValid()) {
+                start = dayjs().startOf('day')
+            }
 
-                // Ensure end time is valid and not before/same as start time
-                if (!end.isValid() || end.isBefore(start) || end.isSame(start)) {
+            // Fallback for missing/invalid end time
+            if (!end.isValid()) {
+                // If the original start time was also invalid, make it a full day event (end of today)
+                if (!dayjs(e.startTime).isValid()) {
+                    end = dayjs().endOf('day')
+                } else {
+                    // Otherwise default to 1 hour after start
                     end = start.add(1, 'hour')
                 }
+            }
 
-                return {
-                    start: [
-                        start.year(),
-                        start.month() + 1,
-                        start.date(),
-                        start.hour(),
-                        start.minute()
-                    ],
-                    end: [
-                        end.year(),
-                        end.month() + 1,
-                        end.date(),
-                        end.hour(),
-                        end.minute()
-                    ],
-                    title: e.title,
-                    description: e.description || '',
-                    location: e.location || '',
-                    uid: `${e.id}@justodo.vibrew.ai`,
-                    created: [
-                        created.isValid() ? created.year() : start.year(),
-                        created.isValid() ? created.month() + 1 : start.month() + 1,
-                        created.isValid() ? created.date() : start.date(),
-                        created.isValid() ? created.hour() : start.hour(),
-                        created.isValid() ? created.minute() : start.minute()
-                    ],
-                    lastModified: [
-                        updated.isValid() ? updated.year() : start.year(),
-                        updated.isValid() ? updated.month() + 1 : start.month() + 1,
-                        updated.isValid() ? updated.date() : start.date(),
-                        updated.isValid() ? updated.hour() : start.hour(),
-                        updated.isValid() ? updated.minute() : start.minute()
-                    ],
-                    status: 'CONFIRMED',
-                    categories: [e.type || 'schedule']
-                }
-            })
-            .filter(Boolean))
+            // Ensure end time is not before/same as start time
+            if (end.isBefore(start) || end.isSame(start)) {
+                end = start.add(1, 'hour')
+            }
+
+            return {
+                start: [
+                    start.year(),
+                    start.month() + 1,
+                    start.date(),
+                    start.hour(),
+                    start.minute()
+                ],
+                end: [
+                    end.year(),
+                    end.month() + 1,
+                    end.date(),
+                    end.hour(),
+                    end.minute()
+                ],
+                title: e.title || '(No Title)',
+                description: e.description || '',
+                location: e.location || '',
+                uid: `${e.id}@justodo.vibrew.ai`,
+                created: [
+                    created.isValid() ? created.year() : start.year(),
+                    created.isValid() ? created.month() + 1 : start.month() + 1,
+                    created.isValid() ? created.date() : start.date(),
+                    created.isValid() ? created.hour() : start.hour(),
+                    created.isValid() ? created.minute() : start.minute()
+                ],
+                lastModified: [
+                    updated.isValid() ? updated.year() : start.year(),
+                    updated.isValid() ? updated.month() + 1 : start.month() + 1,
+                    updated.isValid() ? updated.date() : start.date(),
+                    updated.isValid() ? updated.hour() : start.hour(),
+                    updated.isValid() ? updated.minute() : start.minute()
+                ],
+                status: 'CONFIRMED',
+                categories: [e.type || 'schedule']
+            }
+        }))
 
         if (icsEvents.length === 0) {
             // Return empty ICS if no events, using CRLF and standard headers

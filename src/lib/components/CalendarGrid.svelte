@@ -70,9 +70,9 @@
     })
   }
 
-  // Generate years for dropdown (current year +/- 5)
+  // Generate years for dropdown (2009 - 2140)
   let years = $derived(
-    Array.from({ length: 11 }, (_, i) => currentDate.year() - 5 + i)
+    Array.from({ length: 2140 - 2009 + 1 }, (_, i) => 2009 + i)
   )
   let months = dayjs.months
     ? dayjs.months()

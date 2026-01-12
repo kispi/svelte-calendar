@@ -5,12 +5,16 @@ SvelteKit으로 제작된 모던하고 직관적인 개인용 캘린더 & 노트
 
 ## ✨ 주요 기능
 
-- **통합 캘린더 & 노트**: 세련된 에버그린 테마의 직관적인 레이아웃
+- **캘린더**: 일반적으로 생각하는 캘린더
+- **노트**: Apple Notes에 영감을 받은 노트
 - **편리한 일정 관리**: 클릭 한 번으로 일정을 생성하고 관리하는 모달 기반 편집기
+- **캘린더 import / export 기능(.ics)**: 구글 캘린더 등 타 캘린더 앱으로 일정을 내보내거나 가져오는 기능
 - **간편한 로그인**: Auth.js(v5) 기반의 카카오 계정 로그인 지원
-- **카테고리 분류**: '일정'과 '기념일'을 색상으로 구분하여 한눈에 파악 가능
+- **카테고리 분류**: '일정'과 '일기'을 색상으로 구분하여 한눈에 파악 가능
 - **반응형 디자인**: 모바일과 태블릿 환경에 최적화된 UX/UI
 - **정밀한 날짜 선택**: `flatpickr`를 활용한 세밀한 날짜 및 시간 설정
+- **AI assistant**: 내가 등록한 일정들과 관련된 질문을 하거나, 특정 날짜로 즉시 이동하거나, 음성으로 일정 생성
+- **Location 검색**: 카카오 맵 API로 장소 검색시 상호명 및 주소 자동완성
 
 ---
 
@@ -21,6 +25,7 @@ SvelteKit으로 제작된 모던하고 직관적인 개인용 캘린더 & 노트
 - **Database**: [SQLite](https://www.sqlite.org/) (Better-SQLite3)
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
 - **Authentication**: [Auth.js](https://authjs.dev/)
+- **3rd parties**: Kakao(Login), Google Cloud(AI)
 - **Deployment**: [Node Adapter](https://svelte.dev/docs/kit/adapter-node) + PM2 + GitHub Actions
 
 ---
@@ -37,14 +42,7 @@ npm install
 
 ### 2. 환경 변수 설정
 
-루트 디렉토리에 `.env` 파일을 생성하고 아래 내용을 입력합니다:
-
-```env
-DB_PATH=local.db
-AUTH_SECRET=<your_generated_secret> # npx auth secret
-KAKAO_CLIENT_ID=<kakao_rest_api_key>
-KAKAO_CLIENT_SECRET=<kakao_client_secret>
-```
+루트 디렉토리에 `.env.example` 파일을 참고해 `.env`를 생성하고 관련 내용들을 입력합니다.
 
 ### 3. 데이터베이스 초기화
 
@@ -81,9 +79,3 @@ pm2 restart svelte-calendar
 
 ### GitHub Actions를 통한 자동 배포
 `main` 브랜치에 푸시하면 `.github/workflows/deploy.yml` 워크플로우가 실행되어 서버에 코드를 배포하고 애플리케이션을 자동으로 재시작합니다.
-
----
-
-## 📄 라이선스
-
-MIT

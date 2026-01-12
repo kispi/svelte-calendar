@@ -28,34 +28,20 @@ export async function POST({ request, locals }) {
     if (!session?.user?.id) throw error(401, 'Unauthorized')
 
     try {
-        const { id, title, content } = await request.json()
-
-        if (id) {
-            // Update
-            const [updated] = await db
-                .update(note)
-                .set({
-                    title,
-                    content,
-                    updatedAt: new Date().toISOString()
-                })
-                .where(eq(note.id, id))
-                .returning()
-            return json(updated)
-        } else {
-            // Create
-            const [inserted] = await db
-                .insert(note)
-                .values({
-                    title,
-                    content,
-                    userId: session.user.id
-                })
-                .returning()
-            return json(inserted)
-        }
+        const { title, content } = await request.json()
+        const [inserted] = await db
+            .insert(note)
+            .values({
+                title,
+                content,
+                userId: session.user.id
+            })
+            .returning()
+        return json(inserted)
     } catch (e) {
         console.error('Notes API Error:', e)
         throw error(500, 'Internal Server Error')
     }
 }
+
+

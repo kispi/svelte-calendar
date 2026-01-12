@@ -4,7 +4,7 @@
 </script>
 
 {#if modal.stack.length > 0}
-  <div class="z-[100]">
+  <div class="fixed inset-0 z-[100]">
     {#each modal.stack as item, i (item.id)}
       <div class="fixed inset-0 overflow-y-auto">
         <!-- Backdrop -->

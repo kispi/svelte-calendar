@@ -31,7 +31,11 @@
     })
     if (res.ok) {
       const newNote = await res.json()
-      await queryClient.invalidateQueries({ queryKey: ['notes'] })
+      // Directly update the cache to avoid flickering
+      queryClient.setQueryData(['notes'], (/** @type {any[]} */ old) => [
+        newNote,
+        ...(old || [])
+      ])
       activeNoteId = newNote.id
     }
   }
@@ -39,13 +43,18 @@
   /** @param {{ title: string, content: string }} data */
   async function handleSaveNote(data) {
     if (!activeNoteId) return
-    const res = await fetch('/api/notes', {
-      method: 'POST',
+    const res = await fetch(`/api/notes/${activeNoteId}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id: activeNoteId, ...data })
+      body: JSON.stringify({ title: data.title, content: data.content })
     })
     if (res.ok) {
-      queryClient.invalidateQueries({ queryKey: ['notes'] })
+      const updatedNote = await res.json()
+      // Directly update the cache to avoid flickering
+      queryClient.setQueryData(['notes'], (/** @type {any[]} */ old) => {
+        if (!old) return [updatedNote]
+        return old.map((n) => (n.id === updatedNote.id ? updatedNote : n))
+      })
     }
   }
 
@@ -57,7 +66,7 @@
       message:
         'Are you sure you want to delete this note? This cannot be undone.',
       confirmText: 'Delete',
-      confirmClass: 'bg-red-600'
+      confirmClass: 'bg-red-600 text-white'
     })
 
     if (!confirmed) return
@@ -106,7 +115,7 @@
 
   <!-- Sidebar -->
   <div
-    class="w-full md:w-80 shrink-0 {activeNoteId
+    class="w-full md:w-80 shrink-0 min-w-0 {activeNoteId
       ? 'hidden md:flex'
       : 'flex'} flex-col h-full border-r border-slate-100"
   >
@@ -141,7 +150,7 @@
       </button>
     </div>
 
-    <div class="flex-1 overflow-hidden">
+    <div class="flex-1 w-full overflow-hidden">
       <NoteList
         notes={notesQuery.data || []}
         {activeNoteId}

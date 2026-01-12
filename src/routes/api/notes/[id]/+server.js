@@ -24,3 +24,29 @@ export async function DELETE({ params, locals }) {
         throw error(500, 'Internal Server Error')
     }
 }
+/** @type {import('./$types').RequestHandler} */
+export async function PUT({ params, request, locals }) {
+    const session = await locals.auth()
+    if (!session?.user?.id) throw error(401, 'Unauthorized')
+
+    try {
+        const { title, content } = await request.json()
+        const [updated] = await db
+            .update(note)
+            .set({
+                title,
+                content,
+                updatedAt: new Date().toISOString()
+            })
+            .where(and(eq(note.id, params.id), eq(note.userId, session.user.id)))
+            .returning()
+
+        if (!updated) throw error(404, 'Note not found')
+        return json(updated)
+    } catch (e) {
+        console.error('Notes Update API Error:', e)
+        const status = e instanceof Error && 'status' in e ? /** @type {any} */(e).status : 500
+        const message = e instanceof Error ? e.message : 'Internal Server Error'
+        throw error(status, message)
+    }
+}

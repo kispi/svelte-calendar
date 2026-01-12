@@ -43,19 +43,28 @@
   /** @param {{ title: string, content: string }} data */
   async function handleSaveNote(data) {
     if (!activeNoteId) return
-    const res = await fetch(`/api/notes/${activeNoteId}`, {
+
+    // Update the local cache immediately with client-side data
+    // This keeps the sidebar list in sync without requiring the server response.
+    queryClient.setQueryData(['notes'], (/** @type {any[]} */ old) => {
+      if (!old) return []
+      return old.map((n) =>
+        n.id === activeNoteId
+          ? {
+              ...n,
+              title: data.title,
+              content: data.content,
+              updatedAt: new Date().toISOString()
+            }
+          : n
+      )
+    })
+
+    await fetch(`/api/notes/${activeNoteId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ title: data.title, content: data.content })
     })
-    if (res.ok) {
-      const updatedNote = await res.json()
-      // Directly update the cache to avoid flickering
-      queryClient.setQueryData(['notes'], (/** @type {any[]} */ old) => {
-        if (!old) return [updatedNote]
-        return old.map((n) => (n.id === updatedNote.id ? updatedNote : n))
-      })
-    }
   }
 
   async function handleDeleteNote() {
@@ -84,44 +93,15 @@
 <div
   class="h-[700px] bg-white rounded border border-slate-100 shadow-xl overflow-hidden flex flex-col md:flex-row relative"
 >
-  <!-- Mobile Header (Visible only when no note selected or on list) -->
-  <div
-    class="md:hidden h-14 border-b border-slate-100 flex items-center justify-between px-4 shrink-0 bg-white"
-  >
-    <h2 class="font-bold text-slate-800">Notes</h2>
-    <button
-      onclick={handleCreateNote}
-      class="p-2 text-slate-400 hover:text-slate-800 rounded transition-all"
-      aria-label="Create note"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="20"
-        height="20"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        ><path
-          d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-        /><path
-          d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-        /></svg
-      >
-    </button>
-  </div>
-
   <!-- Sidebar -->
   <div
     class="w-full md:w-80 shrink-0 min-w-0 {activeNoteId
       ? 'hidden md:flex'
       : 'flex'} flex-col h-full border-r border-slate-100"
   >
-    <!-- Desktop List Header -->
+    <!-- List Header -->
     <div
-      class="hidden md:flex h-14 items-center justify-between px-6 shrink-0 border-b border-slate-50 bg-slate-50/50"
+      class="flex h-14 items-center justify-between px-6 shrink-0 border-b border-slate-50 bg-slate-50/50"
     >
       <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
         >List</span
@@ -166,30 +146,11 @@
       : 'hidden md:flex'} flex-col h-full relative"
   >
     {#if activeNote}
-      <!-- Back button for mobile -->
-      <button
-        onclick={() => (activeNoteId = null)}
-        class="md:hidden absolute top-4 left-4 z-20 p-2 text-slate-400 hover:text-slate-800 bg-white/50 backdrop-blur-sm rounded-full"
-        aria-label="Back to list"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg
-        >
-      </button>
-
       <NoteEditor
         note={activeNote}
-        isSaving={false}
         onSave={handleSaveNote}
         onDelete={handleDeleteNote}
+        onBack={() => (activeNoteId = null)}
       />
     {:else}
       <div

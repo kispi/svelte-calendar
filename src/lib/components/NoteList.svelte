@@ -22,10 +22,6 @@
 <div
   class="flex flex-col h-full w-full bg-slate-50/50 border-r border-slate-100 overflow-x-hidden"
 >
-  <div class="p-4 flex flex-col gap-4">
-    <h2 class="text-xl font-bold text-slate-800">Notes</h2>
-  </div>
-
   <div class="flex-1 overflow-y-auto overflow-x-hidden">
     {#if notes.length === 0}
       <div class="p-8 text-center">

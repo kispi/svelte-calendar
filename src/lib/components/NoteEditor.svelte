@@ -4,24 +4,25 @@
   /**
    * @typedef {Object} NoteEditorProps
    * @property {any} note
-   * @property {boolean} isSaving
    * @property {(data: { title: string, content: string }) => void} onSave
    * @property {() => void} onDelete
+   * @property {() => void} [onBack]
    */
 
   /** @type {NoteEditorProps} */
-  let { note, isSaving, onSave, onDelete } = $props()
+  let { note, onSave, onDelete, onBack } = $props()
 
   let title = $state('')
   let content = $state('')
-  let localIsDirty = $state(false)
+  let lastSyncedNoteId = $state(null)
 
   $effect(() => {
-    if (note) {
-      if (!localIsDirty) {
-        title = note.title || ''
-        content = note.content || ''
-      }
+    // Only synchronize local state when the selected note actually changes (ID change).
+    // This completely prevents background sync/refetches from resetting the cursor.
+    if (note && note.id !== lastSyncedNoteId) {
+      title = note.title || ''
+      content = note.content || ''
+      lastSyncedNoteId = note.id
     }
   })
 
@@ -30,7 +31,6 @@
   let timeout
 
   function handleInput() {
-    localIsDirty = true
     clearTimeout(timeout)
     timeout = setTimeout(() => {
       const lines = content.split('\n')
@@ -40,7 +40,6 @@
         title: title || derivedTitle,
         content
       })
-      localIsDirty = false
     }, 1000)
   }
 
@@ -54,17 +53,25 @@
   <div
     class="h-14 border-b border-slate-100 flex items-center justify-between px-6 shrink-0"
   >
-    <div class="flex items-center gap-2">
-      {#if isSaving}
-        <span
-          class="text-[10px] text-slate-400 font-medium uppercase tracking-widest animate-pulse"
-          >Saving...</span
+    <div class="flex items-center">
+      {#if onBack}
+        <button
+          onclick={onBack}
+          class="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-800 rounded-full transition-all"
+          aria-label="Back to list"
         >
-      {:else}
-        <span
-          class="text-[10px] text-slate-300 font-medium uppercase tracking-widest"
-          >Saved</span
-        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg
+          >
+        </button>
       {/if}
     </div>
 

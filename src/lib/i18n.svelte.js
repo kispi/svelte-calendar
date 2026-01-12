@@ -59,6 +59,12 @@ const translations = {
         common_ui: {
             onboarding: 'Your Schedule & Notes. Simplified.',
             kakaoStart: 'Start with Kakao'
+        },
+        chatbot: {
+            placeholder: 'Ask me anything...',
+            error: 'The model is currently busy. Please try again in a moment.',
+            greeting: 'Hello! I am your Justodo Assistant.\n\nTry asking:\n"How many times did I go to the Gym last month?"\n"What did I do on Christmas last year?"\n"List all my meetings next week."',
+            title: 'Justodo Assistant'
         }
     },
     kr: {
@@ -116,6 +122,12 @@ const translations = {
         common_ui: {
             onboarding: '일정과 메모를 한 곳에서. 심플한 하루 관리.',
             kakaoStart: '카카오로 시작하기'
+        },
+        chatbot: {
+            placeholder: '무엇이든 물어보세요...',
+            error: '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+            greeting: '안녕하세요! Justodo 어시스턴트입니다.\n\n저를 이렇게 활용해보세요:\n"지난달에 운동 몇 번 갔는지 세어줘"\n"작년 크리스마스에 뭐 했는지 알려줘"\n"다음 주 미팅 일정만 모아서 보여줘"',
+            title: 'Justodo 어시스턴트'
         }
     }
 }

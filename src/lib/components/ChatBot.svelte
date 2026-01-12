@@ -1,6 +1,7 @@
 <script>
   import { slide, fade } from 'svelte/transition'
   import dayjs from 'dayjs'
+  import { i18n } from '$lib/i18n.svelte.js'
 
   /**
    * @typedef {Object} ChatProps
@@ -18,7 +19,7 @@
       role: 'model',
       parts: [
         {
-          text: 'Hello! I am your Justodo Assistant. How can I help you today?'
+          text: i18n.t('chatbot.greeting')
         }
       ]
     }
@@ -73,7 +74,7 @@
         ...messages,
         {
           role: 'model',
-          parts: [{ text: 'Sorry, I encountered an error. Please try again.' }]
+          parts: [{ text: i18n.t('chatbot.error') }]
         }
       ]
     } finally {
@@ -105,6 +106,36 @@
       .map((p) => p.text)
       .join('\n')
   }
+
+  function parseMarkdown(text) {
+    if (!text) return ''
+
+    // 1. Code blocks
+    text = text.replace(
+      /```([\s\S]*?)```/g,
+      '<pre class="bg-slate-800 text-white p-2 rounded my-2 overflow-x-auto text-xs"><code>$1</code></pre>'
+    )
+
+    // 2. Inline code
+    text = text.replace(
+      /`([^`]+)`/g,
+      '<code class="bg-slate-200 text-slate-800 px-1 py-0.5 rounded text-xs font-mono">$1</code>'
+    )
+
+    // 3. Bold
+    text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+
+    // 4. Links
+    text = text.replace(
+      /\[([^\]]+)\]\(([^)]+)\)/g,
+      '<a href="$2" target="_blank" class="text-blue-500 hover:underline">$1</a>'
+    )
+
+    // 5. Line breaks to <br>
+    text = text.replace(/\n/g, '<br>')
+
+    return text
+  }
 </script>
 
 <div
@@ -122,7 +153,7 @@
         <div class="flex items-center gap-2">
           <div class="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
           <span class="text-white font-bold text-sm tracking-tight"
-            >Justodo Assistant</span
+            >{i18n.t('chatbot.title')}</span
           >
         </div>
         <button
@@ -165,7 +196,8 @@
                   ? 'bg-justodo-green-600 text-white rounded-br-none'
                   : 'bg-white text-slate-700 border border-slate-100 rounded-bl-none'}"
               >
-                {text}
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html parseMarkdown(text)}
               </div>
             </div>
           {/if}
@@ -195,7 +227,7 @@
           <textarea
             bind:value={inputMessage}
             onkeydown={handleKeydown}
-            placeholder="Ask me anything..."
+            placeholder={i18n.t('chatbot.placeholder')}
             rows="1"
             class="w-full bg-slate-50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-200 transition-all resize-none max-h-32"
           ></textarea>

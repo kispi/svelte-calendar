@@ -169,14 +169,16 @@
       })
       if (res.ok) {
         const result = await res.json()
-        alert(result.message)
+        toast.success(i18n.t('toast.importSuccess', { count: result.count }), {
+          position: 'top'
+        })
         queryClient.invalidateQueries({ queryKey: ['events'] })
       } else {
-        alert('Failed to import events')
+        toast.error(i18n.t('toast.importError'), { position: 'top' })
       }
     } catch (err) {
       console.error(err)
-      alert('Error importing events')
+      toast.error(i18n.t('toast.importError'), { position: 'top' })
     } finally {
       target.value = ''
     }

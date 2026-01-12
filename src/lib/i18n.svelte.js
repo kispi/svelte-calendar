@@ -45,7 +45,9 @@ const translations = {
             exportSuccess: 'Successfully exported {count} events!',
             exportError: 'Failed to export events',
             loginRequired: 'Login required',
-            popupBlocked: 'Please allow popups for this site'
+            popupBlocked: 'Please allow popups for this site',
+            importSuccess: 'Successfully imported {count} events!',
+            importError: 'Failed to import events'
         },
         locale: {
             title: 'Language Settings',
@@ -100,7 +102,9 @@ const translations = {
             exportSuccess: '{count}개의 일정을 성공적으로 내보냈습니다!',
             exportError: '일정 내보내기에 실패했습니다',
             loginRequired: '로그인이 필요합니다',
-            popupBlocked: '사이트의 팝업 차단을 해제해 주세요'
+            popupBlocked: '사이트의 팝업 차단을 해제해 주세요',
+            importSuccess: '{count}개의 일정을 성공적으로 가져왔습니다!',
+            importError: '일정 가져오기에 실패했습니다'
         },
         locale: {
             title: '언어 설정',

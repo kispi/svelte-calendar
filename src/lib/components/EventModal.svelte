@@ -2,6 +2,7 @@
   import { enhance } from '$app/forms'
   import { untrack } from 'svelte'
   import { flatpicker } from '$lib/actions/flatpickr'
+  import { autoResize } from '$lib/actions/autoResize'
   import ConfirmModal from './ConfirmModal.svelte'
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
@@ -94,11 +95,11 @@
   }
 </script>
 
-<div class="relative p-6" role="document">
+<div class="relative pt-12 pb-6 px-8" role="document">
   <!-- Close Button 'X' -->
   <button
     onclick={close}
-    class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all"
+    class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all z-10"
     aria-label="Close modal"
   >
     <svg
@@ -108,49 +109,13 @@
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      stroke-width="2"
+      stroke-width="2.5"
       stroke-linecap="round"
       stroke-linejoin="round"
-      ><line x1="18" y1="6" x2="6" y2="18"></line><line
-        x1="6"
-        y1="6"
-        x2="18"
-        y2="18"
-      ></line></svg
+      class="lucide lucide-x"
+      ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
     >
   </button>
-
-  <h2 class="text-2xl font-bold text-justodo-green-600 mb-2">
-    {event ? 'Edit Event' : 'New Event'}
-  </h2>
-  <div class="mb-6 flex items-center gap-2 text-slate-500">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="lucide lucide-calendar"
-      ><rect width="18" height="18" x="3" y="4" rx="2" ry="2"></rect><line
-        x1="16"
-        y1="2"
-        x2="16"
-        y2="6"
-      ></line><line x1="8" y1="2" x2="8" y2="6"></line><line
-        x1="3"
-        y1="10"
-        x2="21"
-        y2="10"
-      ></line></svg
-    >
-    <span class="text-sm font-medium"
-      >{baseDate ? dayjs(baseDate).format('MMMM D, YYYY (ddd)') : ''}</span
-    >
-  </div>
 
   <form
     bind:this={deleteForm}
@@ -165,7 +130,6 @@
         const endRaw = formData.get('endTime')
 
         if (currentType === 'diary') {
-          // Set to full day for diary using the fixed baseDate
           formData.set('startTime', dayjs(`${baseDate} 00:00:00`).toISOString())
           formData.set('endTime', dayjs(`${baseDate} 23:59:59`).toISOString())
         } else {
@@ -191,150 +155,257 @@
         }
       }
     }}
-    class="space-y-4"
+    class="space-y-6"
   >
     {#if event}
       <input type="hidden" name="id" value={event.id} />
     {/if}
 
-    <div>
-      <label for="title" class="block text-sm font-medium text-slate-700 mb-1"
-        >Title</label
-      >
+    <!-- Hero Title Section -->
+    <div class="group">
       <input
         type="text"
         name="title"
         id="title"
         bind:value={title}
         required
-        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all"
-        placeholder="Title"
+        class="w-full text-2xl font-black text-slate-900 border-b-2 border-transparent focus:border-justodo-green-500 outline-none transition-all placeholder:text-slate-200 pb-2"
+        placeholder="Add title"
+        aria-label="Event Title"
       />
     </div>
 
-    <div>
-      <label
-        for="location"
-        class="block text-sm font-medium text-slate-700 mb-1">Location</label
-      >
+    <!-- Time Section -->
+    <div class="flex items-start gap-4">
+      <div class="text-slate-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-clock"
+          ><circle cx="12" cy="12" r="10" /><polyline
+            points="12 6 12 12 16 14"
+          /></svg
+        >
+      </div>
+      <div class="flex-1">
+        <div class="text-sm font-semibold text-slate-700 h-6 flex items-center">
+          {baseDate ? dayjs(baseDate).format('MMMM D, YYYY (ddd)') : ''}
+        </div>
+
+        <div class="h-10 flex items-center">
+          {#if type !== 'diary'}
+            <div class="flex items-center gap-2">
+              <input
+                name="startTime"
+                id="startTime"
+                use:flatpicker={{
+                  defaultDate: startTime,
+                  noCalendar: true,
+                  enableTime: true,
+                  dateFormat: 'H:i',
+                  allowInput: true
+                }}
+                bind:value={startTime}
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
+                aria-label="Start Time"
+              />
+              <span class="text-slate-300">−</span>
+              <input
+                name="endTime"
+                id="endTime"
+                use:flatpicker={{
+                  defaultDate: endTime,
+                  noCalendar: true,
+                  enableTime: true,
+                  dateFormat: 'H:i',
+                  allowInput: true
+                }}
+                bind:value={endTime}
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
+                aria-label="End Time"
+              />
+            </div>
+          {:else}
+            <div
+              class="text-[11px] font-bold px-2 py-0.5 bg-justodo-green-50 text-justodo-green-600 rounded inline-block w-fit"
+            >
+              ALL-DAY DIARY
+            </div>
+            <input type="hidden" name="startTime" value={startTime} />
+            <input type="hidden" name="endTime" value={endTime} />
+          {/if}
+        </div>
+      </div>
+    </div>
+
+    <!-- Location Section -->
+    <div class="flex items-center gap-4">
+      <div class="text-slate-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-map-pin"
+          ><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0" /><circle
+            cx="12"
+            cy="10"
+            r="3"
+          /></svg
+        >
+      </div>
       <input
         type="text"
         name="location"
         id="location"
         bind:value={location}
-        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all"
-        placeholder="Add location..."
+        class="flex-1 px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300"
+        placeholder="Add location"
+        aria-label="Location"
       />
     </div>
 
-    <div>
-      <span class="block text-sm font-medium text-slate-700 mb-1">Type</span>
+    <!-- Type Section -->
+    <div class="flex items-center gap-4 select-none">
+      <div class="text-slate-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-tag"
+          ><path d="m15 5 4 4" /><path
+            d="M13 3.8a2 2 0 0 0-1.6-.6H4a2 2 0 0 0-2 2v7.4a2 2 0 0 0 .6 1.4l9 9a2 2 0 0 0 2.8 0l7-7a2 2 0 0 0 0-2.8l-9-9Z"
+          /><path d="M7 7h.01" /></svg
+        >
+      </div>
       <div class="flex gap-4">
-        <label class="flex items-center gap-2 cursor-pointer">
+        <label class="flex items-center gap-2 cursor-pointer group">
           <input
             type="radio"
             name="type"
             value="schedule"
             bind:group={type}
-            class="text-justodo-green-600 focus:ring-justodo-green-500"
+            class="hidden"
           />
-          <span class="text-sm text-slate-600">Schedule</span>
+          <div
+            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
+            {type === 'schedule'
+              ? 'border-justodo-green-500'
+              : 'border-slate-300 group-hover:border-slate-400'}"
+          >
+            {#if type === 'schedule'}
+              <div class="w-2 h-2 rounded-full bg-justodo-green-500"></div>
+            {/if}
+          </div>
+          <span
+            class="text-xs font-semibold uppercase tracking-wider transition-colors
+            {type === 'schedule'
+              ? 'text-slate-700'
+              : 'text-slate-400 group-hover:text-slate-600'}">Schedule</span
+          >
         </label>
-        <label class="flex items-center gap-2 cursor-pointer">
+
+        <label class="flex items-center gap-2 cursor-pointer group">
           <input
             type="radio"
             name="type"
             value="diary"
             bind:group={type}
-            class="text-purple-600 focus:ring-purple-500"
+            class="hidden"
           />
-          <span class="text-sm text-slate-600">Diary</span>
+          <div
+            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
+            {type === 'diary'
+              ? 'border-justodo-green-500'
+              : 'border-slate-300 group-hover:border-slate-400'}"
+          >
+            {#if type === 'diary'}
+              <div class="w-2 h-2 rounded-full bg-justodo-green-500"></div>
+            {/if}
+          </div>
+          <span
+            class="text-xs font-semibold uppercase tracking-wider transition-colors
+            {type === 'diary'
+              ? 'text-slate-700'
+              : 'text-slate-400 group-hover:text-slate-600'}">Diary</span
+          >
         </label>
       </div>
     </div>
 
-    <div>
-      <label
-        for="description"
-        class="block text-sm font-medium text-slate-700 mb-1">Description</label
-      >
+    <!-- Description Section -->
+    <div class="flex items-start gap-4">
+      <div class="mt-2 text-slate-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-text"
+          ><path d="M17 6.1H3" /><path d="M21 12.1H3" /><path
+            d="M15.1 18.1H3"
+          /></svg
+        >
+      </div>
       <textarea
         name="description"
         id="description"
         bind:value={description}
-        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all resize-none h-24"
-        placeholder="Add details..."
+        use:autoResize
+        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-justodo-green-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-slate-300"
+        placeholder="Add description"
+        aria-label="Description"
       ></textarea>
     </div>
 
-    {#if type !== 'diary'}
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label
-            for="startTime"
-            class="block text-sm font-medium text-slate-700 mb-1">Start</label
-          >
-          <input
-            name="startTime"
-            id="startTime"
-            use:flatpicker={{
-              defaultDate: startTime,
-              noCalendar: true,
-              enableTime: true,
-              dateFormat: 'H:i',
-              allowInput: true
-            }}
-            bind:value={startTime}
-            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all text-sm"
-          />
-        </div>
-        <div>
-          <label
-            for="endTime"
-            class="block text-sm font-medium text-slate-700 mb-1">End</label
-          >
-          <input
-            name="endTime"
-            id="endTime"
-            use:flatpicker={{
-              defaultDate: endTime,
-              noCalendar: true,
-              enableTime: true,
-              dateFormat: 'H:i',
-              allowInput: true
-            }}
-            bind:value={endTime}
-            class="w-full px-3 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all text-sm"
-          />
-        </div>
-      </div>
-    {:else}
-      <!-- Hidden inputs to provide base date for Diary type when time inputs are not rendered -->
-      <input type="hidden" name="startTime" value={startTime} />
-      <input type="hidden" name="endTime" value={endTime} />
-    {/if}
-
-    <div class="flex justify-end gap-3 pt-4">
+    <!-- Actions Section -->
+    <div class="flex justify-end gap-3 pt-6 border-t border-slate-50 mt-8">
       {#if event}
         <button
           bind:this={deleteBtn}
           type="submit"
           formaction="?/delete"
-          class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-all mr-auto"
+          class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all mr-auto uppercase tracking-widest"
           onclick={handleDelete}
         >
           Delete
         </button>
       {/if}
       <button
-        type="submit"
-        class="px-8 py-2.5 text-sm font-bold text-white rounded shadow-sm hover:shadow-md transform active:scale-95 transition-all
-                {type === 'diary'
-          ? 'bg-purple-600 hover:bg-purple-700'
-          : 'bg-slate-800 hover:bg-slate-900'}
-                "
+        onclick={close}
+        type="button"
+        class="px-5 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition-all uppercase tracking-widest"
       >
-        Save Event
+        Cancel
+      </button>
+      <button
+        type="submit"
+        class="px-8 py-2.5 text-xs font-black text-white rounded-lg shadow-lg hover:shadow-xl transform active:scale-95 transition-all uppercase tracking-widest bg-slate-900 hover:bg-black shadow-slate-200"
+      >
+        Save
       </button>
     </div>
   </form>

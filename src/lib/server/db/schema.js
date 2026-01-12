@@ -72,6 +72,7 @@ export const event = sqliteTable('events', {
   ...baseColumns,
   title: text('title').notNull(),
   description: text('description'),
+  location: text('location'),
   startTime: text('start_time'),
   endTime: text('end_time'),
   type: text('type').notNull().default('schedule'),

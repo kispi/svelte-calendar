@@ -27,6 +27,7 @@ export const actions = {
     const data = await request.formData()
     const title = data.get('title')
     const description = data.get('description')
+    const location = data.get('location')
     const type = data.get('type') || 'schedule'
     const startTime = data.get('startTime')
     const endTime = data.get('endTime')
@@ -39,6 +40,7 @@ export const actions = {
       await db.insert(event).values({
         title: title.toString(),
         description: description ? description.toString() : null,
+        location: location ? location.toString() : null,
         type: type.toString(),
         startTime: toISO(startTime),
         endTime: toISO(endTime),
@@ -86,6 +88,7 @@ export const actions = {
     const id = data.get('id')
     const title = data.get('title')
     const description = data.get('description')
+    const location = data.get('location')
     const type = data.get('type') || 'schedule'
     const startTime = data.get('startTime')
     const endTime = data.get('endTime')
@@ -100,6 +103,7 @@ export const actions = {
         .set({
           title: title.toString(),
           description: description ? description.toString() : null,
+          location: location ? location.toString() : null,
           type: type.toString(),
           startTime: toISO(startTime),
           endTime: toISO(endTime)

@@ -122,6 +122,44 @@
       }, 500)
     }
   }
+
+  async function handleExport() {
+    window.location.href = '/api/events/export'
+  }
+
+  let fileInput = $state()
+
+  async function handleImport() {
+    fileInput?.click()
+  }
+
+  /** @param {Event} e */
+  async function onFileSelected(e) {
+    const target = /** @type {HTMLInputElement} */ (e.target)
+    if (!target.files?.[0]) return
+
+    const formData = new FormData()
+    formData.append('file', target.files[0])
+
+    try {
+      const res = await fetch('/api/events/import', {
+        method: 'POST',
+        body: formData
+      })
+      if (res.ok) {
+        const result = await res.json()
+        alert(result.message)
+        queryClient.invalidateQueries({ queryKey: ['events'] })
+      } else {
+        alert('Failed to import events')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('Error importing events')
+    } finally {
+      target.value = ''
+    }
+  }
 </script>
 
 <svelte:head>
@@ -169,6 +207,28 @@
             NOTES
           </button>
         </nav>
+
+        <div class="hidden sm:flex items-center gap-2">
+          <input
+            type="file"
+            accept=".ics"
+            bind:this={fileInput}
+            onchange={onFileSelected}
+            class="hidden"
+          />
+          <button
+            onclick={handleImport}
+            class="px-3 py-1.5 text-[10px] font-black text-slate-400 hover:text-justodo-green-600 hover:bg-justodo-green-50 rounded border border-transparent hover:border-justodo-green-100 transition-all uppercase tracking-widest"
+          >
+            Import
+          </button>
+          <button
+            onclick={handleExport}
+            class="px-3 py-1.5 text-[10px] font-black text-slate-400 hover:text-slate-800 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-all uppercase tracking-widest"
+          >
+            Export
+          </button>
+        </div>
       {/if}
     </div>
 

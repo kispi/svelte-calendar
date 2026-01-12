@@ -18,6 +18,7 @@
 
   let title = $state('')
   let description = $state('')
+  let location = $state('')
   let type = $state('schedule')
   let baseDate = $state('')
   let startTime = $state('')
@@ -27,6 +28,7 @@
     if (event) {
       title = event.title
       description = event.description || ''
+      location = event.location || ''
       type = event.type || 'schedule'
       const start = event.startTime ? dayjs(event.startTime) : dayjs()
       const end = event.endTime ? dayjs(event.endTime) : start.add(1, 'hour')
@@ -71,6 +73,8 @@
   })
 
   let deleteForm = $state()
+  let deleteBtn = $state()
+
   /**
    * @param {MouseEvent} e
    */
@@ -85,7 +89,7 @@
     })
 
     if (confirmed) {
-      deleteForm.requestSubmit()
+      deleteForm.requestSubmit(deleteBtn)
     }
   }
 </script>
@@ -153,29 +157,30 @@
     method="POST"
     action={event ? '?/update' : '?/create'}
     use:enhance={({ formData, action }) => {
-      // If it's a delete action, no need for date processing
-      if (action.search.includes('delete')) return
+      const isDelete = action.search.includes('delete')
 
-      const currentType = formData.get('type')
-      const startRaw = formData.get('startTime')
-      const endRaw = formData.get('endTime')
+      if (!isDelete) {
+        const currentType = formData.get('type')
+        const startRaw = formData.get('startTime')
+        const endRaw = formData.get('endTime')
 
-      if (currentType === 'diary') {
-        // Set to full day for diary using the fixed baseDate
-        formData.set('startTime', dayjs(`${baseDate} 00:00:00`).toISOString())
-        formData.set('endTime', dayjs(`${baseDate} 23:59:59`).toISOString())
-      } else {
-        if (startRaw) {
-          formData.set(
-            'startTime',
-            dayjs(`${baseDate} ${startRaw.toString()}`).toISOString()
-          )
-        }
-        if (endRaw) {
-          formData.set(
-            'endTime',
-            dayjs(`${baseDate} ${endRaw.toString()}`).toISOString()
-          )
+        if (currentType === 'diary') {
+          // Set to full day for diary using the fixed baseDate
+          formData.set('startTime', dayjs(`${baseDate} 00:00:00`).toISOString())
+          formData.set('endTime', dayjs(`${baseDate} 23:59:59`).toISOString())
+        } else {
+          if (startRaw) {
+            formData.set(
+              'startTime',
+              dayjs(`${baseDate} ${startRaw.toString()}`).toISOString()
+            )
+          }
+          if (endRaw) {
+            formData.set(
+              'endTime',
+              dayjs(`${baseDate} ${endRaw.toString()}`).toISOString()
+            )
+          }
         }
       }
 
@@ -204,6 +209,21 @@
         required
         class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all"
         placeholder="Title"
+      />
+    </div>
+
+    <div>
+      <label
+        for="location"
+        class="block text-sm font-medium text-slate-700 mb-1">Location</label
+      >
+      <input
+        type="text"
+        name="location"
+        id="location"
+        bind:value={location}
+        class="w-full px-4 py-2 rounded border border-slate-200 focus:border-justodo-green-400 focus:ring-2 focus:ring-justodo-green-200 outline-none transition-all"
+        placeholder="Add location..."
       />
     </div>
 
@@ -297,6 +317,7 @@
     <div class="flex justify-end gap-3 pt-4">
       {#if event}
         <button
+          bind:this={deleteBtn}
           type="submit"
           formaction="?/delete"
           class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-all mr-auto"

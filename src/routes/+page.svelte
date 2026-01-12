@@ -158,109 +158,197 @@
       alert('Error importing events')
     } finally {
       target.value = ''
+      isSettingsOpen = false
     }
   }
+
+  let isSettingsOpen = $state(false)
+  let settingsContainer = $state()
+
+  // Click outside handler for dropdown
+  $effect(() => {
+    /** @param {MouseEvent} e */
+    function handleClickOutside(e) {
+      if (
+        settingsContainer &&
+        !settingsContainer.contains(/** @type {Node} */ (e.target))
+      ) {
+        isSettingsOpen = false
+      }
+    }
+
+    if (isSettingsOpen) {
+      document.addEventListener('click', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside)
+    }
+  })
 </script>
 
 <svelte:head>
-  <title>Justodo | Calendar & Notes</title>
+  <title>Justodo | Simple Calendar & Smart Notes</title>
+  <meta
+    name="description"
+    content="Justodo is a clean, minimal planner that combines a powerful calendar with smart note-taking. Sync your schedule and manage your tasks with ease."
+  />
+
+  <!-- Open Graph / Social Media -->
+  <meta property="og:title" content="Justodo | Simple Calendar & Smart Notes" />
+  <meta
+    property="og:description"
+    content="A minimal, high-performance planner for managing your schedule and notes in one place."
+  />
+  <meta property="og:image" content="/logo.png" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://justodo.vibrew.ai" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Justodo | Simple Planner" />
+  <meta
+    name="twitter:description"
+    content="The minimal calendar and notes app you've been looking for."
+  />
+  <meta name="twitter:image" content="/logo.png" />
 </svelte:head>
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
   <div
     class="mb-10 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-6"
   >
-    <div class="flex flex-col sm:flex-row items-center gap-6">
-      <div class="flex items-center gap-3">
-        <img
-          src="/favicon.png"
-          alt="Logo"
-          class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all"
-        />
-        <h1 class="text-3xl font-black tracking-tight">
-          <span class="text-justodo-green-600">Justodo</span>
-          <span class="text-slate-400 font-light">Planner</span>
-        </h1>
-      </div>
-
-      {#if data.session}
-        <!-- Desktop Navigation -->
-        <nav
-          class="hidden sm:flex items-center bg-slate-100 p-1 rounded border border-slate-200"
-        >
-          <button
-            onclick={() => (activeTab = 'calendar')}
-            class="px-4 py-1.5 text-xs font-black rounded transition-all
-                   {activeTab === 'calendar'
-              ? 'bg-white text-slate-800 shadow-sm'
-              : 'text-slate-400 hover:text-slate-600'}"
-          >
-            CALENDAR
-          </button>
-          <button
-            onclick={() => (activeTab = 'notes')}
-            class="px-4 py-1.5 text-xs font-black rounded transition-all
-                   {activeTab === 'notes'
-              ? 'bg-white text-slate-800 shadow-sm'
-              : 'text-slate-400 hover:text-slate-600'}"
-          >
-            NOTES
-          </button>
-        </nav>
-
-        <div class="hidden sm:flex items-center gap-2">
-          <input
-            type="file"
-            accept=".ics"
-            bind:this={fileInput}
-            onchange={onFileSelected}
-            class="hidden"
-          />
-          <button
-            onclick={handleImport}
-            class="px-3 py-1.5 text-[10px] font-black text-slate-400 hover:text-justodo-green-600 hover:bg-justodo-green-50 rounded border border-transparent hover:border-justodo-green-100 transition-all uppercase tracking-widest"
-          >
-            Import
-          </button>
-          <button
-            onclick={handleExport}
-            class="px-3 py-1.5 text-[10px] font-black text-slate-400 hover:text-slate-800 hover:bg-slate-50 rounded border border-transparent hover:border-slate-100 transition-all uppercase tracking-widest"
-          >
-            Export
-          </button>
-        </div>
-      {/if}
+    <div class="flex items-center gap-3">
+      <img
+        src="/favicon.png"
+        alt="Logo"
+        class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all"
+      />
+      <h1 class="text-3xl font-black tracking-tight">
+        <span class="text-justodo-green-600">Justodo</span>
+        <span class="text-slate-400 font-light">Planner</span>
+      </h1>
     </div>
 
-    <div>
+    <div class="flex items-center gap-4">
       {#if data.session}
-        <div
-          class="flex items-center gap-4 bg-white p-1.5 rounded border border-slate-200 shadow-sm"
-        >
-          {#if data.session.user?.image}
-            <img
-              src={data.session.user.image}
-              alt="User"
-              class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all border border-slate-100"
-            />
-          {/if}
-          <div class="text-left hidden sm:block">
-            <p
-              class="text-[11px] font-black text-slate-800 leading-none uppercase tracking-tighter"
-            >
-              {data.session.user?.name}
-            </p>
-            <button
-              onclick={() => signOut()}
-              class="text-[10px] text-slate-400 hover:text-red-500 font-bold transition-colors uppercase"
-              >Sign Out</button
-            >
-          </div>
-          <button
-            onclick={() => signOut()}
-            class="sm:hidden text-xs text-slate-400 hover:text-red-500 font-bold px-2 transition-colors"
-            >Sign Out</button
+        <div class="flex items-center gap-2">
+          <div
+            class="flex items-center gap-3 bg-transparent p-1 px-2 rounded transition-all"
           >
+            {#if data.session.user?.image}
+              <img
+                src={data.session.user.image}
+                alt="User"
+                class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all border border-slate-100"
+              />
+            {/if}
+            <div class="text-left hidden sm:block">
+              <p
+                class="text-[11px] font-black text-slate-800 leading-none uppercase tracking-tighter"
+              >
+                {data.session.user?.name}
+              </p>
+            </div>
+
+            <!-- Settings Dropdown -->
+            <div class="relative" bind:this={settingsContainer}>
+              <button
+                onclick={() => (isSettingsOpen = !isSettingsOpen)}
+                class="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-slate-50 rounded transition-all"
+                aria-label="Settings"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-settings"
+                  ><path
+                    d="M12.22 2h-.44a2 2 0 0 0-2 2a2 2 0 0 1-2 2a2 2 0 0 0-2 2a2 2 0 0 1-2 2a2 2 0 0 0-2 2v.44a2 2 0 0 0 2 2a2 2 0 0 1 2 2a2 2 0 0 0 2 2a2 2 0 0 1 2 2a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2a2 2 0 0 1 2-2a2 2 0 0 0 2-2a2 2 0 0 1 2-2a2 2 0 0 0 2-2v-.44a2 2 0 0 0-2-2a2 2 0 0 1-2-2a2 2 0 0 0-2-2a2 2 0 0 1-2-2a2 2 0 0 0-2-2z"
+                  ></path><circle cx="12" cy="12" r="3"></circle></svg
+                >
+              </button>
+
+              {#if isSettingsOpen}
+                <div
+                  class="absolute right-0 mt-2 w-48 bg-white rounded-lg border border-slate-200 shadow-xl py-2 z-50 origin-top-right transition-all"
+                >
+                  <!-- Navigation Section -->
+                  <div
+                    class="px-4 py-1 pb-2 border-b border-slate-100 mb-1 hidden sm:block"
+                  >
+                    <p
+                      class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1"
+                    >
+                      Navigation
+                    </p>
+                    <button
+                      onclick={() => {
+                        activeTab = 'calendar'
+                        isSettingsOpen = false
+                      }}
+                      class="w-full text-left py-1 text-xs font-bold transition-colors
+                             {activeTab === 'calendar'
+                        ? 'text-justodo-green-600'
+                        : 'text-slate-600 hover:text-slate-800'}"
+                    >
+                      Calendar
+                    </button>
+                    <button
+                      onclick={() => {
+                        activeTab = 'notes'
+                        isSettingsOpen = false
+                      }}
+                      class="w-full text-left py-1 text-xs font-bold transition-colors
+                             {activeTab === 'notes'
+                        ? 'text-justodo-green-600'
+                        : 'text-slate-600 hover:text-slate-800'}"
+                    >
+                      Notes
+                    </button>
+                  </div>
+
+                  <input
+                    type="file"
+                    accept=".ics"
+                    bind:this={fileInput}
+                    onchange={onFileSelected}
+                    class="hidden"
+                  />
+                  <button
+                    onclick={() => {
+                      handleImport()
+                    }}
+                    class="w-full text-left px-4 py-2 text-xs font-bold text-slate-600 hover:bg-justodo-green-50 hover:text-justodo-green-600 transition-colors uppercase tracking-wider"
+                  >
+                    Import Calendar
+                  </button>
+                  <button
+                    onclick={() => {
+                      handleExport()
+                      isSettingsOpen = false
+                    }}
+                    class="w-full text-left px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition-colors uppercase tracking-wider"
+                  >
+                    Export Calendar
+                  </button>
+                  <div class="my-1 border-t border-slate-100"></div>
+                  <button
+                    onclick={() => signOut()}
+                    class="w-full text-left px-4 py-2 text-xs font-bold text-slate-400 hover:bg-red-50 hover:text-red-600 transition-colors uppercase tracking-wider"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              {/if}
+            </div>
+          </div>
         </div>
       {:else}
         <button

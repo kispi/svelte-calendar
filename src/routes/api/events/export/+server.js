@@ -4,6 +4,9 @@ import { error } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
 import { createEvents } from 'ics'
 import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ locals }) {
@@ -20,8 +23,13 @@ export async function GET({ locals }) {
             .all()
 
         const icsEvents = /** @type {any[]} */ (allEvents.map((e) => {
+            // Use local time for preparation because the 'ics' library 
+            // converts its input to UTC based on the server's local timezone.
+            // If we use .utc() here, it causes a double-shift.
             const start = dayjs(e.startTime)
             const end = dayjs(e.endTime)
+            const created = dayjs(e.createdAt)
+            const updated = dayjs(e.updatedAt)
 
             return {
                 start: [
@@ -41,35 +49,49 @@ export async function GET({ locals }) {
                 title: e.title,
                 description: e.description || '',
                 location: e.location || '',
-                uid: e.id,
+                uid: `${e.id}@justodo.vibrew.ai`,
                 created: [
-                    dayjs(e.createdAt).year(),
-                    dayjs(e.createdAt).month() + 1,
-                    dayjs(e.createdAt).date(),
-                    dayjs(e.createdAt).hour(),
-                    dayjs(e.createdAt).minute()
+                    created.year(),
+                    created.month() + 1,
+                    created.date(),
+                    created.hour(),
+                    created.minute()
                 ],
                 lastModified: [
-                    dayjs(e.updatedAt).year(),
-                    dayjs(e.updatedAt).month() + 1,
-                    dayjs(e.updatedAt).date(),
-                    dayjs(e.updatedAt).hour(),
-                    dayjs(e.updatedAt).minute()
-                ]
+                    updated.year(),
+                    updated.month() + 1,
+                    updated.date(),
+                    updated.hour(),
+                    updated.minute()
+                ],
+                status: 'CONFIRMED',
+                categories: [e.type || 'schedule']
             }
         }))
 
         if (icsEvents.length === 0) {
-            // Return empty ICS if no events
-            return new Response('BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Justodo//Calendar//EN\nEND:VCALENDAR', {
+            // Return empty ICS if no events, using CRLF and standard headers
+            const emptyIcs = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'PRODID:-//Justodo//Calendar//EN',
+                'END:VCALENDAR'
+            ].join('\r\n')
+
+            return new Response(emptyIcs, {
                 headers: {
-                    'Content-Type': 'text/calendar',
+                    'Content-Type': 'text/calendar; charset=utf-8',
                     'Content-Disposition': 'attachment; filename="calendar.ics"'
                 }
             })
         }
 
-        const { error: icsError, value } = createEvents(icsEvents)
+        const { error: icsError, value } = createEvents(icsEvents, {
+            productId: '-//Justodo//Calendar//EN',
+            calName: 'Justodo Calendar'
+        })
 
         if (icsError) {
             console.error('ICS Generation Error:', icsError)
@@ -78,8 +100,9 @@ export async function GET({ locals }) {
 
         return new Response(value, {
             headers: {
-                'Content-Type': 'text/calendar',
-                'Content-Disposition': 'attachment; filename="calendar.ics"'
+                'Content-Type': 'text/calendar; charset=utf-8',
+                'Content-Disposition': 'attachment; filename="calendar.ics"',
+                'Cache-Control': 'no-cache'
             }
         })
     } catch (e) {

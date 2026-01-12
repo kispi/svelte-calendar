@@ -1,5 +1,6 @@
 <script>
   import dayjs from 'dayjs'
+  import { i18n } from '$lib/i18n.svelte.js'
   import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
   import localeData from 'dayjs/plugin/localeData'
 
@@ -70,26 +71,37 @@
     })
   }
 
-  // Generate years for dropdown (2009 - 2140)
   let years = $derived(
     Array.from({ length: 2140 - 2009 + 1 }, (_, i) => 2009 + i)
   )
-  let months = dayjs.months
-    ? dayjs.months()
-    : [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-        'July',
-        'August',
-        'September',
-        'October',
-        'November',
-        'December'
-      ]
+
+  let months = $derived.by(() => {
+    // Force dependency on locale
+    i18n.locale
+    return dayjs.months
+      ? dayjs.months()
+      : [
+          'January',
+          'February',
+          'March',
+          'April',
+          'May',
+          'June',
+          'July',
+          'August',
+          'September',
+          'October',
+          'November',
+          'December'
+        ]
+  })
+
+  let weekdays = $derived.by(() => {
+    i18n.locale
+    return dayjs.weekdaysShort
+      ? dayjs.weekdaysShort()
+      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  })
 </script>
 
 <div class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden">
@@ -120,7 +132,7 @@
     <div class="flex gap-2">
       <button
         onclick={prevMonth}
-        aria-label="Previous Month"
+        aria-label={i18n.locale === 'kr' ? '이전 달' : 'Previous Month'}
         class="p-2 hover:bg-slate-100 rounded transition-colors text-slate-400 hover:text-slate-600"
       >
         <svg
@@ -138,7 +150,7 @@
       </button>
       <button
         onclick={nextMonth}
-        aria-label="Next Month"
+        aria-label={i18n.locale === 'kr' ? '다음 달' : 'Next Month'}
         class="p-2 hover:bg-slate-100 rounded transition-colors text-slate-400 hover:text-slate-600"
       >
         <svg
@@ -159,7 +171,7 @@
 
   <!-- Weekdays -->
   <div class="grid grid-cols-7 border-b border-slate-100 bg-slate-50/50">
-    {#each ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as day}
+    {#each weekdays as day}
       <div
         class="py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider"
       >

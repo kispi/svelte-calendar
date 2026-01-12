@@ -3,6 +3,7 @@
   import NoteList from './NoteList.svelte'
   import NoteEditor from './NoteEditor.svelte'
   import { modal } from '$lib/modal.svelte.js'
+  import { i18n } from '$lib/i18n.svelte.js'
   import ConfirmModal from './ConfirmModal.svelte'
 
   const queryClient = useQueryClient()
@@ -71,10 +72,9 @@
     if (!activeNoteId) return
 
     const confirmed = await modal.show(ConfirmModal, {
-      title: 'Delete Note',
-      message:
-        'Are you sure you want to delete this note? This cannot be undone.',
-      confirmText: 'Delete',
+      title: i18n.t('notes.deleteTitle'),
+      message: i18n.t('notes.deleteMessage'),
+      confirmText: i18n.t('common.delete'),
       confirmClass: 'bg-red-600 text-white'
     })
 
@@ -104,12 +104,12 @@
       class="flex h-14 items-center justify-between px-6 shrink-0 border-b border-slate-50 bg-slate-50/50"
     >
       <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
-        >List</span
+        >{i18n.t('notes.list')}</span
       >
       <button
         onclick={handleCreateNote}
         class="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-white rounded shadow-sm transition-all active:scale-95"
-        aria-label="Create note"
+        aria-label={i18n.t('notes.create')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -171,7 +171,7 @@
             d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"
           /><polyline points="14 2 14 8 20 8" /></svg
         >
-        <p class="text-sm font-medium">Select a note to view or edit</p>
+        <p class="text-sm font-medium">{i18n.t('notes.empty')}</p>
       </div>
     {/if}
   </div>

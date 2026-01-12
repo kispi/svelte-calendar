@@ -6,6 +6,7 @@
   import ConfirmModal from './ConfirmModal.svelte'
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
+  import { i18n } from '$lib/i18n.svelte.js'
 
   /**
    * @typedef {Object} ModalProps
@@ -82,10 +83,9 @@
   async function handleDelete(e) {
     e.preventDefault()
     const confirmed = await modal.show(ConfirmModal, {
-      title: 'Delete Event',
-      message:
-        'Are you sure you want to delete this event? This action cannot be undone.',
-      confirmText: 'Delete',
+      title: i18n.t('common.delete'),
+      message: i18n.t('event.deleteConfirm'),
+      confirmText: i18n.t('common.delete'),
       confirmClass: 'bg-red-600 hover:bg-red-700 text-white'
     })
 
@@ -170,8 +170,8 @@
         bind:value={title}
         required
         class="w-full text-2xl font-black text-slate-900 border-b-2 border-transparent focus:border-justodo-green-500 outline-none transition-all placeholder:text-slate-200 pb-2"
-        placeholder="Add title"
-        aria-label="Event Title"
+        placeholder={i18n.t('event.title')}
+        aria-label={i18n.t('event.title')}
       />
     </div>
 
@@ -196,7 +196,13 @@
       </div>
       <div class="flex-1">
         <div class="text-sm font-semibold text-slate-700 h-6 flex items-center">
-          {baseDate ? dayjs(baseDate).format('MMMM D, YYYY (ddd)') : ''}
+          {baseDate
+            ? dayjs(baseDate).format(
+                i18n.locale === 'kr'
+                  ? 'YYYY년 M월 D일 (ddd)'
+                  : 'MMMM D, YYYY (ddd)'
+              )
+            : ''}
         </div>
 
         <div class="h-10 flex items-center">
@@ -214,7 +220,7 @@
                 }}
                 bind:value={startTime}
                 class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
-                aria-label="Start Time"
+                aria-label={i18n.t('event.startTime')}
               />
               <span class="text-slate-300">−</span>
               <input
@@ -229,14 +235,14 @@
                 }}
                 bind:value={endTime}
                 class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
-                aria-label="End Time"
+                aria-label={i18n.t('event.endTime')}
               />
             </div>
           {:else}
             <div
               class="text-[11px] font-bold px-2 py-0.5 bg-justodo-green-50 text-justodo-green-600 rounded inline-block w-fit"
             >
-              ALL-DAY DIARY
+              {i18n.t('event.allDayDiary')}
             </div>
             <input type="hidden" name="startTime" value={startTime} />
             <input type="hidden" name="endTime" value={endTime} />
@@ -272,8 +278,8 @@
         id="location"
         bind:value={location}
         class="flex-1 px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300"
-        placeholder="Add location"
-        aria-label="Location"
+        placeholder={i18n.t('event.location')}
+        aria-label={i18n.t('event.location')}
       />
     </div>
 
@@ -319,7 +325,8 @@
             class="text-xs font-semibold uppercase tracking-wider transition-colors
             {type === 'schedule'
               ? 'text-slate-700'
-              : 'text-slate-400 group-hover:text-slate-600'}">Schedule</span
+              : 'text-slate-400 group-hover:text-slate-600'}"
+            >{i18n.t('event.schedule')}</span
           >
         </label>
 
@@ -345,7 +352,8 @@
             class="text-xs font-semibold uppercase tracking-wider transition-colors
             {type === 'diary'
               ? 'text-slate-700'
-              : 'text-slate-400 group-hover:text-slate-600'}">Diary</span
+              : 'text-slate-400 group-hover:text-slate-600'}"
+            >{i18n.t('event.diary')}</span
           >
         </label>
       </div>
@@ -376,8 +384,8 @@
         bind:value={description}
         use:autoResize
         class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-justodo-green-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-slate-300"
-        placeholder="Add description"
-        aria-label="Description"
+        placeholder={i18n.t('event.description')}
+        aria-label={i18n.t('event.description')}
       ></textarea>
     </div>
 
@@ -391,7 +399,7 @@
           class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all mr-auto uppercase tracking-widest"
           onclick={handleDelete}
         >
-          Delete
+          {i18n.t('common.delete')}
         </button>
       {/if}
       <button
@@ -399,13 +407,13 @@
         type="button"
         class="px-5 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition-all uppercase tracking-widest"
       >
-        Cancel
+        {i18n.t('common.cancel')}
       </button>
       <button
         type="submit"
         class="px-8 py-2.5 text-xs font-black text-white rounded-lg shadow-lg hover:shadow-xl transform active:scale-95 transition-all uppercase tracking-widest bg-slate-900 hover:bg-black shadow-slate-200"
       >
-        Save
+        {i18n.t('common.save')}
       </button>
     </div>
   </form>

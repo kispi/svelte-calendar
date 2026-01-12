@@ -1,5 +1,6 @@
 <script>
   import dayjs from 'dayjs'
+  import { i18n } from '$lib/i18n.svelte.js'
 
   /**
    * @typedef {Object} NoteListProps
@@ -13,9 +14,13 @@
 
   /** @param {string | null} content */
   function getPreview(content) {
-    if (!content) return 'No additional text'
+    if (!content)
+      return i18n.locale === 'kr' ? '내용 없음' : 'No additional text'
     const lines = content.split('\n')
-    return lines.slice(1).join(' ').trim() || 'No additional text'
+    return (
+      lines.slice(1).join(' ').trim() ||
+      (i18n.locale === 'kr' ? '내용 없음' : 'No additional text')
+    )
   }
 </script>
 
@@ -25,7 +30,9 @@
   <div class="flex-1 overflow-y-auto overflow-x-hidden">
     {#if notes.length === 0}
       <div class="p-8 text-center">
-        <p class="text-sm text-slate-400">No notes yet</p>
+        <p class="text-sm text-slate-400">
+          {i18n.locale === 'kr' ? '노트가 없습니다' : 'No notes yet'}
+        </p>
       </div>
     {:else}
       <div class="grid gap-px w-full">
@@ -48,7 +55,9 @@
                   {note.title ||
                     (note.content
                       ? note.content.split('\n')[0]
-                      : 'Untitled Note')}
+                      : i18n.locale === 'kr'
+                        ? '제목 없는 노트'
+                        : 'Untitled Note')}
                 </span>
                 <div class="flex items-center gap-2 min-w-0 w-full">
                   <span class="text-[10px] text-slate-400 font-mono shrink-0">

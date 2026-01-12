@@ -1,11 +1,13 @@
 <script>
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
-  import { modal } from '$lib/modal.svelte.js'
+  import { i18n } from '$lib/i18n.svelte.js'
   import { toast } from '$lib/toast.svelte.js'
+  import { modal } from '$lib/modal.svelte.js'
   import EventModal from '$lib/components/EventModal.svelte'
+  import LocaleModal from '$lib/components/LocaleModal.svelte'
   import ConfirmModal from '$lib/components/ConfirmModal.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
-  import NotesView from '$lib/components/NotesView.svelte' // This import was not in the provided snippet, but was in the original code. Keeping it.
+  import NotesView from '$lib/components/NotesView.svelte'
   import dayjs from 'dayjs'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { signIn, signOut } from '@auth/sveltekit/client'
@@ -141,7 +143,7 @@
     }
 
     window.location.href = '/api/events/export'
-    toast.success(`Successfully exported ${events.length} events!`, {
+    toast.success(i18n.t('toast.exportSuccess', { count: events.length }), {
       position: 'top'
     })
   }
@@ -180,11 +182,15 @@
     }
   }
 
+  async function handleOpenLocale() {
+    await modal.show(LocaleModal)
+  }
+
   async function confirmSignOut() {
     const confirmed = await modal.show(ConfirmModal, {
-      title: 'Sign Out',
-      message: 'Are you sure you want to sign out?',
-      confirmText: 'Sign Out',
+      title: i18n.t('nav.signOut'),
+      message: i18n.t('notes.deleteMessage'), // Reuse or add new key
+      confirmText: i18n.t('nav.signOut'),
       confirmClass: 'bg-slate-800 hover:bg-slate-900 text-white'
     })
 
@@ -194,8 +200,47 @@
   }
 </script>
 
+{#snippet navActions()}
+  <input
+    type="file"
+    accept=".ics"
+    bind:this={fileInput}
+    onchange={onFileSelected}
+    class="hidden"
+  />
+  <button
+    onclick={handleImport}
+    class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
+  >
+    {i18n.t('nav.import')}
+  </button>
+
+  <span class="w-1 h-1 rounded-full bg-slate-200"></span>
+
+  <button
+    onclick={handleExport}
+    class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
+  >
+    {i18n.t('nav.export')}
+  </button>
+
+  <span class="w-1 h-1 rounded-full bg-slate-200"></span>
+
+  <button
+    onclick={handleOpenLocale}
+    class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest group"
+  >
+    <span
+      class="text-xs filter saturate-0 group-hover:saturate-100 transition-all"
+    >
+      {i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}
+    </span>
+    {i18n.t(`locale.${i18n.locale}`)}
+  </button>
+{/snippet}
+
 <svelte:head>
-  <title>Justodo | Simple Calendar & Smart Notes</title>
+  <title>Justodo | {i18n.t('nav.calendar')} & {i18n.t('nav.notes')}</title>
   <meta
     name="description"
     content="Justodo is a clean, minimal planner that combines a powerful calendar with smart note-taking. Sync your schedule and manage your tasks with ease."
@@ -223,81 +268,27 @@
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
   <div
-    class="mb-10 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left gap-6"
+    class="mb-10 flex flex-col sm:flex-row items-center justify-between text-center sm:text-left"
   >
     <div class="flex flex-col gap-1 items-center sm:items-start">
       <div class="flex items-center gap-3">
         <h1 class="text-3xl font-black tracking-tight">
           <span class="text-justodo-green-600">Justodo</span>
-          <span class="text-slate-400 font-light">Planner</span>
         </h1>
       </div>
 
       {#if data.session}
-        <div class="flex items-center gap-3 mt-1 sm:ml-11">
-          <input
-            type="file"
-            accept=".ics"
-            bind:this={fileInput}
-            onchange={onFileSelected}
-            class="hidden"
-          />
-          <button
-            onclick={handleImport}
-            class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
-          >
-            Import
-          </button>
-          <span class="text-[10px] text-slate-200">|</span>
-          <button
-            onclick={handleExport}
-            class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
-          >
-            Export
-          </button>
+        <div class="flex sm:hidden items-center gap-3 mt-1">
+          {@render navActions()}
         </div>
       {/if}
     </div>
 
     <div class="flex items-center gap-4">
       {#if data.session}
-        <div class="flex items-center gap-2">
-          <div
-            class="flex items-center gap-3 bg-transparent p-1 px-2 rounded transition-all"
-          >
-            {#if data.session.user?.image}
-              <img
-                src={data.session.user.image}
-                alt="User"
-                class="w-8 h-8 rounded-sm grayscale hover:grayscale-0 transition-all border border-slate-100"
-              />
-            {/if}
-            <div class="text-left hidden sm:block">
-              <p
-                class="text-[11px] font-black text-slate-800 leading-none uppercase tracking-tighter"
-              >
-                {data.session.user?.name}
-              </p>
-            </div>
-          </div>
+        <div class="hidden sm:flex items-center gap-3">
+          {@render navActions()}
         </div>
-      {:else}
-        <button
-          onclick={openLoginPopup}
-          class="flex items-center gap-2 bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] px-5 py-2.5 rounded font-bold transition-all shadow-sm hover:shadow-md active:scale-95 border border-[#FDD835]/50"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            ><path
-              d="M12 3c-5.5 0-10 3.6-10 8 0 2.5 1.5 4.8 4 6.2-.2.8-.7 2.8-.8 3.2 0 .1 0 .2.2.2.1 0 .2 0 .3-.1 3.5-2.6 4-3 4.4-3.2.6.1 1.3.2 1.9.2 5.5 0 10-3.6 10-8s-4.5-8-10-8z"
-            /></svg
-          >
-          Login with Kakao
-        </button>
       {/if}
     </div>
   </div>
@@ -370,7 +361,7 @@
               /></svg
             >
             <span class="text-[10px] font-black uppercase tracking-tighter"
-              >Calendar</span
+              >{i18n.t('nav.calendar')}</span
             >
           </button>
 
@@ -399,7 +390,7 @@
               /></svg
             >
             <span class="text-[10px] font-black uppercase tracking-tighter"
-              >Notes</span
+              >{i18n.t('nav.notes')}</span
             >
           </button>
         </div>
@@ -427,7 +418,7 @@
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          Sign Out
+          {i18n.t('nav.signOut')}
         </button>
       </div>
     {/if}
@@ -437,13 +428,24 @@
         class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded border border-slate-100"
       >
         <p class="text-xl font-bold text-slate-400 mb-6">
-          Please login to manage your schedule
+          {i18n.t('common_ui.onboarding')}
         </p>
         <button
           onclick={openLoginPopup}
-          class="bg-slate-800 hover:bg-slate-900 text-white px-10 py-3.5 rounded font-bold shadow-lg shadow-slate-200 transition-all hover:-translate-y-0.5"
+          class="flex items-center gap-2 bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] px-8 py-4 rounded font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 border border-[#FDD835]/50 group"
         >
-          Get Started
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="transition-transform group-hover:scale-110"
+            ><path
+              d="M12 3c5.523 0 10 3.582 10 8 0 4.42-4.48 8-10 8-1.077 0-2.11-.135-3.077-.387-.232-.06-.476-.048-.7.034l-3.328 2.22c-.52.347-1.18-.178-.962-.764l.608-2.37c.07-.27-.008-.553-.207-.753C2.863 15.395 2 13.784 2 11c0-4.418 4.477-8 10-8z"
+            /></svg
+          >
+          <span class="text-lg">{i18n.t('common_ui.kakaoStart')}</span>
         </button>
       </div>
       <!-- Blurred preview -->

@@ -1,5 +1,6 @@
 <script>
   import { onDestroy } from 'svelte'
+  import { i18n } from '$lib/i18n.svelte.js'
 
   /**
    * @typedef {Object} NoteEditorProps
@@ -34,7 +35,9 @@
     clearTimeout(timeout)
     timeout = setTimeout(() => {
       const lines = content.split('\n')
-      const derivedTitle = lines[0].trim().substring(0, 50) || 'Untitled Note'
+      const derivedTitle =
+        lines[0].trim().substring(0, 50) ||
+        (i18n.locale === 'kr' ? '제목 없는 노트' : 'Untitled Note')
 
       onSave({
         title: title || derivedTitle,
@@ -58,7 +61,7 @@
         <button
           onclick={onBack}
           class="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-800 rounded-full transition-all"
-          aria-label="Back to list"
+          aria-label={i18n.t('notes.back')}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -79,7 +82,7 @@
       <button
         onclick={onDelete}
         class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
-        aria-label="Delete note"
+        aria-label={i18n.t('notes.deleteTitle')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -109,13 +112,13 @@
     <div class="max-w-3xl mx-auto flex flex-col h-full gap-4">
       <input
         type="text"
-        placeholder="Note Title"
+        placeholder={i18n.t('notes.title')}
         bind:value={title}
         oninput={handleInput}
         class="text-3xl font-black text-slate-900 border-none outline-none placeholder:text-slate-200"
       />
       <textarea
-        placeholder="Start writing..."
+        placeholder={i18n.t('notes.placeholder')}
         bind:value={content}
         oninput={handleInput}
         class="flex-1 w-full text-lg leading-relaxed text-slate-700 border-none outline-none resize-none placeholder:text-slate-200 min-h-[500px]"

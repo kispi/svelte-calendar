@@ -23,3 +23,54 @@ export const GET: RequestHandler = async ({ locals }) => {
     throw error(500, 'Internal Server Error')
   }
 }
+
+export const POST: RequestHandler = async ({ request, locals }) => {
+  const session = await locals.auth()
+  if (!session?.user?.id) throw error(401, 'Unauthorized')
+
+  try {
+    const body = await request.json()
+    const {
+      title,
+      description,
+      location,
+      locationAddress,
+      placeId,
+      lat,
+      lng,
+      type,
+      startTime,
+      endTime
+    } = body
+
+    if (!title) throw error(400, 'Title is required')
+
+    const id = crypto.randomUUID()
+    await db.insert(event).values({
+      id,
+      title,
+      description,
+      location,
+      locationAddress,
+      placeId,
+      lat,
+      lng,
+      type: type || 'schedule',
+      startTime: startTime ? new Date(startTime) : null,
+      endTime: endTime ? new Date(endTime) : null,
+      userId: session.user.id
+    })
+
+    const [newEvent] = await db
+      .select()
+      .from(event)
+      .where(eq(event.id, id))
+
+    return json(newEvent)
+  } catch (e) {
+    console.error('Events Create API Error:', e)
+    const status = e instanceof Error && 'status' in (e as any) ? (e as any).status : 500
+    const message = e instanceof Error ? e.message : 'Internal Server Error'
+    throw error(status, message)
+  }
+}

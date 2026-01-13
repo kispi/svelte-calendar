@@ -81,8 +81,12 @@
       method: 'DELETE'
     })
     if (res.ok) {
+      const deletedId = activeNoteId
       activeNoteId = null
-      queryClient.invalidateQueries({ queryKey: ['notes'] })
+      queryClient.setQueryData(['notes'], (old: any[] | undefined) => {
+        if (!old) return []
+        return old.filter((n) => n.id !== deletedId)
+      })
     }
   }
 </script>

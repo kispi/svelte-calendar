@@ -47,7 +47,7 @@
       if (!res.ok) throw new Error('Failed to fetch events')
       return res.json()
     },
-    enabled: !!data.session
+    enabled: !!data.session && activeTab === 'calendar'
   }))
 
   async function handleDateClick(date: any) {
@@ -62,7 +62,20 @@
       { preventCloseOnClickBackdrop: true }
     )
     if (result?.success) {
-      queryClient.invalidateQueries({ queryKey: ['events'] })
+      if (result.event) {
+        // Local update
+        queryClient.setQueryData(['events'], (old: any[] | undefined) => {
+          const updated = [...(old || []), result.event]
+          // Re-sort by startTime if it exists
+          return updated.sort((a, b) => {
+            if (!a.startTime) return 1
+            if (!b.startTime) return -1
+            return dayjs(a.startTime).diff(dayjs(b.startTime))
+          })
+        })
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['events'] })
+      }
     }
   }
 
@@ -75,7 +88,22 @@
       { preventCloseOnClickBackdrop: true }
     )
     if (result?.success) {
-      queryClient.invalidateQueries({ queryKey: ['events'] })
+      if (result.event) {
+        // Local update
+        queryClient.setQueryData(['events'], (old: any[] | undefined) => {
+          if (!old) return [result.event]
+          return old.map((e) => (e.id === result.event.id ? result.event : e))
+        })
+      } else if (result.deletedId) {
+        // Local remove
+        queryClient.setQueryData(['events'], (old: any[] | undefined) => {
+          if (!old) return []
+          return old.filter((e) => e.id !== result.deletedId)
+        })
+      } else {
+        // If it was a create (result.success without event/deletedId)
+        queryClient.invalidateQueries({ queryKey: ['events'] })
+      }
     }
   }
 

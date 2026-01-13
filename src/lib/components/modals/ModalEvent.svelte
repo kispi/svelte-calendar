@@ -150,8 +150,21 @@
       confirmClass: 'bg-red-600 hover:bg-red-700 text-white'
     })
 
-    if (confirmed) {
-      deleteForm?.requestSubmit(deleteBtn)
+    if (confirmed && event?.id) {
+      try {
+        const res = await fetch(`/api/events/${event.id}`, {
+          method: 'DELETE'
+        })
+        if (res.ok) {
+          close({ success: true, deletedId: event.id })
+        } else {
+          const err = await res.json()
+          alert(err.message || 'Delete failed')
+        }
+      } catch (err) {
+        console.error('Delete failed', err)
+        alert('Delete failed')
+      }
     }
   }
 </script>
@@ -190,31 +203,113 @@
     bind:this={deleteForm}
     method="POST"
     action={event ? '?/update' : '?/create'}
-    use:enhance={({ formData, action }) => {
+    use:enhance={({ formData, action, cancel }) => {
       const isDelete = action.search.includes('delete')
+      const isUpdate = action.search.includes('update')
+
+      const currentType = formData.get('type')
+      const startRaw = formData.get('startTime')
+      const endRaw = formData.get('endTime')
+
+      let startISO = null
+      let endISO = null
+
+      if (currentType === 'diary') {
+        startISO = dayjs(`${baseDate} 00:00:00`).toISOString()
+        endISO = dayjs(`${baseDate} 23:59:59`).toISOString()
+      } else {
+        if (startRaw) {
+          startISO = dayjs(`${baseDate} ${startRaw.toString()}`).toISOString()
+        }
+        if (endRaw) {
+          endISO = dayjs(`${baseDate} ${endRaw.toString()}`).toISOString()
+        }
+      }
 
       if (!isDelete) {
-        const currentType = formData.get('type')
-        const startRaw = formData.get('startTime')
-        const endRaw = formData.get('endTime')
+        formData.set('startTime', startISO || '')
+        formData.set('endTime', endISO || '')
+      }
 
-        if (currentType === 'diary') {
-          formData.set('startTime', dayjs(`${baseDate} 00:00:00`).toISOString())
-          formData.set('endTime', dayjs(`${baseDate} 23:59:59`).toISOString())
-        } else {
-          if (startRaw) {
-            formData.set(
-              'startTime',
-              dayjs(`${baseDate} ${startRaw.toString()}`).toISOString()
-            )
-          }
-          if (endRaw) {
-            formData.set(
-              'endTime',
-              dayjs(`${baseDate} ${endRaw.toString()}`).toISOString()
-            )
-          }
+      if (isUpdate && event?.id) {
+        cancel()
+        const data = {
+          title: formData.get('title'),
+          description: formData.get('description'),
+          location: formData.get('location'),
+          locationAddress: formData.get('locationAddress'),
+          placeId: formData.get('placeId'),
+          lat: formData.get('lat')
+            ? parseFloat(formData.get('lat') as string)
+            : null,
+          lng: formData.get('lng')
+            ? parseFloat(formData.get('lng') as string)
+            : null,
+          type: formData.get('type'),
+          startTime: startISO,
+          endTime: endISO
         }
+
+        fetch(`/api/events/${event.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+          .then(async (res) => {
+            if (res.ok) {
+              const updatedEvent = await res.json()
+              close({ success: true, event: updatedEvent })
+            } else {
+              const err = await res.json()
+              alert(err.message || 'Update failed')
+            }
+          })
+          .catch((err) => {
+            console.error('Update failed', err)
+            alert('Update failed')
+          })
+        return
+      }
+
+      if (!isDelete && !isUpdate) {
+        // Create
+        cancel()
+        const data = {
+          title: formData.get('title'),
+          description: formData.get('description'),
+          location: formData.get('location'),
+          locationAddress: formData.get('locationAddress'),
+          placeId: formData.get('placeId'),
+          lat: formData.get('lat')
+            ? parseFloat(formData.get('lat') as string)
+            : null,
+          lng: formData.get('lng')
+            ? parseFloat(formData.get('lng') as string)
+            : null,
+          type: formData.get('type'),
+          startTime: startISO,
+          endTime: endISO
+        }
+
+        fetch('/api/events', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+          .then(async (res) => {
+            if (res.ok) {
+              const newEvent = await res.json()
+              close({ success: true, event: newEvent })
+            } else {
+              const err = await res.json()
+              alert(err.message || 'Creation failed')
+            }
+          })
+          .catch((err) => {
+            console.error('Creation failed', err)
+            alert('Creation failed')
+          })
+        return
       }
 
       return async ({ result, update }) => {

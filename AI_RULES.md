@@ -48,5 +48,13 @@
 ## 6. Environment Variables
 
 - Manage secrets in `.env`.
-- Do not commit `.env`. Commit `.env.example`.
+
+## 7. REST API & Data Fetching
+
+- **RESTful Endpoints**: Prefer RESTful API endpoints (`GET`, `POST`, `PUT`, `DELETE`) over legacy form actions for data operations.
+- **JSON APIs**: Communication should happen via JSON `fetch` requests.
+- **Response Handling**: APIs for `POST` and `PUT` SHOULD return the created/updated object as JSON.
+- **Local State Sync**: After `POST`, `PUT`, or `DELETE`, manually update the client-side cache (e.g., `queryClient.setQueryData`) to reflect changes immediately.
+- **No Redundant Fetches**: Avoid re-fetching the entire list (`invalidateQueries`) after individual CRUD operations if the result can be updated locally.
+- **Conditional Fetching**: Queries should be `enabled` only for the active view or tab to minimize network traffic on load and tab switching.
 

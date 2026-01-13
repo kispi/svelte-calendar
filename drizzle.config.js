@@ -1,10 +1,15 @@
 import { defineConfig } from 'drizzle-kit'
+import 'dotenv/config'
 
 export default defineConfig({
   schema: './src/lib/server/db/schema.ts',
   out: './drizzle',
-  dialect: 'sqlite',
+  dialect: 'mysql',
   dbCredentials: {
-    url: 'local.db'
+    host: process.env.DB_HOST || 'webserver.coinsect.io',
+    port: Number(process.env.DB_PORT) || 3306,
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || 'calendar'
   }
 })

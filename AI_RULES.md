@@ -15,9 +15,9 @@
   - ✅ USE `$state`, `$derived`, `$effect`, `$props`.
 - **Styling**: Tailwind CSS (v3).
   - Custom colors defined in `tailwind.config.js` (`justodo-green`).
-- **Database**: Drizzle ORM + `better-sqlite3` (`local.db`).
+- **Database**: Drizzle ORM + MySQL.
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
-  - **Date Types**: Use `PROPER ISO8601 TEXT` strings for dates, NOT Integers.
+  - **Date Types**: Use `Date` objects for `datetime`/`timestamp` columns in Drizzle (Drizzle handles conversion to/from MySQL format automatically).
 - **Date Handling**: `dayjs`.
 - **Components**: `flatpickr` for date inputs.
 - **Client State**: `@tanstack/svelte-query` for data fetching and caching.

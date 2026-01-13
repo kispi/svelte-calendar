@@ -17,7 +17,6 @@
     "@sveltejs/adapter-node": "^5.4.0",
     "@sveltejs/kit": "^2.49.1",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",
-    "@types/better-sqlite3": "^7.6.13",
     "autoprefixer": "^10.4.23",
     "cross-env": "^10.1.0",
     "drizzle-kit": "^0.31.8",
@@ -36,13 +35,13 @@
     "@auth/sveltekit": "^1.11.1",
     "@google/generative-ai": "^0.24.1",
     "@tanstack/svelte-query": "^6.0.14",
-    "better-sqlite3": "^12.5.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.19",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "flatpickr": "^4.6.13",
     "ics": "^3.8.1",
+    "mysql2": "^3.16.0",
     "node-ical": "^0.23.1"
   }
 }

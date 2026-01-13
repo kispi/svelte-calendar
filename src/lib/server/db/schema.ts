@@ -1,95 +1,96 @@
-import { sqliteTable, text, integer, real, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import { mysqlTable, varchar, text, int, double, primaryKey, uniqueIndex, timestamp, datetime } from 'drizzle-orm/mysql-core'
+import { sql } from 'drizzle-orm'
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm'
 
 const baseColumns = {
-  id: text('id')
+  id: varchar('id', { length: 255 })
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  createdAt: text('created_at').notNull().$defaultFn(() => new Date().toISOString()),
-  updatedAt: text('updated_at').notNull().$defaultFn(() => new Date().toISOString()),
-  deletedAt: text('deleted_at')
+  createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+  deletedAt: timestamp('deleted_at')
 }
 
-export const user = sqliteTable('users', {
+export const user = mysqlTable('users', {
   ...baseColumns,
-  name: text('name'),
-  email: text('email').unique(),
-  emailVerified: text('email_verified'),
+  name: varchar('name', { length: 255 }),
+  email: varchar('email', { length: 255 }).unique(),
+  emailVerified: timestamp('email_verified'),
   image: text('image')
 })
 
-export const account = sqliteTable(
+export const account = mysqlTable(
   'accounts',
   {
-    ...baseColumns,
-    userId: text('user_id')
+    provider: varchar('provider', { length: 255 }).notNull(),
+    providerAccountId: varchar('provider_account_id', { length: 255 }).notNull(),
+    userId: varchar('user_id', { length: 255 })
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
-    type: text('type').notNull(),
-    provider: text('provider').notNull(),
-    providerAccountId: text('provider_account_id').notNull(),
+    type: varchar('type', { length: 255 }).notNull(),
     refresh_token: text('refresh_token'),
     access_token: text('access_token'),
-    expires_at: integer('expires_at'),
-    token_type: text('token_type'),
-    scope: text('scope'),
+    expires_at: int('expires_at'),
+    token_type: varchar('token_type', { length: 255 }),
+    scope: varchar('scope', { length: 255 }),
     id_token: text('id_token'),
-    session_state: text('session_state')
+    session_state: varchar('session_state', { length: 255 }),
+    createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+    deletedAt: timestamp('deleted_at')
   },
   (account) => ({
-    uniqueAccount: uniqueIndex('accounts_provider_provider_account_id_unique').on(
-      account.provider,
-      account.providerAccountId
-    )
+    compoundKey: primaryKey({ columns: [account.provider, account.providerAccountId] })
   })
 )
 
-export const session = sqliteTable('sessions', {
-  ...baseColumns,
-  sessionToken: text('session_token').unique().notNull(), // standard for Auth.js
-  userId: text('user_id')
+export const session = mysqlTable('sessions', {
+  sessionToken: varchar('session_token', { length: 255 }).notNull().primaryKey(),
+  userId: varchar('user_id', { length: 255 })
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
-  expires: text('expires').notNull()
+  expires: timestamp('expires').notNull(),
+  createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+  deletedAt: timestamp('deleted_at')
 })
 
-export const verificationToken = sqliteTable(
+export const verificationToken = mysqlTable(
   'verification_tokens',
   {
-    ...baseColumns,
-    identifier: text('identifier').notNull(),
-    token: text('token').notNull(),
-    expires: text('expires').notNull()
+    identifier: varchar('identifier', { length: 255 }).notNull(),
+    token: varchar('token', { length: 255 }).notNull(),
+    expires: timestamp('expires').notNull(),
+    createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+    deletedAt: timestamp('deleted_at')
   },
   (vt) => ({
-    uniqueToken: uniqueIndex('verification_tokens_identifier_token_unique').on(
-      vt.identifier,
-      vt.token
-    )
+    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] })
   })
 )
 
-export const event = sqliteTable('events', {
+export const event = mysqlTable('events', {
   ...baseColumns,
-  title: text('title').notNull(),
+  title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
-  location: text('location'),
+  location: varchar('location', { length: 255 }),
   // Location fields - Detailed
-  lat: real('lat'),
-  lng: real('lng'),
-  locationAddress: text('location_address'),
-  placeId: text('place_id'), // Kakao Place ID
-  startTime: text('start_time'),
-  endTime: text('end_time'),
-  type: text('type').notNull().default('schedule'),
-  userId: text('user_id').references(() => user.id, { onDelete: 'set null' })
+  lat: double('lat'),
+  lng: double('lng'),
+  locationAddress: varchar('location_address', { length: 512 }),
+  placeId: varchar('place_id', { length: 255 }), // Kakao Place ID
+  startTime: datetime('start_time'),
+  endTime: datetime('end_time'),
+  type: varchar('type', { length: 50 }).notNull().default('schedule'),
+  userId: varchar('user_id', { length: 255 }).references(() => user.id, { onDelete: 'set null' })
 })
 
-export const note = sqliteTable('notes', {
+export const note = mysqlTable('notes', {
   ...baseColumns,
-  title: text('title'),
+  title: varchar('title', { length: 255 }),
   content: text('content'),
-  userId: text('user_id').references(() => user.id, { onDelete: 'cascade' })
+  userId: varchar('user_id', { length: 255 }).references(() => user.id, { onDelete: 'cascade' })
 })
 
 export type User = InferSelectModel<typeof user>

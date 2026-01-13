@@ -20,7 +20,6 @@ export const GET: RequestHandler = async ({ locals }) => {
             .select()
             .from(event)
             .where(eq(event.userId, session.user.id))
-            .all()
 
         const icsEvents: EventAttributes[] = allEvents.map((e) => {
             let start = dayjs(e.startTime)

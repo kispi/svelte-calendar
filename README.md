@@ -22,7 +22,7 @@ SvelteKit으로 제작된 모던하고 직관적인 개인용 캘린더 & 노트
 
 - **Framework**: [SvelteKit 5](https://svelte.dev/)
 - **Styling**: [TailwindCSS](https://tailwindcss.com/)
-- **Database**: [SQLite](https://www.sqlite.org/) (Better-SQLite3)
+- **Database**: [MySQL](https://www.mysql.com/)
 - **ORM**: [Drizzle ORM](https://orm.drizzle.team/)
 - **Authentication**: [Auth.js](https://authjs.dev/)
 - **3rd parties**: Kakao(Login), Google Cloud(AI)
@@ -44,9 +44,7 @@ npm install
 
 루트 디렉토리에 `.env.example` 파일을 참고해 `.env`를 생성하고 관련 내용들을 입력합니다.
 
-### 3. 데이터베이스 초기화
-
-Drizzle을 사용하여 로컬 SQLite 데이터베이스를 생성하고 스키마를 동기화합니다:
+Drizzle을 사용하여 데이터베이스 스키마를 동기화합니다 (환경 변수에 설정된 MySQL DB 사용):
 
 ```bash
 npx drizzle-kit push

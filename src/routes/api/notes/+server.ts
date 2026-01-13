@@ -15,7 +15,6 @@ export const GET: RequestHandler = async ({ locals }) => {
             .from(note)
             .where(eq(note.userId, session.user.id))
             .orderBy(desc(note.updatedAt))
-            .all()
         return json(allNotes)
     } catch (e) {
         console.error('Notes API Error:', e)
@@ -29,14 +28,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     try {
         const { title, content } = await request.json()
-        const [inserted] = await db
+        const id = crypto.randomUUID()
+        await db
             .insert(note)
             .values({
+                id,
                 title,
                 content,
                 userId: session.user.id
             })
-            .returning()
+
+        const [inserted] = await db
+            .select()
+            .from(note)
+            .where(eq(note.id, id))
+
         return json(inserted)
     } catch (e) {
         console.error('Notes API Error:', e)

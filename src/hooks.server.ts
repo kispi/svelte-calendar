@@ -11,66 +11,15 @@ import {
   verificationToken
 } from '$lib/server/db/schema'
 
-// @ts-ignore
 const drizzleAdapter = DrizzleAdapter(db, {
-  usersTable: user as any,
-  accountsTable: account as any,
-  sessionsTable: session as any,
-  verificationTokensTable: verificationToken as any
+  usersTable: user,
+  accountsTable: account,
+  sessionsTable: session,
+  verificationTokensTable: verificationToken
 })
 
-/** @type {import("@auth/sveltekit").SvelteKitAuthConfig["adapter"]} */
-const customAdapter = {
-  ...drizzleAdapter,
-  async createSession(session: any) {
-    const result = await drizzleAdapter.createSession!(
-      {
-        ...session,
-        expires: session.expires.toISOString()
-      }
-    )
-    if (result) {
-      result.expires = new Date(result.expires)
-    }
-    return result
-  },
-  async updateSession(session: any) {
-    const result = await drizzleAdapter.updateSession!(
-      {
-        ...session,
-        expires: session.expires?.toISOString()
-      }
-    )
-    if (result?.expires) {
-      result.expires = new Date(result.expires)
-    }
-    return result
-  },
-  async createVerificationToken(token: any) {
-    const result = await drizzleAdapter.createVerificationToken!(
-      {
-        ...token,
-        expires: token.expires.toISOString()
-      }
-    )
-    if (result?.expires) {
-      result.expires = new Date(result.expires)
-    }
-    return result
-  },
-  // We also need to ensure read operations convert String -> Date back for Auth.js
-  // Auth.js expects `expires` to be a Date object.
-  async getSessionAndUser(sessionToken: string) {
-    const result = await drizzleAdapter.getSessionAndUser!(sessionToken)
-    if (result?.session) {
-      result.session.expires = new Date(result.session.expires)
-    }
-    return result
-  }
-}
-
 export const { handle } = SvelteKitAuth({
-  adapter: customAdapter,
+  adapter: drizzleAdapter,
   providers: [
     Kakao({
       clientId: env.KAKAO_CLIENT_ID,

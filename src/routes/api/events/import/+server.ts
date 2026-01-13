@@ -29,21 +29,31 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             for (const e of events) {
                 // Ensure userId is the current user
                 e.userId = session.user.id
+
+                // Convert date strings to Date objects for MySQL datetime/timestamp columns
+                const values = {
+                    ...e,
+                    startTime: e.startTime ? new Date(e.startTime) : null,
+                    endTime: e.endTime ? new Date(e.endTime) : null,
+                    createdAt: e.createdAt ? new Date(e.createdAt) : undefined,
+                    updatedAt: e.updatedAt ? new Date(e.updatedAt) : undefined,
+                    deletedAt: e.deletedAt ? new Date(e.deletedAt) : undefined
+                }
+
                 await db.insert(event)
-                    .values(e)
-                    .onConflictDoUpdate({
-                        target: event.id,
+                    .values(values)
+                    .onDuplicateKeyUpdate({
                         set: {
-                            title: e.title,
-                            description: e.description,
-                            location: e.location,
-                            locationAddress: e.locationAddress,
-                            placeId: e.placeId,
-                            lat: e.lat,
-                            lng: e.lng,
-                            startTime: e.startTime,
-                            endTime: e.endTime,
-                            updatedAt: new Date().toISOString()
+                            title: values.title,
+                            description: values.description,
+                            location: values.location,
+                            locationAddress: values.locationAddress,
+                            placeId: values.placeId,
+                            lat: values.lat,
+                            lng: values.lng,
+                            startTime: values.startTime,
+                            endTime: values.endTime,
+                            updatedAt: new Date()
                         }
                     })
             }

@@ -17,7 +17,6 @@ export const GET: RequestHandler = async ({ locals }) => {
       .from(event)
       .where(eq(event.userId, session.user.id))
       .orderBy(asc(event.startTime))
-      .all()
     return json(allEvents)
   } catch (e) {
     console.error('API Error:', e)

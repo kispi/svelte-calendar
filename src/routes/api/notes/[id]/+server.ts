@@ -10,12 +10,11 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
     if (!session?.user?.id) throw error(401, 'Unauthorized')
 
     try {
-        const result = await db
+        const [result] = await db
             .delete(note)
             .where(and(eq(note.id, params.id), eq(note.userId, session.user.id)))
-            .returning()
 
-        if (result.length === 0) {
+        if (result.affectedRows === 0) {
             throw error(404, 'Note not found')
         }
 
@@ -32,7 +31,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
 
     try {
         const { title, content } = await request.json()
-        const [updated] = await db
+        await db
             .update(note)
             .set({
                 title,
@@ -40,7 +39,11 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
                 updatedAt: new Date().toISOString()
             })
             .where(and(eq(note.id, params.id), eq(note.userId, session.user.id)))
-            .returning()
+
+        const [updated] = await db
+            .select()
+            .from(note)
+            .where(and(eq(note.id, params.id), eq(note.userId, session.user.id)))
 
         if (!updated) throw error(404, 'Note not found')
         return json(updated)

@@ -1,8 +1,9 @@
-<script>
+<script lang="ts">
   import '../app.css'
   import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query'
+  import type { Snippet } from 'svelte'
 
-  let { children } = $props()
+  let { children }: { children: Snippet } = $props()
 
   const queryClient = new QueryClient({
     defaultOptions: {

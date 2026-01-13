@@ -1,16 +1,15 @@
-<script>
+<script lang="ts">
   import { i18n } from '$lib/i18n.svelte.js'
-  /**
-   * @typedef {Object} ConfirmProps
-   * @property {string} [title]
-   * @property {string} [message]
-   * @property {string} [confirmText]
-   * @property {string} [cancelText]
-   * @property {string} [confirmClass]
-   * @property {(value?: any) => void} [close]
-   */
 
-  /** @type {ConfirmProps} */
+  interface ConfirmProps {
+    title?: string
+    message?: string
+    confirmText?: string
+    cancelText?: string
+    confirmClass?: string
+    close?: (value?: boolean) => void
+  }
+
   let {
     title = i18n.t('common.confirm'),
     message = i18n.t('event.deleteConfirm'),
@@ -18,7 +17,7 @@
     cancelText = i18n.t('common.cancel'),
     confirmClass = 'bg-red-600 hover:bg-red-700 text-white',
     close = () => {}
-  } = $props()
+  }: ConfirmProps = $props()
 </script>
 
 <div class="p-6">

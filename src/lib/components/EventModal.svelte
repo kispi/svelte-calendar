@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { enhance } from '$app/forms'
   import { untrack } from 'svelte'
   import { flatpicker } from '$lib/actions/flatpickr'
@@ -8,15 +8,13 @@
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
 
-  /**
-   * @typedef {Object} ModalProps
-   * @property {any} [event]
-   * @property {any} [selectedDate]
-   * @property {(value?: any) => void} [close]
-   */
+  interface ModalProps {
+    event?: any
+    selectedDate?: any
+    close?: (value?: any) => void
+  }
 
-  /** @type {ModalProps} */
-  let { event = null, selectedDate, close = () => {} } = $props()
+  let { event = null, selectedDate, close = () => {} }: ModalProps = $props()
 
   let title = $state('')
   let description = $state('')
@@ -25,12 +23,12 @@
   let baseDate = $state('')
   let startTime = $state('')
   let endTime = $state('')
-  let searchResults = $state([])
+  let searchResults = $state<any[]>([])
   let showDropdown = $state(false)
-  /** @type {ReturnType<typeof setTimeout>} */
-  let searchTimeout
 
-  async function performSearch(query) {
+  let searchTimeout: ReturnType<typeof setTimeout> | undefined
+
+  async function performSearch(query: string) {
     if (!query.trim()) {
       searchResults = []
       showDropdown = false
@@ -51,9 +49,8 @@
     }
   }
 
-  /** @param {Event} e */
-  function handleLocationInput(e) {
-    const target = /** @type {HTMLInputElement} */ (e.target)
+  function handleLocationInput(e: Event) {
+    const target = e.target as HTMLInputElement
     const query = target.value
     // location is bound, no need to set manually
 
@@ -70,8 +67,7 @@
     }
   }
 
-  /** @param {any} place */
-  function handleSelectLocation(place) {
+  function handleSelectLocation(place: any) {
     location = `${place.road_address_name || place.address_name} (${place.place_name})`
     showDropdown = false
     if (searchTimeout) clearTimeout(searchTimeout)
@@ -125,13 +121,10 @@
     })
   })
 
-  let deleteForm = $state()
-  let deleteBtn = $state()
+  let deleteForm = $state<HTMLFormElement>()
+  let deleteBtn = $state<HTMLButtonElement>()
 
-  /**
-   * @param {MouseEvent} e
-   */
-  async function handleDelete(e) {
+  async function handleDelete(e: MouseEvent) {
     e.preventDefault()
     const confirmed = await modal.show(ConfirmModal, {
       title: i18n.t('common.delete'),
@@ -141,7 +134,7 @@
     })
 
     if (confirmed) {
-      deleteForm.requestSubmit(deleteBtn)
+      deleteForm?.requestSubmit(deleteBtn)
     }
   }
 </script>

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { modal } from '$lib/modal.svelte.js'
   import { fade, scale } from 'svelte/transition'
 </script>

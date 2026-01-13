@@ -1,8 +1,8 @@
 import { json } from '@sveltejs/kit'
 import { KAKAO_CLIENT_SECRET } from '$env/static/private'
+import type { RequestHandler } from './$types'
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET({ url }) {
+export const GET: RequestHandler = async ({ url }) => {
     const query = url.searchParams.get('query')
 
     if (!query) {

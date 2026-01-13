@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
   import { i18n } from '$lib/i18n.svelte.js'
   import { toast } from '$lib/toast.svelte.js'
@@ -12,15 +12,14 @@
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { signIn, signOut } from '@auth/sveltekit/client'
   import { untrack } from 'svelte'
+  import type { PageData } from './$types'
 
-  /** @type {{ data: import('./$types').PageData }} */
-  let { data } = $props()
+  let { data }: { data: PageData } = $props()
 
   let activeTab = $state('calendar') // 'calendar' | 'notes'
   let currentDate = $state(dayjs())
 
-  /** @param {string} dateStr */
-  function handleMoveToDate(dateStr) {
+  function handleMoveToDate(dateStr: string) {
     activeTab = 'calendar'
     currentDate = dayjs(dateStr)
   }
@@ -50,8 +49,7 @@
     enabled: !!data.session
   }))
 
-  /** @param {any} date */
-  async function handleDateClick(date) {
+  async function handleDateClick(date: any) {
     if (!data.session) {
       openLoginPopup()
       return
@@ -67,8 +65,7 @@
     }
   }
 
-  /** @param {any} event */
-  async function handleEventClick(event) {
+  async function handleEventClick(event: any) {
     if (!data.session) return
 
     const result = await modal.show(
@@ -100,6 +97,7 @@
       return
     }
 
+    // @ts-ignore
     popup.document.write('Loading login...')
 
     try {
@@ -148,15 +146,16 @@
     })
   }
 
-  let fileInput = $state()
+  let fileInput = $state<HTMLInputElement>()
 
   async function handleImport() {
     fileInput?.click()
   }
 
-  /** @param {Event} e */
-  async function onFileSelected(e) {
-    const target = /** @type {HTMLInputElement} */ (e.target)
+  async function onFileSelected(
+    e: Event & { currentTarget: EventTarget & HTMLInputElement }
+  ) {
+    const target = e.currentTarget
     if (!target.files?.[0]) return
 
     const formData = new FormData()

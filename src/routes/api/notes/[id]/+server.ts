@@ -3,8 +3,9 @@ import { note } from '$lib/server/db/schema'
 import { error, json } from '@sveltejs/kit'
 import { eq, and } from 'drizzle-orm'
 
-/** @type {import('./$types').RequestHandler} */
-export async function DELETE({ params, locals }) {
+import type { RequestHandler } from './$types'
+
+export const DELETE: RequestHandler = async ({ params, locals }) => {
     const session = await locals.auth()
     if (!session?.user?.id) throw error(401, 'Unauthorized')
 
@@ -24,8 +25,8 @@ export async function DELETE({ params, locals }) {
         throw error(500, 'Internal Server Error')
     }
 }
-/** @type {import('./$types').RequestHandler} */
-export async function PUT({ params, request, locals }) {
+
+export const PUT: RequestHandler = async ({ params, request, locals }) => {
     const session = await locals.auth()
     if (!session?.user?.id) throw error(401, 'Unauthorized')
 
@@ -47,6 +48,6 @@ export async function PUT({ params, request, locals }) {
         console.error('Notes Update API Error:', e)
         const status = e instanceof Error && 'status' in e ? /** @type {any} */(e).status : 500
         const message = e instanceof Error ? e.message : 'Internal Server Error'
-        throw error(status, message)
+        throw error(status as number, message)
     }
 }

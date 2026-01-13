@@ -1,22 +1,23 @@
-<script>
+<script lang="ts">
   import { i18n } from '$lib/i18n.svelte.js'
 
-  /**
-   * @typedef {Object} LocaleModalProps
-   * @property {(value: any) => void} close
-   */
+  interface LocaleModalProps {
+    close: (value: any) => void
+  }
 
-  /** @type {LocaleModalProps} */
-  let { close } = $props()
+  let { close }: LocaleModalProps = $props()
 
-  /** @type {{ code: 'kr' | 'en', label: string, sub: string, icon: string }[]} */
-  const options = [
+  const options: {
+    code: 'kr' | 'en'
+    label: string
+    sub: string
+    icon: string
+  }[] = [
     { code: 'kr', label: 'South Korea', sub: '대한민국', icon: '🇰🇷' },
     { code: 'en', label: 'United States', sub: 'United States', icon: '🇺🇸' }
   ]
 
-  /** @param {'en' | 'kr'} code */
-  function handleSelect(code) {
+  function handleSelect(code: 'en' | 'kr') {
     i18n.setLocale(code)
     close(true)
   }

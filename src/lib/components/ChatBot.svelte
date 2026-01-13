@@ -1,15 +1,13 @@
-<script>
+<script lang="ts">
   import { slide, fade } from 'svelte/transition'
   import dayjs from 'dayjs'
   import { i18n } from '$lib/i18n.svelte.js'
 
-  /**
-   * @typedef {Object} ChatProps
-   * @property {(date: string) => void} onMoveToDate
-   */
+  interface ChatProps {
+    onMoveToDate: (date: string) => void
+  }
 
-  /** @type {ChatProps} */
-  let { onMoveToDate } = $props()
+  let { onMoveToDate }: ChatProps = $props()
 
   let isOpen = $state(false)
   let inputMessage = $state('')
@@ -25,7 +23,7 @@
     }
   ])
   let isLoading = $state(false)
-  let chatContainer = $state()
+  let chatContainer = $state<HTMLDivElement>()
 
   $effect(() => {
     if (isOpen) {
@@ -91,8 +89,7 @@
     }, 50)
   }
 
-  /** @param {KeyboardEvent} e */
-  function handleKeydown(e) {
+  function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
@@ -100,14 +97,14 @@
   }
 
   // Helper to get text from parts for UI rendering
-  function getMessageText(msg) {
+  function getMessageText(msg: any) {
     return msg.parts
-      .filter((p) => p.text)
-      .map((p) => p.text)
+      .filter((p: any) => p.text)
+      .map((p: any) => p.text)
       .join('\n')
   }
 
-  function parseMarkdown(text) {
+  function parseMarkdown(text: string) {
     if (!text) return ''
 
     // 1. Code blocks

@@ -3,6 +3,8 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import 'dayjs/locale/en'
 
+type Locale = 'en' | 'kr'
+
 const translations = {
     en: {
         common: {
@@ -133,14 +135,13 @@ const translations = {
 }
 
 class I18nState {
-    /** @type {'en' | 'kr'} */
-    locale = $state('en')
+    locale = $state<Locale>('en')
 
     constructor() {
         if (browser) {
             const saved = localStorage.getItem('justodo_locale')
             if (saved === 'kr' || saved === 'en') {
-                this.locale = saved
+                this.locale = saved as Locale
             } else {
                 // Detect system language
                 const sysLang = navigator.language.startsWith('ko') ? 'kr' : 'en'
@@ -150,8 +151,7 @@ class I18nState {
         }
     }
 
-    /** @param {'en' | 'kr'} locale */
-    setLocale(locale) {
+    setLocale(locale: Locale) {
         this.locale = locale
         if (browser) {
             localStorage.setItem('justodo_locale', locale)
@@ -163,18 +163,13 @@ class I18nState {
         dayjs.locale(this.locale === 'kr' ? 'ko' : 'en')
     }
 
-    /**
-     * @param {string} path - path to translation (e.g. 'common.save')
-     * @param {Record<string, any>} [params] - variables to replace
-     */
-    t(path, params = {}) {
+    t(path: string, params: Record<string, string | number> = {}) {
         const keys = path.split('.')
-        /** @type {any} */
-        let result = translations[this.locale]
+        let result: any = translations[this.locale]
 
         for (const key of keys) {
             if (!result) return path
-            result = result[key]
+            result = result[key as keyof typeof result]
         }
 
         if (typeof result !== 'string') return path

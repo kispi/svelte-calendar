@@ -1,19 +1,17 @@
-<script>
+<script lang="ts">
   import dayjs from 'dayjs'
   import { i18n } from '$lib/i18n.svelte.js'
+  import type { Note } from '$lib/server/db/schema'
 
-  /**
-   * @typedef {Object} NoteListProps
-   * @property {any[]} notes
-   * @property {string | null} activeNoteId
-   * @property {(id: string) => void} onSelect
-   */
+  interface NoteListProps {
+    notes?: Note[]
+    activeNoteId?: string | null
+    onSelect: (id: string) => void
+  }
 
-  /** @type {NoteListProps} */
-  let { notes = [], activeNoteId = null, onSelect } = $props()
+  let { notes = [], activeNoteId = null, onSelect }: NoteListProps = $props()
 
-  /** @param {string | null} content */
-  function getPreview(content) {
+  function getPreview(content: string | null) {
     if (!content)
       return i18n.locale === 'kr' ? '내용 없음' : 'No additional text'
     const lines = content.split('\n')

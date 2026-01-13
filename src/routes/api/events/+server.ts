@@ -3,8 +3,9 @@ import { event } from '$lib/server/db/schema'
 import { json, error } from '@sveltejs/kit'
 import { eq, asc } from 'drizzle-orm'
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET({ locals }) {
+import type { RequestHandler } from './$types'
+
+export const GET: RequestHandler = async ({ locals }) => {
   const session = await locals.auth()
   if (!session?.user?.id) {
     throw error(401, 'Unauthorized')

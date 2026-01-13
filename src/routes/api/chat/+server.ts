@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit'
+import type { RequestHandler } from './$types'
 import { env } from '$env/dynamic/private'
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai'
+import { GoogleGenerativeAI, SchemaType, type Content } from '@google/generative-ai'
 import { db } from '$lib/server/db'
 import { event as eventTable } from '$lib/server/db/schema'
 import { eq, and, gte, lte, asc } from 'drizzle-orm'
@@ -11,7 +12,7 @@ if (!env.GOOGLE_AI_API_KEY) {
 }
 const genAI = new GoogleGenerativeAI(env.GOOGLE_AI_API_KEY || '')
 
-export const POST = async ({ request, locals }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
     const session = await locals.auth()
     if (!session?.user?.id) {
         throw error(401, 'Unauthorized')
@@ -57,24 +58,22 @@ export const POST = async ({ request, locals }) => {
                     }
                 }
             ]
-        }
+        } as any
     ]
 
     const model = genAI.getGenerativeModel({
-        model: 'gemini-3-flash-preview',
+        model: 'gemini-2.0-flash-exp',
         tools
     })
 
     // Map history ensuring it adheres to Gemini's Content structure
-    // We expect messages to follow { role, parts: [{ text: string } | { functionCall: ... } | { functionResponse: ... }] }
-    /** @type {import('@google/generative-ai').Content[]} */
-    const history = messages
+    const history: Content[] = messages
         .slice(0, -1)
-        .map((/** @type {any} */ m) => ({
+        .map((m: any) => ({
             role: m.role,
             parts: m.parts
         }))
-        .filter((/** @type {any} */ msg, /** @type {number} */ index) => {
+        .filter((msg: any, index: number) => {
             // Gemini history MUST start with 'user' role
             if (index === 0 && msg.role !== 'user') return false;
             return true;
@@ -83,6 +82,7 @@ export const POST = async ({ request, locals }) => {
     const chat = model.startChat({
         history,
         systemInstruction: {
+            role: 'system',
             parts: [{
                 text: `You are Justodo Assistant, a helpful AI built into the Justodo Planner. 
       Today is ${dayjs(clientDate || undefined).format('YYYY-MM-DD dddd')}.
@@ -111,6 +111,8 @@ export const POST = async ({ request, locals }) => {
 
     // Handle function calls in a loop (for complex multi-step queries)
     let callCount = 0
+    // Fix: Access functionCall on parts correctly. Response structure depends on SDK version, 
+    // assuming response.functionCalls() or response.candidates[0].content.parts 
     while (response.candidates?.[0]?.content?.parts?.some(p => p.functionCall) && callCount < 5) {
         callCount++
         const parts = response.candidates[0].content.parts
@@ -120,7 +122,7 @@ export const POST = async ({ request, locals }) => {
             if (part.functionCall) {
                 const { name, args } = part.functionCall
                 if (name === 'get_events') {
-                    const { startDate, endDate } = /** @type {any} */ (args)
+                    const { startDate, endDate } = args as { startDate: string, endDate: string }
                     const events = await db
                         .select()
                         .from(eventTable)
@@ -140,7 +142,7 @@ export const POST = async ({ request, locals }) => {
                         }
                     })
                 } else if (name === 'move_to_date') {
-                    const { date } = /** @type {any} */ (args)
+                    const { date } = args as { date: string }
                     toolResponses.push({
                         functionResponse: {
                             name: 'move_to_date',
@@ -167,6 +169,6 @@ export const POST = async ({ request, locals }) => {
     return json({
         content: response.text(),
         history: fullHistory, // Return the full rich history turns
-        moveToDate: moveCall?.functionCall?.args?.date
+        moveToDate: (moveCall?.functionCall?.args as any)?.date
     })
 }

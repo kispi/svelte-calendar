@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import NoteList from './NoteList.svelte'
   import NoteEditor from './NoteEditor.svelte'
@@ -7,8 +7,7 @@
   import ConfirmModal from './ConfirmModal.svelte'
 
   const queryClient = useQueryClient()
-  /** @type {string | null} */
-  let activeNoteId = $state(null)
+  let activeNoteId = $state<string | null>(null)
 
   const notesQuery = createQuery(() => ({
     queryKey: ['notes'],
@@ -20,8 +19,7 @@
   }))
 
   let activeNote = $derived(
-    notesQuery.data?.find((/** @type {any} */ n) => n.id === activeNoteId) ||
-      null
+    notesQuery.data?.find((n: any) => n.id === activeNoteId) || null
   )
 
   async function handleCreateNote() {
@@ -33,7 +31,7 @@
     if (res.ok) {
       const newNote = await res.json()
       // Directly update the cache to avoid flickering
-      queryClient.setQueryData(['notes'], (/** @type {any[]} */ old) => [
+      queryClient.setQueryData(['notes'], (old: any[]) => [
         newNote,
         ...(old || [])
       ])
@@ -41,13 +39,12 @@
     }
   }
 
-  /** @param {{ title: string, content: string }} data */
-  async function handleSaveNote(data) {
+  async function handleSaveNote(data: { title: string; content: string }) {
     if (!activeNoteId) return
 
     // Update the local cache immediately with client-side data
     // This keeps the sidebar list in sync without requiring the server response.
-    queryClient.setQueryData(['notes'], (/** @type {any[]} */ old) => {
+    queryClient.setQueryData(['notes'], (old: any[]) => {
       if (!old) return []
       return old.map((n) =>
         n.id === activeNoteId

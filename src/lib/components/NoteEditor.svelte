@@ -1,21 +1,20 @@
-<script>
+<script lang="ts">
   import { onDestroy } from 'svelte'
   import { i18n } from '$lib/i18n.svelte.js'
+  import type { Note } from '$lib/server/db/schema'
 
-  /**
-   * @typedef {Object} NoteEditorProps
-   * @property {any} note
-   * @property {(data: { title: string, content: string }) => void} onSave
-   * @property {() => void} onDelete
-   * @property {() => void} [onBack]
-   */
+  interface NoteEditorProps {
+    note: Note
+    onSave: (data: { title: string; content: string }) => void
+    onDelete: () => void
+    onBack?: () => void
+  }
 
-  /** @type {NoteEditorProps} */
-  let { note, onSave, onDelete, onBack } = $props()
+  let { note, onSave, onDelete, onBack }: NoteEditorProps = $props()
 
   let title = $state('')
   let content = $state('')
-  let lastSyncedNoteId = $state(null)
+  let lastSyncedNoteId = $state<string | null>(null)
 
   $effect(() => {
     // Only synchronize local state when the selected note actually changes (ID change).
@@ -28,8 +27,7 @@
   })
 
   // Debounced auto-save
-  /** @type {ReturnType<typeof setTimeout> | undefined} */
-  let timeout
+  let timeout: ReturnType<typeof setTimeout> | undefined
 
   function handleInput() {
     clearTimeout(timeout)

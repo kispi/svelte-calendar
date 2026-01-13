@@ -1,15 +1,12 @@
+import type { Action } from 'svelte/action'
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.css'
+import type { Options } from 'flatpickr/dist/types/options'
 
-/**
- * @param {HTMLInputElement} node
- * @param {import('flatpickr/dist/types/options').Options} options
- */
-export function flatpicker(node, options) {
-  const minTime = options.minTime || null
-  const defaultDate = options.defaultDate || null
+export const flatpicker: Action<HTMLInputElement, Options> = (node, options) => {
+  const minTime = options.minTime || undefined
+  const defaultDate = options.defaultDate || undefined
 
-  // @ts-ignore
   const fp = flatpickr(node, {
     enableTime: true,
     dateFormat: 'Y-m-d H:i',
@@ -26,12 +23,10 @@ export function flatpicker(node, options) {
   })
 
   return {
-    /** @param {import('flatpickr/dist/types/options').Options} newOptions */
     update(newOptions) {
       if (newOptions.defaultDate) {
         fp.setDate(newOptions.defaultDate, false)
       }
-      // @ts-ignore
       fp.set(newOptions)
     },
     destroy() {

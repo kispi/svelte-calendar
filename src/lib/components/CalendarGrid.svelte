@@ -1,27 +1,26 @@
-<script>
-  import dayjs from 'dayjs'
+<script lang="ts">
+  import dayjs, { type Dayjs } from 'dayjs'
   import { i18n } from '$lib/i18n.svelte.js'
   import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
   import localeData from 'dayjs/plugin/localeData'
+  import type { Event } from '$lib/server/db/schema'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
 
-  /**
-   * @typedef {Object} CalendarProps
-   * @property {any[]} events
-   * @property {(date: any) => void} onDateClick
-   * @property {(event: any) => void} onEventClick
-   * @property {import('dayjs').Dayjs} currentDate
-   */
+  interface CalendarProps {
+    events?: Event[]
+    onDateClick: (date: Dayjs) => void
+    onEventClick: (event: Event) => void
+    currentDate?: Dayjs
+  }
 
-  /** @type {CalendarProps} */
   let {
     events = [],
     onDateClick,
     onEventClick,
     currentDate = $bindable(dayjs())
-  } = $props()
+  }: CalendarProps = $props()
 
   // Derived state for calendar grid using dayjs
   let monthStart = $derived(currentDate.startOf('month'))
@@ -48,22 +47,19 @@
     currentDate = currentDate.subtract(1, 'month')
   }
 
-  /** @param {Event} e */
-  function handleMonthChange(e) {
-    // @ts-ignore
-    const newMonth = parseInt(e.target.value)
+  function handleMonthChange(e: Event) {
+    const target = e.target as HTMLSelectElement
+    const newMonth = parseInt(target.value)
     currentDate = currentDate.month(newMonth)
   }
 
-  /** @param {Event} e */
-  function handleYearChange(e) {
-    // @ts-ignore
-    const newYear = parseInt(e.target.value)
+  function handleYearChange(e: Event) {
+    const target = e.target as HTMLSelectElement
+    const newYear = parseInt(target.value)
     currentDate = currentDate.year(newYear)
   }
 
-  /** @param {dayjs.Dayjs} day */
-  function getEventsForDay(day) {
+  function getEventsForDay(day: Dayjs) {
     return events.filter((event) => {
       if (!event.startTime) return false
       const eventDate = dayjs(event.startTime)

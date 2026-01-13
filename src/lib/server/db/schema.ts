@@ -1,4 +1,5 @@
 import { sqliteTable, text, integer, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import type { InferSelectModel, InferInsertModel } from 'drizzle-orm'
 
 const baseColumns = {
   id: text('id')
@@ -85,5 +86,23 @@ export const note = sqliteTable('notes', {
   content: text('content'),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' })
 })
+
+export type User = InferSelectModel<typeof user>
+export type NewUser = InferInsertModel<typeof user>
+
+export type Account = InferSelectModel<typeof account>
+export type NewAccount = InferInsertModel<typeof account>
+
+export type Session = InferSelectModel<typeof session>
+export type NewSession = InferInsertModel<typeof session>
+
+export type VerificationToken = InferSelectModel<typeof verificationToken>
+export type NewVerificationToken = InferInsertModel<typeof verificationToken>
+
+export type Event = InferSelectModel<typeof event>
+export type NewEvent = InferInsertModel<typeof event>
+
+export type Note = InferSelectModel<typeof note>
+export type NewNote = InferInsertModel<typeof note>
 
 

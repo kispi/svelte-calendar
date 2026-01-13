@@ -2,9 +2,9 @@ import { db } from '$lib/server/db'
 import { event } from '$lib/server/db/schema'
 import { fail } from '@sveltejs/kit'
 import { eq, and } from 'drizzle-orm'
+import type { PageServerLoad, Actions } from './$types'
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ locals }) {
+export const load: PageServerLoad = async ({ locals }) => {
   const session = await locals.auth()
   return { session }
 }
@@ -14,11 +14,9 @@ import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
 
 // Helper to ensure ISO format (or null)
-/** @param {FormDataEntryValue | null} d */
-const toISO = (d) => (d ? dayjs(d.toString()).toISOString() : null)
+const toISO = (d: FormDataEntryValue | null) => (d ? dayjs(d.toString()).toISOString() : null)
 
-/** @type {import('./$types').Actions} */
-export const actions = {
+export const actions: Actions = {
   create: async ({ request, locals }) => {
     const session = await locals.auth()
 

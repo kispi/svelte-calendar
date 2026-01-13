@@ -5,4 +5,6 @@ import { env } from '$env/dynamic/private'
 const dbPath = env.DB_PATH || 'local.db'
 const sqlite = new Database(dbPath)
 
-export const db = drizzle(sqlite)
+import * as schema from './schema'
+
+export const db = drizzle(sqlite, { schema })

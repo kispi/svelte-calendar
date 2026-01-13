@@ -1,15 +1,15 @@
+import type { RequestHandler } from './$types'
 import { db } from '$lib/server/db'
 import { event } from '$lib/server/db/schema'
 import { error } from '@sveltejs/kit'
 import { eq } from 'drizzle-orm'
-import { createEvents } from 'ics'
+import { createEvents, type EventAttributes } from 'ics'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 
 dayjs.extend(utc)
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET({ locals }) {
+export const GET: RequestHandler = async ({ locals }) => {
     const session = await locals.auth()
     if (!session?.user?.id) {
         throw error(401, 'Unauthorized')
@@ -22,7 +22,7 @@ export async function GET({ locals }) {
             .where(eq(event.userId, session.user.id))
             .all()
 
-        const icsEvents = /** @type {any[]} */ (allEvents.map((e) => {
+        const icsEvents: EventAttributes[] = allEvents.map((e) => {
             let start = dayjs(e.startTime)
             let end = dayjs(e.endTime)
             const created = dayjs(e.createdAt)
@@ -85,7 +85,7 @@ export async function GET({ locals }) {
                 status: 'CONFIRMED',
                 categories: [e.type || 'schedule']
             }
-        }))
+        })
 
         if (icsEvents.length === 0) {
             // Return empty ICS if no events, using CRLF and standard headers

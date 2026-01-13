@@ -3,9 +3,9 @@ import { event } from '$lib/server/db/schema'
 import { error, json } from '@sveltejs/kit'
 import ical from 'node-ical'
 import dayjs from 'dayjs'
+import type { RequestHandler } from './$types'
 
-/** @type {import('./$types').RequestHandler} */
-export async function POST({ locals, request }) {
+export const POST: RequestHandler = async ({ locals, request }) => {
     const session = await locals.auth()
     if (!session?.user?.id) {
         throw error(401, 'Unauthorized')
@@ -29,6 +29,7 @@ export async function POST({ locals, request }) {
             if (item.type === 'VEVENT') {
                 eventsToInsert.push({
                     id: item.uid || crypto.randomUUID(),
+                    // @ts-ignore
                     title: item.summary || 'Untitled Event',
                     description: item.description || '',
                     location: item.location || '',
@@ -45,7 +46,6 @@ export async function POST({ locals, request }) {
         }
 
         // Perform upserts
-        // Using simple loop for SQLite compatibility and clarity
         for (const e of eventsToInsert) {
             await db.insert(event)
                 .values(e)

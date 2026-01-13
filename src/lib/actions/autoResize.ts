@@ -1,8 +1,9 @@
+import type { Action } from 'svelte/action'
+
 /**
  * Svelte action to auto-resize a textarea based on its content.
- * @param {HTMLTextAreaElement} node
  */
-export function autoResize(node) {
+export const autoResize: Action<HTMLTextAreaElement> = (node) => {
     function resize() {
         node.style.height = 'auto'
         node.style.height = `${node.scrollHeight}px`

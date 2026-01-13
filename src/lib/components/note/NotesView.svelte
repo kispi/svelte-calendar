@@ -4,7 +4,7 @@
   import NoteEditor from './NoteEditor.svelte'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
-  import ConfirmModal from '../modals/ModalConfirm.svelte'
+  import ModalConfirm from '../modals/ModalConfirm.svelte'
 
   const queryClient = useQueryClient()
   let activeNoteId = $state<string | null>(null)
@@ -68,7 +68,7 @@
   async function handleDeleteNote() {
     if (!activeNoteId) return
 
-    const confirmed = await modal.show(ConfirmModal, {
+    const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('notes.deleteTitle'),
       message: i18n.t('notes.deleteMessage'),
       confirmText: i18n.t('common.delete'),

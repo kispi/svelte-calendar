@@ -26,6 +26,10 @@ export const actions: Actions = {
     const title = data.get('title')
     const description = data.get('description')
     const location = data.get('location')
+    const locationAddress = data.get('locationAddress')
+    const placeId = data.get('placeId')
+    const lat = data.get('lat') ? parseFloat(data.get('lat') as string) : null
+    const lng = data.get('lng') ? parseFloat(data.get('lng') as string) : null
     const type = data.get('type') || 'schedule'
     const startTime = data.get('startTime')
     const endTime = data.get('endTime')
@@ -39,6 +43,10 @@ export const actions: Actions = {
         title: title.toString(),
         description: description ? description.toString() : null,
         location: location ? location.toString() : null,
+        locationAddress: locationAddress ? locationAddress.toString() : null,
+        placeId: placeId ? placeId.toString() : null,
+        lat: lat,
+        lng: lng,
         type: type.toString(),
         startTime: toISO(startTime),
         endTime: toISO(endTime),
@@ -52,6 +60,7 @@ export const actions: Actions = {
   },
 
   delete: async ({ request, locals }) => {
+    // ... (unchanged) ...
     const session = await locals.auth()
     if (!session?.user?.id) return fail(401, { message: 'Unauthorized' })
 
@@ -87,6 +96,10 @@ export const actions: Actions = {
     const title = data.get('title')
     const description = data.get('description')
     const location = data.get('location')
+    const locationAddress = data.get('locationAddress')
+    const placeId = data.get('placeId')
+    const lat = data.get('lat') ? parseFloat(data.get('lat') as string) : null
+    const lng = data.get('lng') ? parseFloat(data.get('lng') as string) : null
     const type = data.get('type') || 'schedule'
     const startTime = data.get('startTime')
     const endTime = data.get('endTime')
@@ -102,6 +115,10 @@ export const actions: Actions = {
           title: title.toString(),
           description: description ? description.toString() : null,
           location: location ? location.toString() : null,
+          locationAddress: locationAddress ? locationAddress.toString() : null,
+          placeId: placeId ? placeId.toString() : null,
+          lat: lat,
+          lng: lng,
           type: type.toString(),
           startTime: toISO(startTime),
           endTime: toISO(endTime)

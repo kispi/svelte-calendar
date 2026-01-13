@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core'
+import { sqliteTable, text, integer, real, primaryKey, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm'
 
 const baseColumns = {
@@ -74,6 +74,11 @@ export const event = sqliteTable('events', {
   title: text('title').notNull(),
   description: text('description'),
   location: text('location'),
+  // Location fields - Detailed
+  lat: real('lat'),
+  lng: real('lng'),
+  locationAddress: text('location_address'),
+  placeId: text('place_id'), // Kakao Place ID
   startTime: text('start_time'),
   endTime: text('end_time'),
   type: text('type').notNull().default('schedule'),
@@ -104,5 +109,3 @@ export type NewEvent = InferInsertModel<typeof event>
 
 export type Note = InferSelectModel<typeof note>
 export type NewNote = InferInsertModel<typeof note>
-
-

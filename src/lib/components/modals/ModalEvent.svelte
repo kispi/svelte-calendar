@@ -3,7 +3,8 @@
   import { untrack } from 'svelte'
   import { flatpicker } from '$lib/actions/flatpickr'
   import { autoResize } from '$lib/actions/autoResize'
-  import ConfirmModal from './ModalConfirm.svelte'
+  import ModalConfirm from './ModalConfirm.svelte'
+  import ModalNavigation from './ModalNavigation.svelte'
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
@@ -19,6 +20,10 @@
   let title = $state('')
   let description = $state('')
   let location = $state('')
+  let locationAddress = $state('')
+  let placeId = $state('') // Kakao Place ID
+  let lat = $state<number | null>(null)
+  let lng = $state<number | null>(null)
   let type = $state('schedule')
   let baseDate = $state('')
   let startTime = $state('')
@@ -52,7 +57,11 @@
   function handleLocationInput(e: Event) {
     const target = e.target as HTMLInputElement
     const query = target.value
-    // location is bound, no need to set manually
+    // location is bound
+    locationAddress = ''
+    lat = null
+    lng = null
+    placeId = ''
 
     if (searchTimeout) clearTimeout(searchTimeout)
 
@@ -68,7 +77,11 @@
   }
 
   function handleSelectLocation(place: any) {
-    location = `${place.road_address_name || place.address_name} (${place.place_name})`
+    location = place.place_name
+    locationAddress = place.road_address_name || place.address_name
+    placeId = place.id
+    lat = parseFloat(place.y)
+    lng = parseFloat(place.x)
     showDropdown = false
     if (searchTimeout) clearTimeout(searchTimeout)
   }
@@ -78,6 +91,10 @@
       title = event.title
       description = event.description || ''
       location = event.location || ''
+      locationAddress = event.locationAddress || ''
+      placeId = event.placeId || ''
+      lat = event.lat || null
+      lng = event.lng || null
       type = event.type || 'schedule'
       const start = event.startTime ? dayjs(event.startTime) : dayjs()
       const end = event.endTime ? dayjs(event.endTime) : start.add(1, 'hour')
@@ -126,7 +143,7 @@
 
   async function handleDelete(e: MouseEvent) {
     e.preventDefault()
-    const confirmed = await modal.show(ConfirmModal, {
+    const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('common.delete'),
       message: i18n.t('event.deleteConfirm'),
       confirmText: i18n.t('common.delete'),
@@ -212,6 +229,10 @@
     {#if event}
       <input type="hidden" name="id" value={event.id} />
     {/if}
+    <input type="hidden" name="locationAddress" value={locationAddress} />
+    <input type="hidden" name="placeId" value={placeId} />
+    <input type="hidden" name="lat" value={lat ?? ''} />
+    <input type="hidden" name="lng" value={lng ?? ''} />
 
     <!-- Hero Title Section -->
     <div class="group">
@@ -333,10 +354,41 @@
           oninput={handleLocationInput}
           onfocus={handleFocus}
           autocomplete="off"
-          class="w-full px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300"
+          class="w-full px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300 pr-8"
           placeholder={i18n.t('event.location')}
           aria-label={i18n.t('event.location')}
         />
+        {#if lat && lng}
+          <button
+            type="button"
+            onclick={async () => {
+              if (lat && lng) {
+                await modal.show(ModalNavigation, {
+                  lat,
+                  lng,
+                  name: location,
+                  placeId
+                })
+              }
+            }}
+            class="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-justodo-green-500 transition-colors"
+            aria-label="Navigate"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="lucide lucide-navigation"
+              ><polygon points="3 11 22 2 13 21 11 13 3 11" /></svg
+            >
+          </button>
+        {/if}
         {#if showDropdown && searchResults.length > 0}
           <div
             class="absolute top-full left-0 w-full bg-white rounded-lg shadow-xl border border-slate-100 mt-1 max-h-48 overflow-y-auto z-50"

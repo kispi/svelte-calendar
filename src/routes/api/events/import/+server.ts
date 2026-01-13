@@ -33,6 +33,14 @@ export const POST: RequestHandler = async ({ locals, request }) => {
                     title: item.summary || 'Untitled Event',
                     description: item.description || '',
                     location: item.location || '',
+                    // @ts-ignore - node-ical types might be loose
+                    locationAddress: item['x-justodo-address'] || '',
+                    // @ts-ignore
+                    placeId: item['x-justodo-place-id'] || '',
+                    // @ts-ignore
+                    lat: item.geo ? parseFloat(item.geo.lat) : null,
+                    // @ts-ignore
+                    lng: item.geo ? parseFloat(item.geo.lon) : null,
                     startTime: dayjs(item.start).toISOString(),
                     endTime: dayjs(item.end).toISOString(),
                     userId: session.user.id,
@@ -55,6 +63,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
                         title: e.title,
                         description: e.description,
                         location: e.location,
+                        locationAddress: e.locationAddress,
+                        placeId: e.placeId,
+                        lat: e.lat,
+                        lng: e.lng,
                         startTime: e.startTime,
                         endTime: e.endTime,
                         updatedAt: new Date().toISOString()

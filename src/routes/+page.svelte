@@ -19,6 +19,7 @@
 
   let activeTab = $state('calendar') // 'calendar' | 'notes'
   let currentDate = $state(dayjs())
+  let isReady = $state(false)
 
   function handleMoveToDate(dateStr: string) {
     activeTab = 'calendar'
@@ -31,6 +32,7 @@
     if (saved && (saved === 'calendar' || saved === 'notes')) {
       untrack(() => (activeTab = saved))
     }
+    isReady = true
   })
 
   $effect(() => {
@@ -47,7 +49,7 @@
       if (!res.ok) throw new Error('Failed to fetch events')
       return res.json()
     },
-    enabled: !!data.session && activeTab === 'calendar'
+    enabled: !!data.session && activeTab === 'calendar' && isReady
   }))
 
   async function handleDateClick(date: any) {

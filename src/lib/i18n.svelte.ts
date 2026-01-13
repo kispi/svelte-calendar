@@ -11,7 +11,10 @@ const translations = {
             cancel: 'Cancel',
             save: 'Save',
             delete: 'Delete',
-            confirm: 'Confirm'
+            confirm: 'Confirm',
+            search: 'Search',
+            searchPlaceholder: 'Search events...',
+            today: 'Today'
         },
         nav: {
             calendar: 'CALENDAR',
@@ -75,7 +78,10 @@ const translations = {
             cancel: '취소',
             save: '저장',
             delete: '삭제',
-            confirm: '확인'
+            confirm: '확인',
+            search: '검색',
+            searchPlaceholder: '일정 검색...',
+            today: '이번 달'
         },
         nav: {
             calendar: '달력',

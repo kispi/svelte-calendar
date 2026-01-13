@@ -5,6 +5,7 @@
   import { autoResize } from '$lib/actions/autoResize'
   import ModalConfirm from './ModalConfirm.svelte'
   import ModalNavigation from './ModalNavigation.svelte'
+  import Dropdown from '../Dropdown.svelte'
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
@@ -484,25 +485,27 @@
             >
           </button>
         {/if}
-        {#if showDropdown && searchResults.length > 0}
-          <div
-            class="absolute top-full left-0 w-full bg-white rounded-lg shadow-xl border border-slate-100 mt-1 max-h-48 overflow-y-auto z-50"
-          >
-            {#each searchResults as place}
-              <button
-                type="button"
-                onmousedown={(e) => e.preventDefault()}
-                onclick={() => handleSelectLocation(place)}
-                class="w-full text-left px-3 py-2 text-sm hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
-              >
-                <div class="font-bold text-slate-800">{place.place_name}</div>
-                <div class="text-xs text-slate-400 truncate">
-                  {place.road_address_name || place.address_name}
-                </div>
-              </button>
-            {/each}
-          </div>
-        {/if}
+
+        <Dropdown
+          items={searchResults}
+          show={showDropdown}
+          onSelect={handleSelectLocation}
+          onClose={() => (showDropdown = false)}
+          containerClass="w-full"
+        >
+          {#snippet children(place: any)}
+            <div
+              role="presentation"
+              class="px-3 py-2 text-sm border-b border-slate-50 last:border-0"
+              onmousedown={(e) => e.preventDefault()}
+            >
+              <div class="font-bold text-slate-800">{place.place_name}</div>
+              <div class="text-xs text-slate-400 truncate">
+                {place.road_address_name || place.address_name}
+              </div>
+            </div>
+          {/snippet}
+        </Dropdown>
       </div>
     </div>
 

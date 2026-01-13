@@ -4,6 +4,7 @@
   import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
   import localeData from 'dayjs/plugin/localeData'
   import type { Event as CalendarEvent } from '$lib/server/db/schema'
+  import Dropdown from './Dropdown.svelte'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
@@ -59,6 +60,69 @@
     currentDate = currentDate.year(newYear)
   }
 
+  let weekdays = $derived.by(() => {
+    i18n.locale
+    return dayjs.weekdaysShort
+      ? dayjs.weekdaysShort()
+      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  })
+
+  let searchQuery = $state('')
+  let searchResults = $state<CalendarEvent[]>([])
+  let isSearching = $state(false)
+  let showSearchDropdown = $state(false)
+
+  let searchTimeout: ReturnType<typeof setTimeout>
+  $effect(() => {
+    const query = searchQuery.trim()
+
+    // Clear any pending timeout
+    clearTimeout(searchTimeout)
+
+    if (query.length > 0) {
+      searchTimeout = setTimeout(async () => {
+        isSearching = true
+        try {
+          const res = await fetch(
+            `/api/events?query=${encodeURIComponent(query)}`
+          )
+          if (res.ok) {
+            searchResults = await res.json()
+            showSearchDropdown = true
+          }
+        } catch (e) {
+          console.error('Search failed:', e)
+        } finally {
+          isSearching = false
+        }
+      }, 300)
+    } else {
+      searchResults = []
+      showSearchDropdown = false
+    }
+
+    // Cleanup on effect re-run or unmount
+    return () => {
+      clearTimeout(searchTimeout)
+    }
+  })
+
+  function handleSelectSearchResult(event: CalendarEvent) {
+    // Clear timeout before resetting query to prevent race condition
+    clearTimeout(searchTimeout)
+
+    if (event.startTime) {
+      currentDate = dayjs(event.startTime)
+    }
+    showSearchDropdown = false
+    searchQuery = ''
+    onEventClick(event)
+  }
+
+  function goToday() {
+    currentDate = dayjs()
+  }
+
   function getEventsForDay(day: Dayjs) {
     return events.filter((event) => {
       if (!event.startTime) return false
@@ -91,13 +155,6 @@
           'December'
         ]
   })
-
-  let weekdays = $derived.by(() => {
-    i18n.locale
-    return dayjs.weekdaysShort
-      ? dayjs.weekdaysShort()
-      : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
-  })
 </script>
 
 <div class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden">
@@ -125,7 +182,89 @@
         {/each}
       </select>
     </div>
+
+    <!-- Search Bar -->
+    <div class="flex-1 max-w-md mx-4">
+      <div class="relative group">
+        <input
+          type="text"
+          bind:value={searchQuery}
+          placeholder={i18n.t('common.searchPlaceholder')}
+          class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2.5 text-sm transition-all outline-none"
+        />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-justodo-green-500 transition-colors"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          ><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg
+        >
+        {#if searchQuery}
+          <button
+            onclick={() => (searchQuery = '')}
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+            aria-label="Clear search"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
+            >
+          </button>
+        {/if}
+
+        <Dropdown
+          items={searchResults}
+          show={showSearchDropdown}
+          onSelect={handleSelectSearchResult}
+          onClose={() => (showSearchDropdown = false)}
+        >
+          {#snippet children(result: CalendarEvent)}
+            <div class="px-4 py-3 border-b border-slate-50 last:border-b-0">
+              <div class="flex items-center justify-between">
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-slate-800 truncate">
+                    {result.title}
+                  </div>
+                  {#if result.description}
+                    <div class="text-xs text-slate-500 truncate mt-0.5">
+                      {result.description}
+                    </div>
+                  {/if}
+                </div>
+                {#if result.startTime}
+                  <div class="text-xs text-slate-400 ml-2 shrink-0">
+                    {dayjs(result.startTime).format('MMM D, YYYY')}
+                  </div>
+                {/if}
+              </div>
+            </div>
+          {/snippet}
+        </Dropdown>
+      </div>
+    </div>
+
     <div class="flex gap-2">
+      <button
+        onclick={goToday}
+        aria-label={i18n.t('common.today')}
+        class="px-3 py-2 text-xs font-bold text-slate-600 hover:text-justodo-green-600 hover:bg-slate-100 rounded transition-colors uppercase tracking-wider"
+      >
+        {i18n.t('common.today')}
+      </button>
       <button
         onclick={prevMonth}
         aria-label={i18n.locale === 'kr' ? '이전 달' : 'Previous Month'}

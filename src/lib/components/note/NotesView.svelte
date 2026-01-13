@@ -66,14 +66,19 @@
   }
 
   async function handleDeleteNote() {
-    if (!activeNoteId) return
+    if (!activeNoteId || !activeNote) return
 
-    const confirmed = await modal.show(ModalConfirm, {
-      title: i18n.t('notes.deleteTitle'),
-      message: i18n.t('notes.deleteMessage'),
-      confirmText: i18n.t('common.delete'),
-      confirmClass: 'bg-red-600 text-white'
-    })
+    const isEmpty = !activeNote.title?.trim() && !activeNote.content?.trim()
+    let confirmed = true
+
+    if (!isEmpty) {
+      confirmed = await modal.show(ModalConfirm, {
+        title: i18n.t('notes.deleteTitle'),
+        message: i18n.t('notes.deleteMessage'),
+        confirmText: i18n.t('common.delete'),
+        confirmClass: 'bg-red-600 text-white'
+      })
+    }
 
     if (!confirmed) return
 

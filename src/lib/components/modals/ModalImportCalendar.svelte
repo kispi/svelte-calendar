@@ -9,14 +9,8 @@
 
   let { events, close }: ImportProps = $props()
 
-  // Default: Select all (using $effect to avoid Svelte 5 warning about referencing props in state)
-  let selectedIds = $state<Set<string>>(new Set())
-
-  $effect(() => {
-    if (selectedIds.size === 0 && events.length > 0) {
-      selectedIds = new Set(events.map((e) => e.id))
-    }
-  })
+  // Default: Select all
+  let selectedIds = $state<Set<string>>(new Set(events.map((e) => e.id)))
 
   function toggle(id: string) {
     if (selectedIds.has(id)) {

@@ -52,7 +52,7 @@
               ...n,
               title: data.title,
               content: data.content,
-              updatedAt: new Date().toISOString()
+              updatedAt: new Date()
             }
           : n
       )

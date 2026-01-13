@@ -3,8 +3,8 @@ import type { RequestHandler } from './$types'
 import { env } from '$env/dynamic/private'
 import { GoogleGenerativeAI, SchemaType, type Content } from '@google/generative-ai'
 import { db } from '$lib/server/db'
-import { event as eventTable } from '$lib/server/db/schema'
-import { eq, and, gte, lte, asc } from 'drizzle-orm'
+import { event as eventTable, note as noteTable } from '$lib/server/db/schema'
+import { eq, and, gte, lte, asc, or, like } from 'drizzle-orm'
 import dayjs from 'dayjs'
 
 if (!env.GOOGLE_AI_API_KEY) {
@@ -56,13 +56,26 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                         },
                         required: ['date']
                     }
+                },
+                {
+                    name: 'get_notes',
+                    description: 'Search for user notes. Can filter by a search term in title or content.',
+                    parameters: {
+                        type: SchemaType.OBJECT,
+                        properties: {
+                            search: {
+                                type: SchemaType.STRING,
+                                description: 'Optional search keyword to filter notes.'
+                            }
+                        }
+                    }
                 }
             ]
         } as any
     ]
 
     const model = genAI.getGenerativeModel({
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-3-flash-preview',
         tools
     })
 
@@ -88,7 +101,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       Today is ${dayjs(clientDate || undefined).format('YYYY-MM-DD dddd')}.
       
       # Capabilities
-      - Use 'get_events' to search for past or future events.
+      - Use 'get_events' to search for past or future events (calendar).
+      - Use 'get_notes' to search within the user's personal notes.
       - Use 'move_to_date' when the user clearly wants to navigate the calendar view to a specific time.
 
       # Data Interpretation
@@ -129,8 +143,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                         .where(
                             and(
                                 eq(eventTable.userId, userId),
-                                gte(eventTable.startTime, dayjs(startDate).startOf('day').toISOString()),
-                                lte(eventTable.startTime, dayjs(endDate).endOf('day').toISOString())
+                                gte(eventTable.startTime, dayjs(startDate).startOf('day').toDate()),
+                                lte(eventTable.startTime, dayjs(endDate).endOf('day').toDate())
                             )
                         )
                         .orderBy(asc(eventTable.startTime))
@@ -147,6 +161,28 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                         functionResponse: {
                             name: 'move_to_date',
                             response: { success: true, movedTo: date }
+                        }
+                    })
+                } else if (name === 'get_notes') {
+                    const { search } = args as { search?: string }
+                    const filters = [eq(noteTable.userId, userId)]
+                    if (search) {
+                        filters.push(or(
+                            like(noteTable.title, `%${search}%`),
+                            like(noteTable.content, `%${search}%`)
+                        ) as any)
+                    }
+
+                    const notes = await db
+                        .select()
+                        .from(noteTable)
+                        .where(and(...filters))
+                        .orderBy(asc(noteTable.updatedAt))
+
+                    toolResponses.push({
+                        functionResponse: {
+                            name: 'get_notes',
+                            response: { notes }
                         }
                     })
                 }

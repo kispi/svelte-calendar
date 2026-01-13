@@ -36,7 +36,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
             .set({
                 title,
                 content,
-                updatedAt: new Date().toISOString()
+                updatedAt: new Date()
             })
             .where(and(eq(note.id, params.id), eq(note.userId, session.user.id)))
 

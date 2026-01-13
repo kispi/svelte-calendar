@@ -39,7 +39,6 @@
 
     // Optimistically update AI history with user message
     messages = currentMessages
-    const currentInput = inputMessage
     inputMessage = ''
     isLoading = true
 
@@ -68,6 +67,7 @@
         onMoveToDate(data.moveToDate)
       }
     } catch (err) {
+      console.error('Chat error:', err)
       messages = [
         ...messages,
         {

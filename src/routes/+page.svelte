@@ -6,6 +6,7 @@
   import ModalEvent from '$lib/components/modals/ModalEvent.svelte'
   import ModalLocale from '$lib/components/modals/ModalLocale.svelte'
   import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
+  import ModalImportCalendar from '$lib/components/modals/ModalImportCalendar.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import NotesView from '$lib/components/note/NotesView.svelte'
   import dayjs from 'dayjs'
@@ -162,16 +163,54 @@
     formData.append('file', target.files[0])
 
     try {
+      // 1. Get Preview
       const res = await fetch('/api/events/import', {
         method: 'POST',
         body: formData
       })
+
       if (res.ok) {
         const result = await res.json()
-        toast.success(i18n.t('toast.importSuccess', { count: result.count }), {
-          position: 'top'
-        })
-        queryClient.invalidateQueries({ queryKey: ['events'] })
+
+        if (result.preview && result.events?.length > 0) {
+          // 2. Show Selection Modal
+          const modalResult = await modal.show(
+            ModalImportCalendar,
+            { events: result.events },
+            { preventCloseOnClickBackdrop: true }
+          )
+
+          // 3. Import Selected
+          if (modalResult?.success && modalResult.selectedEvents?.length > 0) {
+            const importRes = await fetch('/api/events/import', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ events: modalResult.selectedEvents })
+            })
+
+            if (importRes.ok) {
+              const importResult = await importRes.json()
+              toast.success(
+                i18n.t('toast.importSuccess', { count: importResult.count }),
+                {
+                  position: 'top'
+                }
+              )
+              queryClient.invalidateQueries({ queryKey: ['events'] })
+            } else {
+              throw new Error('Import failed')
+            }
+          }
+        } else {
+          toast.info(
+            i18n.locale === 'kr'
+              ? '가져올 일정이 없습니다.'
+              : 'No events found.',
+            { position: 'top' }
+          )
+        }
       } else {
         toast.error(i18n.t('toast.importError'), { position: 'top' })
       }

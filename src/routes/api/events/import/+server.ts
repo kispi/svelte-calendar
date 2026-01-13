@@ -12,6 +12,50 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     }
 
     try {
+        const contentType = request.headers.get('content-type') || ''
+
+        // 1. Handle JSON body: Insert selected events
+        if (contentType.includes('application/json')) {
+            const { events } = await request.json()
+            if (!events || !Array.isArray(events)) {
+                throw error(400, 'Invalid events data')
+            }
+
+            if (events.length === 0) {
+                return json({ success: true, count: 0, message: 'No events to import' })
+            }
+
+            // Perform upserts
+            for (const e of events) {
+                // Ensure userId is the current user
+                e.userId = session.user.id
+                await db.insert(event)
+                    .values(e)
+                    .onConflictDoUpdate({
+                        target: event.id,
+                        set: {
+                            title: e.title,
+                            description: e.description,
+                            location: e.location,
+                            locationAddress: e.locationAddress,
+                            placeId: e.placeId,
+                            lat: e.lat,
+                            lng: e.lng,
+                            startTime: e.startTime,
+                            endTime: e.endTime,
+                            updatedAt: new Date().toISOString()
+                        }
+                    })
+            }
+
+            return json({
+                success: true,
+                count: events.length,
+                message: `Successfully imported ${events.length} events`
+            })
+        }
+
+        // 2. Handle File Upload: Parse and Preview
         const formData = await request.formData()
         const file = formData.get('file')
 
@@ -22,21 +66,25 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         const content = await file.text()
         const data = await ical.async.parseICS(content)
 
-        const eventsToInsert = []
+        const parsedEvents: any[] = []
 
         for (const k in data) {
             const item = data[k]
             if (item.type === 'VEVENT') {
-                eventsToInsert.push({
+                parsedEvents.push({
                     id: item.uid || crypto.randomUUID(),
                     // @ts-ignore
                     title: item.summary || 'Untitled Event',
-                    description: item.description || '',
+                    description: (item.description || '').split('\n\n--- JUSTODO METADATA ---')[0] || '',
                     location: item.location || '',
-                    // @ts-ignore - node-ical types might be loose
-                    locationAddress: item['x-justodo-address'] || '',
-                    // @ts-ignore
-                    placeId: item['x-justodo-place-id'] || '',
+                    locationAddress: (() => {
+                        const match = (item.description || '').match(/ADDRESS:(.+)/)
+                        return match ? match[1].trim() : ''
+                    })(),
+                    placeId: (() => {
+                        const match = (item.description || '').match(/PLACE_ID:(.+)/)
+                        return match ? match[1].trim() : ''
+                    })(),
                     // @ts-ignore
                     lat: item.geo ? parseFloat(item.geo.lat) : null,
                     // @ts-ignore
@@ -49,35 +97,11 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             }
         }
 
-        if (eventsToInsert.length === 0) {
-            return json({ success: true, count: 0, message: 'No events found in file' })
-        }
-
-        // Perform upserts
-        for (const e of eventsToInsert) {
-            await db.insert(event)
-                .values(e)
-                .onConflictDoUpdate({
-                    target: event.id,
-                    set: {
-                        title: e.title,
-                        description: e.description,
-                        location: e.location,
-                        locationAddress: e.locationAddress,
-                        placeId: e.placeId,
-                        lat: e.lat,
-                        lng: e.lng,
-                        startTime: e.startTime,
-                        endTime: e.endTime,
-                        updatedAt: new Date().toISOString()
-                    }
-                })
-        }
-
         return json({
             success: true,
-            count: eventsToInsert.length,
-            message: `Successfully imported ${eventsToInsert.length} events`
+            preview: true,
+            events: parsedEvents,
+            message: `Found ${parsedEvents.length} events`
         })
 
     } catch (e) {

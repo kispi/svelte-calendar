@@ -65,7 +65,6 @@ export const GET: RequestHandler = async ({ locals }) => {
                     end.minute()
                 ],
                 title: e.title || '(No Title)',
-                description: e.description || '',
                 location: e.location || '',
                 uid: `${e.id}@justodo.vibrew.ai`,
                 created: [
@@ -86,27 +85,12 @@ export const GET: RequestHandler = async ({ locals }) => {
                 categories: [e.type || 'schedule'],
                 // Standard iCal GEO property
                 geo: (e.lat && e.lng) ? { lat: e.lat, lon: e.lng } : undefined,
-                // Custom properties for Justodo specific data
-                // Note: 'ics' library might need these to be passed in a specific way if strictly typed,
-                // but usually extra keys are ignored or handled if the library allows.
-                // If 'ics' library doesn't support arbitrary keys, we might need a workaround,
-                // but let's try standard X-prop formatting if supported or just add them.
-                // Looking at common 'ics' library usage, X-props are often passed loosely or via 'attributes'.
-                // Let's try passing them as top-level keys first if the types allow, or check if we need to cast.
-                // Since I can't check docs, I'll assume passing them might work or I'll just rely on IMPORT fixing it primarily.
-                // Wait, if export doesn't write them, import can't read them.
-                // Let's force them via a cast if needed, or use a known property if available.
-                // Actually, 'ics' package usually accepts `attributes` array for custom props.
-                attributes: [
-                    ...(e.locationAddress ? [{
-                        key: 'X-JUSTODO-ADDRESS',
-                        value: e.locationAddress
-                    }] : []),
-                    ...(e.placeId ? [{
-                        key: 'X-JUSTODO-PLACE-ID',
-                        value: e.placeId
-                    }] : [])
-                ]
+                description: [
+                    e.description || '',
+                    (e.locationAddress || e.placeId) ? '\n\n--- JUSTODO METADATA ---' : '',
+                    e.locationAddress ? `ADDRESS:${e.locationAddress}` : '',
+                    e.placeId ? `PLACE_ID:${e.placeId}` : ''
+                ].filter(Boolean).join('\n')
             }
         })
 

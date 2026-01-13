@@ -229,7 +229,7 @@
   async function confirmSignOut() {
     const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('nav.signOut'),
-      message: i18n.t('notes.deleteMessage'), // Reuse or add new key
+      message: i18n.t('nav.signOutConfirm'),
       confirmText: i18n.t('nav.signOut'),
       confirmClass: 'bg-slate-800 hover:bg-slate-900 text-white'
     })

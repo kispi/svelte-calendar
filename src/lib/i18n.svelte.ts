@@ -17,6 +17,7 @@ const translations = {
             calendar: 'CALENDAR',
             notes: 'NOTES',
             signOut: 'Sign Out',
+            signOutConfirm: 'Are you sure you want to sign out?',
             import: 'Import',
             export: 'Export'
         },
@@ -80,6 +81,7 @@ const translations = {
             calendar: '달력',
             notes: '메모',
             signOut: '로그아웃',
+            signOutConfirm: '로그아웃 하시겠습니까?',
             import: '가져오기',
             export: '내보내기'
         },

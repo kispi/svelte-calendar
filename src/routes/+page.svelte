@@ -3,11 +3,11 @@
   import { i18n } from '$lib/i18n.svelte.js'
   import { toast } from '$lib/toast.svelte.js'
   import { modal } from '$lib/modal.svelte.js'
-  import EventModal from '$lib/components/EventModal.svelte'
-  import LocaleModal from '$lib/components/LocaleModal.svelte'
-  import ConfirmModal from '$lib/components/ConfirmModal.svelte'
+  import ModalEvent from '$lib/components/modals/ModalEvent.svelte'
+  import ModalLocale from '$lib/components/modals/ModalLocale.svelte'
+  import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
-  import NotesView from '$lib/components/NotesView.svelte'
+  import NotesView from '$lib/components/note/NotesView.svelte'
   import dayjs from 'dayjs'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { signIn, signOut } from '@auth/sveltekit/client'
@@ -56,7 +56,7 @@
     }
 
     const result = await modal.show(
-      EventModal,
+      ModalEvent,
       { selectedDate: date },
       { preventCloseOnClickBackdrop: true }
     )
@@ -69,7 +69,7 @@
     if (!data.session) return
 
     const result = await modal.show(
-      EventModal,
+      ModalEvent,
       { event },
       { preventCloseOnClickBackdrop: true }
     )
@@ -184,11 +184,11 @@
   }
 
   async function handleOpenLocale() {
-    await modal.show(LocaleModal)
+    await modal.show(ModalLocale)
   }
 
   async function confirmSignOut() {
-    const confirmed = await modal.show(ConfirmModal, {
+    const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('nav.signOut'),
       message: i18n.t('notes.deleteMessage'), // Reuse or add new key
       confirmText: i18n.t('nav.signOut'),

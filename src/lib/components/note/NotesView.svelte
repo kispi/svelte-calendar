@@ -4,7 +4,7 @@
   import NoteEditor from './NoteEditor.svelte'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
-  import ConfirmModal from './ConfirmModal.svelte'
+  import ConfirmModal from '../modals/ModalConfirm.svelte'
 
   const queryClient = useQueryClient()
   let activeNoteId = $state<string | null>(null)

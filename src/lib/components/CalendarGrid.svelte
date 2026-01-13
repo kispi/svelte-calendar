@@ -3,15 +3,15 @@
   import { i18n } from '$lib/i18n.svelte.js'
   import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
   import localeData from 'dayjs/plugin/localeData'
-  import type { Event } from '$lib/server/db/schema'
+  import type { Event as CalendarEvent } from '$lib/server/db/schema'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
 
   interface CalendarProps {
-    events?: Event[]
+    events?: CalendarEvent[]
     onDateClick: (date: Dayjs) => void
-    onEventClick: (event: Event) => void
+    onEventClick: (event: CalendarEvent) => void
     currentDate?: Dayjs
   }
 

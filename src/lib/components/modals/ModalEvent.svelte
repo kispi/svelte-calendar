@@ -3,7 +3,7 @@
   import { untrack } from 'svelte'
   import { flatpicker } from '$lib/actions/flatpickr'
   import { autoResize } from '$lib/actions/autoResize'
-  import ConfirmModal from './ConfirmModal.svelte'
+  import ConfirmModal from './ModalConfirm.svelte'
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'

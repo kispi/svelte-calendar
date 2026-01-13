@@ -13,7 +13,7 @@
     }
   })
 
-  import ModalProvider from '$lib/components/ModalProvider.svelte'
+  import ModalProvider from '$lib/components/modals/ModalProvider.svelte'
   import ToastProvider from '$lib/components/ToastProvider.svelte'
 </script>
 

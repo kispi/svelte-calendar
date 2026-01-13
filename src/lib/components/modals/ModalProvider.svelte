@@ -33,7 +33,7 @@
           style="z-index: {i * 10 + 1}"
         >
           <div
-            class="relative w-full max-w-lg overflow-hidden rounded bg-white shadow-2xl ring-1 ring-slate-200 pointer-events-auto"
+            class="relative w-full max-w-lg rounded bg-white shadow-2xl ring-1 ring-slate-200 pointer-events-auto"
             transition:scale|global={{ duration: 200, start: 0.95 }}
           >
             <svelte:component

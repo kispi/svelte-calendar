@@ -3,6 +3,7 @@
   import { untrack } from 'svelte'
   import { flatpicker } from '$lib/actions/flatpickr'
   import { autoResize } from '$lib/actions/autoResize'
+  import { createDebounce } from '$lib/debounce'
   import ModalConfirm from './ModalConfirm.svelte'
   import ModalNavigation from './ModalNavigation.svelte'
   import Dropdown from '../Dropdown.svelte'
@@ -32,8 +33,6 @@
   let searchResults = $state<any[]>([])
   let showDropdown = $state(false)
 
-  let searchTimeout: ReturnType<typeof setTimeout> | undefined
-
   async function performSearch(query: string) {
     if (!query.trim()) {
       searchResults = []
@@ -55,6 +54,11 @@
     }
   }
 
+  const { debounced: debouncedSearch, cleanup: cleanupSearch } = createDebounce(
+    performSearch,
+    300
+  )
+
   function handleLocationInput(e: Event) {
     const target = e.target as HTMLInputElement
     const query = target.value
@@ -64,11 +68,7 @@
     lng = null
     placeId = ''
 
-    if (searchTimeout) clearTimeout(searchTimeout)
-
-    searchTimeout = setTimeout(() => {
-      performSearch(query)
-    }, 300)
+    debouncedSearch(query)
   }
 
   function handleFocus() {
@@ -84,7 +84,7 @@
     lat = parseFloat(place.y)
     lng = parseFloat(place.x)
     showDropdown = false
-    if (searchTimeout) clearTimeout(searchTimeout)
+    cleanupSearch()
   }
 
   $effect(() => {

@@ -1,6 +1,7 @@
 <script lang="ts">
   import dayjs, { type Dayjs } from 'dayjs'
   import { i18n } from '$lib/i18n.svelte.js'
+  import { createDebounce } from '$lib/debounce'
   import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
   import localeData from 'dayjs/plugin/localeData'
   import type { Event as CalendarEvent } from '$lib/server/db/schema'
@@ -72,51 +73,62 @@
   let searchResults = $state<CalendarEvent[]>([])
   let isSearching = $state(false)
   let showSearchDropdown = $state(false)
-  let isComposing = $state(false)
+  let justCompositionEnded = $state(false)
 
-  let searchTimeout: ReturnType<typeof setTimeout>
-  $effect(() => {
-    const query = searchQuery.trim()
+  let compositionEndTimeout: ReturnType<typeof setTimeout>
 
-    // Clear any pending timeout
-    clearTimeout(searchTimeout)
+  async function performSearch(query: string) {
+    const trimmedQuery = query.trim()
 
-    // Don't trigger search during IME composition
-    if (isComposing) {
+    if (trimmedQuery.length === 0) {
+      searchResults = []
+      showSearchDropdown = false
       return
     }
 
-    if (query.length > 0) {
-      searchTimeout = setTimeout(async () => {
-        isSearching = true
-        try {
-          const res = await fetch(
-            `/api/events?query=${encodeURIComponent(query)}`
-          )
-          if (res.ok) {
-            searchResults = await res.json()
-            showSearchDropdown = true
-          }
-        } catch (e) {
-          console.error('Search failed:', e)
-        } finally {
-          isSearching = false
-        }
-      }, 300)
-    } else {
-      searchResults = []
-      showSearchDropdown = false
+    isSearching = true
+    try {
+      const res = await fetch(
+        `/api/events?query=${encodeURIComponent(trimmedQuery)}`
+      )
+      if (res.ok) {
+        searchResults = await res.json()
+        showSearchDropdown = true
+      }
+    } catch (e) {
+      console.error('Search failed:', e)
+    } finally {
+      isSearching = false
+    }
+  }
+
+  const { debounced: debouncedSearch, cleanup: cleanupSearch } = createDebounce(
+    performSearch,
+    300
+  )
+
+  function handleSearchInput() {
+    // Skip search if this was triggered immediately after compositionend
+    // This prevents duplicate API call when blur happens during Korean IME composition
+    if (justCompositionEnded) {
+      return
     }
 
-    // Cleanup on effect re-run or unmount
-    return () => {
-      clearTimeout(searchTimeout)
-    }
-  })
+    debouncedSearch(searchQuery)
+  }
+
+  function handleCompositionEnd() {
+    // Set flag to skip input handler for a short duration after compositionend
+    // This prevents duplicate API calls when blur happens during Korean IME composition
+    clearTimeout(compositionEndTimeout)
+    justCompositionEnded = true
+    compositionEndTimeout = setTimeout(() => {
+      justCompositionEnded = false
+    }, 100)
+  }
 
   function handleSelectSearchResult(event: CalendarEvent) {
-    // Clear timeout before resetting query to prevent race condition
-    clearTimeout(searchTimeout)
+    cleanupSearch()
 
     const previousMonth = currentDate.format('YYYY-MM')
 
@@ -144,25 +156,8 @@
 
   function handleSearchFocus() {
     // Re-trigger search when focusing if there's already a query
-    const query = searchQuery.trim()
-    if (query.length > 0) {
-      clearTimeout(searchTimeout)
-      searchTimeout = setTimeout(async () => {
-        isSearching = true
-        try {
-          const res = await fetch(
-            `/api/events?query=${encodeURIComponent(query)}`
-          )
-          if (res.ok) {
-            searchResults = await res.json()
-            showSearchDropdown = true
-          }
-        } catch (e) {
-          console.error('Search failed:', e)
-        } finally {
-          isSearching = false
-        }
-      }, 100) // Shorter delay for focus
+    if (searchQuery.trim().length > 0) {
+      performSearch(searchQuery)
     }
   }
 
@@ -236,9 +231,9 @@
         <input
           type="text"
           bind:value={searchQuery}
+          oninput={handleSearchInput}
           onfocus={handleSearchFocus}
-          oncompositionstart={() => (isComposing = true)}
-          oncompositionend={() => (isComposing = false)}
+          oncompositionend={handleCompositionEnd}
           placeholder={i18n.t('common.searchPlaceholder')}
           class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2.5 text-sm transition-all outline-none"
         />

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy } from 'svelte'
   import { i18n } from '$lib/i18n.svelte.js'
+  import { createDebounce } from '$lib/debounce'
   import type { Note } from '$lib/server/db/schema'
 
   interface NoteEditorProps {
@@ -27,25 +28,20 @@
   })
 
   // Debounced auto-save
-  let timeout: ReturnType<typeof setTimeout> | undefined
+  const { debounced: handleInput, cleanup } = createDebounce(() => {
+    const lines = content.split('\n')
+    const derivedTitle =
+      lines[0].trim().substring(0, 50) ||
+      (i18n.locale === 'kr' ? '제목 없는 노트' : 'Untitled Note')
 
-  function handleInput() {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      const lines = content.split('\n')
-      const derivedTitle =
-        lines[0].trim().substring(0, 50) ||
-        (i18n.locale === 'kr' ? '제목 없는 노트' : 'Untitled Note')
-
-      onSave({
-        title: title || derivedTitle,
-        content
-      })
-    }, 1000)
-  }
+    onSave({
+      title: title || derivedTitle,
+      content
+    })
+  }, 1000)
 
   onDestroy(() => {
-    clearTimeout(timeout)
+    cleanup()
   })
 </script>
 

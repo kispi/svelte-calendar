@@ -5,6 +5,7 @@
   import localeData from 'dayjs/plugin/localeData'
   import type { Event as CalendarEvent } from '$lib/server/db/schema'
   import Dropdown from './Dropdown.svelte'
+  import { toast } from '$lib/toast.svelte.js'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
@@ -111,12 +112,52 @@
     // Clear timeout before resetting query to prevent race condition
     clearTimeout(searchTimeout)
 
+    const previousMonth = currentDate.format('YYYY-MM')
+
     if (event.startTime) {
       currentDate = dayjs(event.startTime)
+
+      const newMonth = currentDate.format('YYYY-MM')
+      if (previousMonth !== newMonth) {
+        // Show toast notification when navigating to a different month
+        const dateStr = currentDate.format(
+          i18n.locale === 'kr' ? 'YYYY년 M월 D일' : 'MMMM D, YYYY'
+        )
+        toast.info(
+          i18n.locale === 'kr'
+            ? `${dateStr}로 이동했습니다`
+            : `Navigated to ${dateStr}`,
+          { position: 'top' }
+        )
+      }
     }
     showSearchDropdown = false
     searchQuery = ''
     onEventClick(event)
+  }
+
+  function handleSearchFocus() {
+    // Re-trigger search when focusing if there's already a query
+    const query = searchQuery.trim()
+    if (query.length > 0) {
+      clearTimeout(searchTimeout)
+      searchTimeout = setTimeout(async () => {
+        isSearching = true
+        try {
+          const res = await fetch(
+            `/api/events?query=${encodeURIComponent(query)}`
+          )
+          if (res.ok) {
+            searchResults = await res.json()
+            showSearchDropdown = true
+          }
+        } catch (e) {
+          console.error('Search failed:', e)
+        } finally {
+          isSearching = false
+        }
+      }, 100) // Shorter delay for focus
+    }
   }
 
   function goToday() {
@@ -189,6 +230,7 @@
         <input
           type="text"
           bind:value={searchQuery}
+          onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
           class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2.5 text-sm transition-all outline-none"
         />

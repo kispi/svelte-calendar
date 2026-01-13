@@ -42,6 +42,7 @@
 ## 5. Cleanup & Reliability
 
 - **Ephemeral Scripts**: Do NOT leave migration, debug, or diagnostic scripts (e.g., `migrate_*.js`, `debug_*.js`) in the project root. Delete them automatically once verified.
+- **Intermediate Files**: Files generated for checking output (e.g., `check_output*.txt`) must be added to `.gitignore` and deleted immediately after use.
 - **Build Verification**: Ensure the production build (`npm run build`) is verified after significant changes.
 
 ## 6. Environment Variables

@@ -72,6 +72,7 @@
   let searchResults = $state<CalendarEvent[]>([])
   let isSearching = $state(false)
   let showSearchDropdown = $state(false)
+  let isComposing = $state(false)
 
   let searchTimeout: ReturnType<typeof setTimeout>
   $effect(() => {
@@ -79,6 +80,11 @@
 
     // Clear any pending timeout
     clearTimeout(searchTimeout)
+
+    // Don't trigger search during IME composition
+    if (isComposing) {
+      return
+    }
 
     if (query.length > 0) {
       searchTimeout = setTimeout(async () => {
@@ -132,7 +138,7 @@
       }
     }
     showSearchDropdown = false
-    searchQuery = ''
+    // Don't reset searchQuery to allow re-opening dropdown with same search
     onEventClick(event)
   }
 
@@ -231,6 +237,8 @@
           type="text"
           bind:value={searchQuery}
           onfocus={handleSearchFocus}
+          oncompositionstart={() => (isComposing = true)}
+          oncompositionend={() => (isComposing = false)}
           placeholder={i18n.t('common.searchPlaceholder')}
           class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2.5 text-sm transition-all outline-none"
         />

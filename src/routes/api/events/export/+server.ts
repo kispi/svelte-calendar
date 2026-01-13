@@ -65,7 +65,7 @@ export const GET: RequestHandler = async ({ locals }) => {
                 ],
                 title: e.title || '(No Title)',
                 location: e.location || '',
-                uid: `${e.id}@justodo.vibrew.ai`,
+                uid: e.id.includes('@') ? e.id : `${e.id}@justodo.vibrew.ai`,
                 created: [
                     created.isValid() ? created.year() : start.year(),
                     created.isValid() ? created.month() + 1 : start.month() + 1,

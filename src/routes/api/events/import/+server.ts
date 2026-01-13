@@ -82,7 +82,10 @@ export const POST: RequestHandler = async ({ locals, request }) => {
             const item = data[k]
             if (item.type === 'VEVENT') {
                 parsedEvents.push({
-                    id: item.uid || crypto.randomUUID(),
+                    id: (() => {
+                        const uid = item.uid || crypto.randomUUID()
+                        return uid.includes('@') ? uid : `${uid}@justodo.vibrew.ai`
+                    })(),
                     // @ts-ignore
                     title: item.summary || 'Untitled Event',
                     description: (item.description || '').split('\n\n--- JUSTODO METADATA ---')[0] || '',

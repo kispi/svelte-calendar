@@ -14,7 +14,7 @@ import utc from 'dayjs/plugin/utc'
 dayjs.extend(utc)
 
 // Helper to ensure Date object (or null)
-const toDate = (d: FormDataEntryValue | null) => (d ? dayjs(d.toString()).toDate() : null)
+const toDate = (d: FormDataEntryValue | null) =>
+  d ? dayjs(d.toString()).toDate() : null
 
-export const actions: Actions = {
-}
+export const actions: Actions = {}

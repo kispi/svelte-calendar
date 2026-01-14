@@ -10,6 +10,7 @@
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
+  import { createQuery } from '@tanstack/svelte-query'
 
   interface ModalProps {
     event?: any
@@ -30,8 +31,21 @@
   let baseDate = $state('')
   let startTime = $state('')
   let endTime = $state('')
+  let calendarId = $state('')
   let searchResults = $state<any[]>([])
   let showDropdown = $state(false)
+  let showCalendarDropdown = $state(false)
+
+  // Fetch Calendars
+  const calendarsQuery = createQuery(() => ({
+    queryKey: ['calendars'],
+    queryFn: async () => {
+      const res = await fetch('/api/calendars')
+      if (!res.ok) throw new Error('Failed to fetch calendars')
+      const data = await res.json()
+      return data
+    }
+  }))
 
   async function performSearch(query: string) {
     if (!query.trim()) {
@@ -102,6 +116,7 @@
       baseDate = start.format('YYYY-MM-DD')
       startTime = start.format('HH:mm')
       endTime = end.format('HH:mm')
+      calendarId = event.calendarId || ''
     } else if (selectedDate) {
       baseDate = selectedDate.format('YYYY-MM-DD')
       startTime = '09:00'
@@ -110,6 +125,20 @@
       title = ''
       description = ''
       type = 'schedule'
+    }
+  })
+
+  // Set default calendar if creating new event and calendars are loaded
+  $effect(() => {
+    if (!event && !calendarId && calendarsQuery.data?.length > 0) {
+      // Default to the first calendar (usually "My Calendar")
+      // Logic could be improved to prefer "Primary" calendar
+      const primary = calendarsQuery.data.find((c: any) => c.isPrimary)
+      if (primary) {
+        calendarId = primary.id
+      } else {
+        calendarId = calendarsQuery.data[0].id
+      }
     }
   })
 
@@ -232,6 +261,8 @@
         formData.set('endTime', endISO || '')
       }
 
+      const payloadCalendarId = formData.get('calendarId')
+
       if (isUpdate && event?.id) {
         cancel()
         const data = {
@@ -248,7 +279,8 @@
             : null,
           type: formData.get('type'),
           startTime: startISO,
-          endTime: endISO
+          endTime: endISO,
+          calendarId: payloadCalendarId || undefined
         }
 
         fetch(`/api/events/${event.id}`, {
@@ -289,7 +321,8 @@
             : null,
           type: formData.get('type'),
           startTime: startISO,
-          endTime: endISO
+          endTime: endISO,
+          calendarId: payloadCalendarId || undefined
         }
 
         fetch('/api/events', {
@@ -421,7 +454,9 @@
     </div>
 
     <!-- Location Section -->
-    <div class="flex items-center gap-4 relative z-20">
+    <div
+      class="flex items-center gap-4 relative {showDropdown ? 'z-50' : 'z-20'}"
+    >
       <div class="text-slate-400">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -509,6 +544,99 @@
       </div>
     </div>
 
+    <!-- Calendar Section -->
+    <div
+      class="flex items-center gap-4 relative {showCalendarDropdown
+        ? 'z-50'
+        : 'z-30'}"
+    >
+      <div class="text-slate-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-calendar"
+          ><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line
+            x1="16"
+            x2="16"
+            y1="2"
+            y2="6"
+          /><line x1="8" x2="8" y1="2" y2="6" /><line
+            x1="3"
+            x2="21"
+            y1="10"
+            y2="10"
+          /></svg
+        >
+      </div>
+      <div class="relative flex-1">
+        <input type="hidden" name="calendarId" value={calendarId} />
+        <button
+          type="button"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm font-bold text-slate-700 flex items-center justify-between group"
+          onclick={(e) => {
+            e.stopPropagation()
+            showCalendarDropdown = !showCalendarDropdown
+          }}
+        >
+          <span class="truncate">
+            {calendarsQuery.data?.find((c: any) => c.id === calendarId)?.name ||
+              i18n.t('event.selectCalendar')}
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-chevron-down text-slate-400 group-hover:text-slate-600 transition-colors"
+            ><path d="m6 9 6 6 6-6" /></svg
+          >
+        </button>
+
+        <Dropdown
+          items={calendarsQuery.data || []}
+          show={showCalendarDropdown}
+          onSelect={(cal) => {
+            calendarId = cal.id
+            showCalendarDropdown = false
+          }}
+          onClose={() => (showCalendarDropdown = false)}
+          containerClass="w-full"
+        >
+          {#snippet children(cal: any)}
+            <div
+              role="presentation"
+              class="px-3 py-2 text-sm border-b border-slate-50 last:border-0 hover:bg-slate-50 flex items-center gap-2"
+              onmousedown={(e) => e.preventDefault()}
+            >
+              <div
+                class="w-2 h-2 rounded-full"
+                style="background-color: {cal.color}"
+              ></div>
+              <div class="font-medium text-slate-700">{cal.name}</div>
+              {#if cal.isPrimary}
+                <span
+                  class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded"
+                  >Primary</span
+                >
+              {/if}
+            </div>
+          {/snippet}
+        </Dropdown>
+      </div>
+    </div>
+
     <!-- Type Section -->
     <div class="flex items-center gap-4 select-none">
       <div class="text-slate-400">
@@ -565,7 +693,7 @@
             class="hidden"
           />
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
+            class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all
             {type === 'diary'
               ? 'border-justodo-green-500'
               : 'border-slate-300 group-hover:border-slate-400'}"

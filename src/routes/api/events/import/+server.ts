@@ -6,120 +6,122 @@ import dayjs from 'dayjs'
 import type { RequestHandler } from './$types'
 
 export const POST: RequestHandler = async ({ locals, request }) => {
-    const session = await locals.auth()
-    if (!session?.user?.id) {
-        throw error(401, 'Unauthorized')
+  const session = await locals.auth()
+  if (!session?.user?.id) {
+    throw error(401, 'Unauthorized')
+  }
+
+  try {
+    const contentType = request.headers.get('content-type') || ''
+
+    // 1. Handle JSON body: Insert selected events
+    if (contentType.includes('application/json')) {
+      const { events } = await request.json()
+      if (!events || !Array.isArray(events)) {
+        throw error(400, 'Invalid events data')
+      }
+
+      if (events.length === 0) {
+        return json({ success: true, count: 0, message: 'No events to import' })
+      }
+
+      // Perform upserts
+      for (const e of events) {
+        // Ensure userId is the current user
+        e.userId = session.user.id
+
+        // Convert date strings to Date objects for MySQL datetime/timestamp columns
+        const values = {
+          ...e,
+          startTime: e.startTime ? new Date(e.startTime) : null,
+          endTime: e.endTime ? new Date(e.endTime) : null,
+          createdAt: e.createdAt ? new Date(e.createdAt) : undefined,
+          updatedAt: e.updatedAt ? new Date(e.updatedAt) : undefined,
+          deletedAt: e.deletedAt ? new Date(e.deletedAt) : undefined
+        }
+
+        await db
+          .insert(event)
+          .values(values)
+          .onDuplicateKeyUpdate({
+            set: {
+              title: values.title,
+              description: values.description,
+              location: values.location,
+              locationAddress: values.locationAddress,
+              placeId: values.placeId,
+              lat: values.lat,
+              lng: values.lng,
+              startTime: values.startTime,
+              endTime: values.endTime,
+              updatedAt: new Date()
+            }
+          })
+      }
+
+      return json({
+        success: true,
+        count: events.length,
+        message: `Successfully imported ${events.length} events`
+      })
     }
 
-    try {
-        const contentType = request.headers.get('content-type') || ''
+    // 2. Handle File Upload: Parse and Preview
+    const formData = await request.formData()
+    const file = formData.get('file')
 
-        // 1. Handle JSON body: Insert selected events
-        if (contentType.includes('application/json')) {
-            const { events } = await request.json()
-            if (!events || !Array.isArray(events)) {
-                throw error(400, 'Invalid events data')
-            }
+    if (!file || !(file instanceof File)) {
+      throw error(400, 'No file uploaded')
+    }
 
-            if (events.length === 0) {
-                return json({ success: true, count: 0, message: 'No events to import' })
-            }
+    const content = await file.text()
+    const data = await ical.async.parseICS(content)
 
-            // Perform upserts
-            for (const e of events) {
-                // Ensure userId is the current user
-                e.userId = session.user.id
+    const parsedEvents: any[] = []
 
-                // Convert date strings to Date objects for MySQL datetime/timestamp columns
-                const values = {
-                    ...e,
-                    startTime: e.startTime ? new Date(e.startTime) : null,
-                    endTime: e.endTime ? new Date(e.endTime) : null,
-                    createdAt: e.createdAt ? new Date(e.createdAt) : undefined,
-                    updatedAt: e.updatedAt ? new Date(e.updatedAt) : undefined,
-                    deletedAt: e.deletedAt ? new Date(e.deletedAt) : undefined
-                }
-
-                await db.insert(event)
-                    .values(values)
-                    .onDuplicateKeyUpdate({
-                        set: {
-                            title: values.title,
-                            description: values.description,
-                            location: values.location,
-                            locationAddress: values.locationAddress,
-                            placeId: values.placeId,
-                            lat: values.lat,
-                            lng: values.lng,
-                            startTime: values.startTime,
-                            endTime: values.endTime,
-                            updatedAt: new Date()
-                        }
-                    })
-            }
-
-            return json({
-                success: true,
-                count: events.length,
-                message: `Successfully imported ${events.length} events`
-            })
-        }
-
-        // 2. Handle File Upload: Parse and Preview
-        const formData = await request.formData()
-        const file = formData.get('file')
-
-        if (!file || !(file instanceof File)) {
-            throw error(400, 'No file uploaded')
-        }
-
-        const content = await file.text()
-        const data = await ical.async.parseICS(content)
-
-        const parsedEvents: any[] = []
-
-        for (const k in data) {
-            const item = data[k]
-            if (item.type === 'VEVENT') {
-                parsedEvents.push({
-                    id: (() => {
-                        const uid = item.uid || crypto.randomUUID()
-                        return uid.includes('@') ? uid : `${uid}@justodo.vibrew.ai`
-                    })(),
-                    // @ts-ignore
-                    title: item.summary || 'Untitled Event',
-                    description: (item.description || '').split('\n\n--- JUSTODO METADATA ---')[0] || '',
-                    location: item.location || '',
-                    locationAddress: (() => {
-                        const match = (item.description || '').match(/ADDRESS:(.+)/)
-                        return match ? match[1].trim() : ''
-                    })(),
-                    placeId: (() => {
-                        const match = (item.description || '').match(/PLACE_ID:(.+)/)
-                        return match ? match[1].trim() : ''
-                    })(),
-                    // @ts-ignore
-                    lat: item.geo ? parseFloat(item.geo.lat) : null,
-                    // @ts-ignore
-                    lng: item.geo ? parseFloat(item.geo.lon) : null,
-                    startTime: dayjs(item.start).toISOString(),
-                    endTime: dayjs(item.end).toISOString(),
-                    userId: session.user.id,
-                    type: 'schedule'
-                })
-            }
-        }
-
-        return json({
-            success: true,
-            preview: true,
-            events: parsedEvents,
-            message: `Found ${parsedEvents.length} events`
+    for (const k in data) {
+      const item = data[k]
+      if (item.type === 'VEVENT') {
+        parsedEvents.push({
+          id: (() => {
+            const uid = item.uid || crypto.randomUUID()
+            return uid.includes('@') ? uid : `${uid}@justodo.vibrew.ai`
+          })(),
+          // @ts-ignore
+          title: item.summary || 'Untitled Event',
+          description:
+            (item.description || '').split('\n\n--- JUSTODO METADATA ---')[0] ||
+            '',
+          location: item.location || '',
+          locationAddress: (() => {
+            const match = (item.description || '').match(/ADDRESS:(.+)/)
+            return match ? match[1].trim() : ''
+          })(),
+          placeId: (() => {
+            const match = (item.description || '').match(/PLACE_ID:(.+)/)
+            return match ? match[1].trim() : ''
+          })(),
+          // @ts-ignore
+          lat: item.geo ? parseFloat(item.geo.lat) : null,
+          // @ts-ignore
+          lng: item.geo ? parseFloat(item.geo.lon) : null,
+          startTime: dayjs(item.start).toISOString(),
+          endTime: dayjs(item.end).toISOString(),
+          userId: session.user.id,
+          type: 'schedule'
         })
-
-    } catch (e) {
-        console.error('Import Error:', e)
-        const message = e instanceof Error ? e.message : 'Unknown error'
-        throw error(500, 'Internal Server Error: ' + message)
+      }
     }
+
+    return json({
+      success: true,
+      preview: true,
+      events: parsedEvents,
+      message: `Found ${parsedEvents.length} events`
+    })
+  } catch (e) {
+    console.error('Import Error:', e)
+    const message = e instanceof Error ? e.message : 'Unknown error'
+    throw error(500, 'Internal Server Error: ' + message)
+  }
 }

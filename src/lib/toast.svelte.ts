@@ -2,57 +2,57 @@ type ToastType = 'success' | 'info' | 'error' | 'warning'
 type ToastPosition = 'top' | 'bottom'
 
 type ToastOptions = {
-    type?: ToastType
-    position?: ToastPosition
-    duration?: number
+  type?: ToastType
+  position?: ToastPosition
+  duration?: number
 }
 
 type ToastItem = {
-    id: string
-    text: string
-    type: ToastType
-    position: ToastPosition
-    duration: number
+  id: string
+  text: string
+  type: ToastType
+  position: ToastPosition
+  duration: number
 }
 
 class ToastState {
-    items = $state<ToastItem[]>([])
+  items = $state<ToastItem[]>([])
 
-    show(text: string, options: ToastOptions = {}) {
-        const id = Math.random().toString(36).substring(2, 9)
-        const { type = 'info', position = 'top', duration = 3000 } = options
+  show(text: string, options: ToastOptions = {}) {
+    const id = Math.random().toString(36).substring(2, 9)
+    const { type = 'info', position = 'top', duration = 3000 } = options
 
-        const item: ToastItem = { id, text, type, position, duration }
-        this.items.push(item)
+    const item: ToastItem = { id, text, type, position, duration }
+    this.items.push(item)
 
-        if (duration > 0) {
-            setTimeout(() => {
-                this.dismiss(id)
-            }, duration)
-        }
-
-        return id
+    if (duration > 0) {
+      setTimeout(() => {
+        this.dismiss(id)
+      }, duration)
     }
 
-    dismiss(id: string) {
-        this.items = this.items.filter((item) => item.id !== id)
-    }
+    return id
+  }
 
-    success(text: string, options: Omit<ToastOptions, 'type'> = {}) {
-        return this.show(text, { ...options, type: 'success' })
-    }
+  dismiss(id: string) {
+    this.items = this.items.filter((item) => item.id !== id)
+  }
 
-    error(text: string, options: Omit<ToastOptions, 'type'> = {}) {
-        return this.show(text, { ...options, type: 'error' })
-    }
+  success(text: string, options: Omit<ToastOptions, 'type'> = {}) {
+    return this.show(text, { ...options, type: 'success' })
+  }
 
-    info(text: string, options: Omit<ToastOptions, 'type'> = {}) {
-        return this.show(text, { ...options, type: 'info' })
-    }
+  error(text: string, options: Omit<ToastOptions, 'type'> = {}) {
+    return this.show(text, { ...options, type: 'error' })
+  }
 
-    warning(text: string, options: Omit<ToastOptions, 'type'> = {}) {
-        return this.show(text, { ...options, type: 'warning' })
-    }
+  info(text: string, options: Omit<ToastOptions, 'type'> = {}) {
+    return this.show(text, { ...options, type: 'info' })
+  }
+
+  warning(text: string, options: Omit<ToastOptions, 'type'> = {}) {
+    return this.show(text, { ...options, type: 'warning' })
+  }
 }
 
 export const toast = new ToastState()

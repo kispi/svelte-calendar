@@ -4,7 +4,7 @@ declare global {
   namespace App {
     // interface Error {}
     interface Locals {
-      auth(): Promise<import("@auth/sveltekit").Session | null>
+      auth(): Promise<import('@auth/sveltekit').Session | null>
     }
     // interface PageData {}
     // interface PageState {}
@@ -12,4 +12,4 @@ declare global {
   }
 }
 
-export { }
+export {}

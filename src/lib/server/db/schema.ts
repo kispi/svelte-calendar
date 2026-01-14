@@ -1,4 +1,16 @@
-import { mysqlTable, varchar, text, int, double, primaryKey, uniqueIndex, timestamp, datetime } from 'drizzle-orm/mysql-core'
+import {
+  mysqlTable,
+  varchar,
+  text,
+  int,
+  double,
+  primaryKey,
+  uniqueIndex,
+  timestamp,
+  datetime,
+  boolean,
+  tinyint
+} from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
 import type { InferSelectModel, InferInsertModel } from 'drizzle-orm'
 
@@ -6,8 +18,13 @@ const baseColumns = {
   id: varchar('id', { length: 255 })
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+  createdAt: timestamp('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .onUpdateNow(),
   deletedAt: timestamp('deleted_at')
 }
 
@@ -23,7 +40,9 @@ export const account = mysqlTable(
   'accounts',
   {
     provider: varchar('provider', { length: 255 }).notNull(),
-    providerAccountId: varchar('provider_account_id', { length: 255 }).notNull(),
+    providerAccountId: varchar('provider_account_id', {
+      length: 255
+    }).notNull(),
     userId: varchar('user_id', { length: 255 })
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
@@ -35,23 +54,37 @@ export const account = mysqlTable(
     scope: varchar('scope', { length: 255 }),
     id_token: text('id_token'),
     session_state: varchar('session_state', { length: 255 }),
-    createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+    createdAt: timestamp('created_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp('updated_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`)
+      .onUpdateNow(),
     deletedAt: timestamp('deleted_at')
   },
   (account) => ({
-    compoundKey: primaryKey({ columns: [account.provider, account.providerAccountId] })
+    compoundKey: primaryKey({
+      columns: [account.provider, account.providerAccountId]
+    })
   })
 )
 
 export const session = mysqlTable('sessions', {
-  sessionToken: varchar('session_token', { length: 255 }).notNull().primaryKey(),
+  sessionToken: varchar('session_token', { length: 255 })
+    .notNull()
+    .primaryKey(),
   userId: varchar('user_id', { length: 255 })
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
   expires: timestamp('expires').notNull(),
-  createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+  createdAt: timestamp('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: timestamp('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .onUpdateNow(),
   deletedAt: timestamp('deleted_at')
 })
 
@@ -61,12 +94,44 @@ export const verificationToken = mysqlTable(
     identifier: varchar('identifier', { length: 255 }).notNull(),
     token: varchar('token', { length: 255 }).notNull(),
     expires: timestamp('expires').notNull(),
-    createdAt: timestamp('created_at').notNull().default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp('updated_at').notNull().default(sql`CURRENT_TIMESTAMP`).onUpdateNow(),
+    createdAt: timestamp('created_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: timestamp('updated_at')
+      .notNull()
+      .default(sql`CURRENT_TIMESTAMP`)
+      .onUpdateNow(),
     deletedAt: timestamp('deleted_at')
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] })
+  })
+)
+
+export const calendar = mysqlTable('calendars', {
+  ...baseColumns,
+  name: varchar('name', { length: 255 }).notNull(),
+  color: varchar('color', { length: 50 }).notNull().default('#3b82f6'),
+  userId: varchar('user_id', { length: 255 }).references(() => user.id, {
+    onDelete: 'cascade'
+  }), // Owner/Creator convenience
+  isPrimary: tinyint('is_primary').default(0)
+})
+
+export const calendarMember = mysqlTable(
+  'calendar_members',
+  {
+    ...baseColumns,
+    calendarId: varchar('calendar_id', { length: 255 })
+      .notNull()
+      .references(() => calendar.id, { onDelete: 'cascade' }),
+    userId: varchar('user_id', { length: 255 })
+      .notNull()
+      .references(() => user.id, { onDelete: 'cascade' }),
+    role: varchar('role', { length: 50 }).notNull().default('owner') // owner, writer, reader
+  },
+  (t) => ({
+    compoundKey: primaryKey({ columns: [t.calendarId, t.userId] })
   })
 )
 
@@ -83,14 +148,45 @@ export const event = mysqlTable('events', {
   startTime: datetime('start_time'),
   endTime: datetime('end_time'),
   type: varchar('type', { length: 50 }).notNull().default('schedule'),
-  userId: varchar('user_id', { length: 255 }).references(() => user.id, { onDelete: 'set null' })
+
+  // New Fields for Calendar Architecture
+  calendarId: varchar('calendar_id', { length: 255 }).references(
+    () => calendar.id,
+    { onDelete: 'cascade' }
+  ),
+
+  // Recurrence Fields
+  recurrenceRule: text('recurrence_rule'),
+  exdates: text('exdates'),
+
+  // Deprecated (Keep for migration)
+  userId: varchar('user_id', { length: 255 }).references(() => user.id, {
+    onDelete: 'set null'
+  })
 })
 
 export const note = mysqlTable('notes', {
   ...baseColumns,
   title: varchar('title', { length: 255 }),
   content: text('content'),
-  userId: varchar('user_id', { length: 255 }).references(() => user.id, { onDelete: 'cascade' })
+  userId: varchar('user_id', { length: 255 }).references(() => user.id, {
+    onDelete: 'cascade'
+  })
+})
+
+export const eventShare = mysqlTable('event_shares', {
+  id: varchar('id', { length: 255 })
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  eventId: varchar('event_id', { length: 255 })
+    .notNull()
+    .references(() => event.id, { onDelete: 'cascade' }),
+  inviterId: varchar('inviter_id', { length: 255 }).notNull(), // User who invited
+  inviteeEmail: varchar('invitee_email', { length: 255 }).notNull(),
+  inviteeId: varchar('invitee_id', { length: 255 }), // Optional until they join
+  status: varchar('status', { length: 50 }).default('pending'), // pending, accepted, rejected
+  permissions: varchar('permissions', { length: 50 }).default('read'), // read, write
+  createdAt: timestamp('created_at').defaultNow()
 })
 
 export type User = InferSelectModel<typeof user>
@@ -104,6 +200,9 @@ export type NewSession = InferInsertModel<typeof session>
 
 export type VerificationToken = InferSelectModel<typeof verificationToken>
 export type NewVerificationToken = InferInsertModel<typeof verificationToken>
+
+export type Folder = InferSelectModel<typeof calendar>
+export type NewFolder = InferInsertModel<typeof calendar>
 
 export type Event = InferSelectModel<typeof event>
 export type NewEvent = InferInsertModel<typeof event>

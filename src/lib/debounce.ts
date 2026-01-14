@@ -20,21 +20,21 @@
  * ```
  */
 export function createDebounce<T extends (...args: any[]) => any>(
-    callback: T,
-    delay: number
+  callback: T,
+  delay: number
 ) {
-    let timeout: ReturnType<typeof setTimeout> | undefined
+  let timeout: ReturnType<typeof setTimeout> | undefined
 
-    const debounced = ((...args: Parameters<T>) => {
-        clearTimeout(timeout)
-        timeout = setTimeout(() => {
-            callback(...args)
-        }, delay)
-    }) as T
+  const debounced = ((...args: Parameters<T>) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      callback(...args)
+    }, delay)
+  }) as T
 
-    const cleanup = () => {
-        clearTimeout(timeout)
-    }
+  const cleanup = () => {
+    clearTimeout(timeout)
+  }
 
-    return { debounced, cleanup }
+  return { debounced, cleanup }
 }

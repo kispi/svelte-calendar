@@ -3,7 +3,10 @@ import flatpickr from 'flatpickr'
 import 'flatpickr/dist/flatpickr.css'
 import type { Options } from 'flatpickr/dist/types/options'
 
-export const flatpicker: Action<HTMLInputElement, Options> = (node, options) => {
+export const flatpicker: Action<HTMLInputElement, Options> = (
+  node,
+  options
+) => {
   const minTime = options.minTime || undefined
   const defaultDate = options.defaultDate || undefined
 

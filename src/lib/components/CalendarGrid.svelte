@@ -4,7 +4,10 @@
   import { createDebounce } from '$lib/debounce'
   import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
   import localeData from 'dayjs/plugin/localeData'
-  import type { Event as CalendarEvent } from '$lib/server/db/schema'
+  import type {
+    Event as CalendarEvent,
+    Folder as Calendar
+  } from '$lib/server/db/schema'
   import Dropdown from './Dropdown.svelte'
   import { toast } from '$lib/toast.svelte.js'
 
@@ -13,6 +16,8 @@
 
   interface CalendarProps {
     events?: CalendarEvent[]
+    calendars?: Calendar[]
+    visibleCalendarIds?: string[]
     onDateClick: (date: Dayjs) => void
     onEventClick: (event: CalendarEvent) => void
     currentDate?: Dayjs
@@ -20,6 +25,8 @@
 
   let {
     events = [],
+    calendars = [],
+    visibleCalendarIds = [],
     onDateClick,
     onEventClick,
     currentDate = $bindable(dayjs())
@@ -168,10 +175,29 @@
 
   function getEventsForDay(day: Dayjs) {
     return events.filter((event) => {
+      // 1. Basic date check
       if (!event.startTime) return false
       const eventDate = dayjs(event.startTime)
-      return eventDate.isSame(day, 'day')
+      const isSameDay = eventDate.isSame(day, 'day')
+      if (!isSameDay) return false
+
+      // 2. Calendar Visibility Check
+      if (
+        event.calendarId &&
+        visibleCalendarIds.length > 0 &&
+        !visibleCalendarIds.includes(event.calendarId)
+      ) {
+        return false
+      }
+
+      return true
     })
+  }
+
+  function getEventColor(calendarId: string | null) {
+    if (!calendarId) return null
+    const cal = calendars.find((c) => c.id === calendarId)
+    return cal ? cal.color : null
   }
 
   let years = $derived(
@@ -200,14 +226,16 @@
   })
 </script>
 
-<div class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden">
+<div
+  class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden h-full flex flex-col"
+>
   <!-- Header -->
   <div
-    class="p-6 flex flex-col sm:flex-row items-center justify-between bg-gradient-to-r from-justodo-green-50 to-white border-b border-justodo-green-100 gap-4"
+    class="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between bg-gradient-to-r from-justodo-green-50 to-white border-b border-justodo-green-100 gap-4"
   >
     <div class="flex items-center gap-2">
       <select
-        class="bg-transparent text-2xl font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
+        class="bg-transparent text-xl sm:text-2xl font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
         value={currentDate.month()}
         onchange={handleMonthChange}
       >
@@ -216,7 +244,7 @@
         {/each}
       </select>
       <select
-        class="bg-transparent text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
+        class="bg-transparent text-xl sm:text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
         value={currentDate.year()}
         onchange={handleYearChange}
       >
@@ -227,7 +255,7 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="flex-1 max-w-md mx-4">
+    <div class="flex-1 max-w-md w-full mx-4">
       <div class="relative group">
         <input
           type="text"
@@ -236,7 +264,7 @@
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
-          class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2.5 text-sm transition-all outline-none"
+          class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2 text-sm transition-all outline-none"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -362,7 +390,7 @@
   </div>
 
   <!-- Days Grid -->
-  <div class="grid grid-cols-7 auto-rows-fr h-[600px] lg:h-[700px]">
+  <div class="grid grid-cols-7 auto-rows-fr h-full overflow-hidden">
     {#each days as day}
       <div
         class="
@@ -394,11 +422,15 @@
           {#each getEventsForDay(day) as event}
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
+            {@const color = getEventColor(event.calendarId)}
             <div
               class="px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
-                            {event.type === 'diary'
+                             {event.type === 'diary'
                 ? 'bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100'
                 : 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200'}"
+              style={event.type !== 'diary' && color
+                ? `background-color: ${color}20; color: ${color}; border-color: ${color}40;`
+                : ''}
               role="button"
               onclick={(e) => {
                 e.stopPropagation()

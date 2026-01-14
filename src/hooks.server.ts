@@ -8,7 +8,9 @@ import {
   user,
   account,
   session,
-  verificationToken
+  verificationToken,
+  calendar,
+  calendarMember
 } from '$lib/server/db/schema'
 
 const drizzleAdapter = DrizzleAdapter(db, {
@@ -33,6 +35,32 @@ export const { handle } = SvelteKitAuth({
         session.user.id = user.id
       }
       return session
+    }
+  },
+  events: {
+    async createUser(message) {
+      const { user } = message
+      if (!user.id) return
+
+      try {
+        const calendarId = crypto.randomUUID()
+        await db.insert(calendar).values({
+          id: calendarId,
+          name: 'Personal',
+          color: '#3b82f6',
+          userId: user.id,
+          isPrimary: 1
+        })
+
+        await db.insert(calendarMember).values({
+          calendarId,
+          userId: user.id,
+          role: 'owner'
+        })
+        console.log(`Created default calendar for user ${user.id}`)
+      } catch (e) {
+        console.error('Failed to create default calendar', e)
+      }
     }
   },
   trustHost: true

@@ -44,7 +44,7 @@
 {#if show && items.length > 0}
   <div
     bind:this={dropdownEl}
-    class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-slate-100 {maxHeight} overflow-y-auto z-50 {containerClass}"
+    class="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-slate-100 {maxHeight} overflow-y-auto z-[60] {containerClass}"
   >
     {#each items as item, index (index)}
       <button

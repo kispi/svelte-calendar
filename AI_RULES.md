@@ -57,4 +57,3 @@
 - **Local State Sync**: After `POST`, `PUT`, or `DELETE`, manually update the client-side cache (e.g., `queryClient.setQueryData`) to reflect changes immediately.
 - **No Redundant Fetches**: Avoid re-fetching the entire list (`invalidateQueries`) after individual CRUD operations if the result can be updated locally.
 - **Conditional Fetching**: Queries should be `enabled` only for the active view or tab to minimize network traffic on load and tab switching.
-

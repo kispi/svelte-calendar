@@ -211,16 +211,13 @@
   }
 
   async function handleExport() {
-    const events = query.data || []
-    if (events.length === 0) {
-      toast.info('No events to export')
-      return
-    }
-
     window.location.href = '/api/events/export'
-    toast.success(i18n.t('toast.exportSuccess', { count: events.length }), {
-      position: 'top'
-    })
+    toast.success(
+      i18n.locale === 'kr' ? '일정을 내보냅니다' : 'Exporting events...',
+      {
+        position: 'top'
+      }
+    )
   }
 
   let fileInput = $state<HTMLInputElement>()

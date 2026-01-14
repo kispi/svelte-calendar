@@ -372,7 +372,7 @@
   />
   <meta property="og:image" content="/logo.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://justodo.vibrew.ai" />
+  <meta property="og:url" content="https://justodo.gravex.app" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />

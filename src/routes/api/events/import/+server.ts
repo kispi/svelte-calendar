@@ -115,7 +115,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         parsedEvents.push({
           id: (() => {
             const uid = item.uid || crypto.randomUUID()
-            return uid.includes('@') ? uid : `${uid}@justodo.vibrew.ai`
+            return uid.includes('@') ? uid : `${uid}@gravex.app`
           })(),
           // @ts-ignore
           title: item.summary || 'Untitled Event',

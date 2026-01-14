@@ -79,7 +79,7 @@ export const GET: RequestHandler = async ({ locals }) => {
         recurrenceRule: e.recurrenceRule || undefined,
         title: e.title || '(No Title)',
         location: e.location || '',
-        uid: e.id.includes('@') ? e.id : `${e.id}@justodo.vibrew.ai`,
+        uid: e.id.includes('@') ? e.id : `${e.id}@justodo.gravex.app`,
         created: [
           created.isValid() ? created.year() : start.year(),
           created.isValid() ? created.month() + 1 : start.month() + 1,

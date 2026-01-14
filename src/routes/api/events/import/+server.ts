@@ -1,6 +1,7 @@
 import { db } from '$lib/server/db'
-import { event } from '$lib/server/db/schema'
+import { event, calendar } from '$lib/server/db/schema'
 import { error, json } from '@sveltejs/kit'
+import { eq, asc } from 'drizzle-orm'
 import ical from 'node-ical'
 import dayjs from 'dayjs'
 import type { RequestHandler } from './$types'
@@ -25,10 +26,35 @@ export const POST: RequestHandler = async ({ locals, request }) => {
         return json({ success: true, count: 0, message: 'No events to import' })
       }
 
+      // Fetch user's primary calendar
+      const userCalendars = await db
+        .select()
+        .from(calendar)
+        .where(eq(calendar.userId, session.user.id))
+        .orderBy(asc(calendar.createdAt))
+
+      let targetCalendarId = userCalendars.find((c) => c.isPrimary)?.id
+      if (!targetCalendarId && userCalendars.length > 0) {
+        targetCalendarId = userCalendars[0].id
+      }
+
+      // If no calendar exists, create a default one
+      if (!targetCalendarId) {
+        const newCalId = crypto.randomUUID()
+        await db.insert(calendar).values({
+          id: newCalId,
+          userId: session.user.id,
+          name: 'My Calendar',
+          color: '#3b82f6',
+          isPrimary: 1
+        })
+        targetCalendarId = newCalId
+      }
+
       // Perform upserts
       for (const e of events) {
-        // Ensure userId is the current user
-        e.userId = session.user.id
+        // userId removed
+        e.calendarId = targetCalendarId // Assign to valid calendar
 
         // Convert date strings to Date objects for MySQL datetime/timestamp columns
         const values = {
@@ -37,7 +63,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
           endTime: e.endTime ? new Date(e.endTime) : null,
           createdAt: e.createdAt ? new Date(e.createdAt) : undefined,
           updatedAt: e.updatedAt ? new Date(e.updatedAt) : undefined,
-          deletedAt: e.deletedAt ? new Date(e.deletedAt) : undefined
+          deletedAt: e.deletedAt ? new Date(e.deletedAt) : undefined,
+          // Ensure recurrenceRule is preserved
+          recurrenceRule: e.recurrenceRule || null
         }
 
         await db
@@ -54,10 +82,12 @@ export const POST: RequestHandler = async ({ locals, request }) => {
               lng: values.lng,
               startTime: values.startTime,
               endTime: values.endTime,
-              updatedAt: new Date()
+              updatedAt: new Date(),
+              calendarId: values.calendarId, // Update calendarId if exists
+              recurrenceRule: values.recurrenceRule
             }
           })
-      }
+      } // End for loop
 
       return json({
         success: true,
@@ -80,7 +110,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
     const parsedEvents: any[] = []
 
     for (const k in data) {
-      const item = data[k]
+      const item = data[k] as any
       if (item.type === 'VEVENT') {
         parsedEvents.push({
           id: (() => {
@@ -107,7 +137,9 @@ export const POST: RequestHandler = async ({ locals, request }) => {
           lng: item.geo ? parseFloat(item.geo.lon) : null,
           startTime: dayjs(item.start).toISOString(),
           endTime: dayjs(item.end).toISOString(),
-          userId: session.user.id,
+          // userId removed
+          // Extract RRule
+          recurrenceRule: item.rrule ? item.rrule.toString() : null,
           type: 'schedule'
         })
       }

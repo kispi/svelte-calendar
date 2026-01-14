@@ -4,11 +4,11 @@ import {
   text,
   int,
   double,
+  index,
   primaryKey,
   uniqueIndex,
   timestamp,
   datetime,
-  boolean,
   tinyint
 } from 'drizzle-orm/mysql-core'
 import { sql } from 'drizzle-orm'
@@ -39,6 +39,7 @@ export const user = mysqlTable('users', {
 export const account = mysqlTable(
   'accounts',
   {
+    ...baseColumns,
     provider: varchar('provider', { length: 255 }).notNull(),
     providerAccountId: varchar('provider_account_id', {
       length: 255
@@ -53,60 +54,25 @@ export const account = mysqlTable(
     token_type: varchar('token_type', { length: 255 }),
     scope: varchar('scope', { length: 255 }),
     id_token: text('id_token'),
-    session_state: varchar('session_state', { length: 255 }),
-    createdAt: timestamp('created_at')
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp('updated_at')
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP`)
-      .onUpdateNow(),
-    deletedAt: timestamp('deleted_at')
+    session_state: varchar('session_state', { length: 255 })
   },
   (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId]
-    })
+    unq: uniqueIndex('accounts_unq').on(account.provider, account.providerAccountId)
   })
 )
 
 export const session = mysqlTable('sessions', {
+  ...baseColumns,
   sessionToken: varchar('session_token', { length: 255 })
     .notNull()
-    .primaryKey(),
+    .unique(),
   userId: varchar('user_id', { length: 255 })
     .notNull()
     .references(() => user.id, { onDelete: 'cascade' }),
-  expires: timestamp('expires').notNull(),
-  createdAt: timestamp('created_at')
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: timestamp('updated_at')
-    .notNull()
-    .default(sql`CURRENT_TIMESTAMP`)
-    .onUpdateNow(),
-  deletedAt: timestamp('deleted_at')
+  expires: timestamp('expires').notNull()
 })
 
-export const verificationToken = mysqlTable(
-  'verification_tokens',
-  {
-    identifier: varchar('identifier', { length: 255 }).notNull(),
-    token: varchar('token', { length: 255 }).notNull(),
-    expires: timestamp('expires').notNull(),
-    createdAt: timestamp('created_at')
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP`),
-    updatedAt: timestamp('updated_at')
-      .notNull()
-      .default(sql`CURRENT_TIMESTAMP`)
-      .onUpdateNow(),
-    deletedAt: timestamp('deleted_at')
-  },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] })
-  })
-)
+// verificationToken removed
 
 export const calendar = mysqlTable('calendars', {
   ...baseColumns,
@@ -131,7 +97,8 @@ export const calendarMember = mysqlTable(
     role: varchar('role', { length: 50 }).notNull().default('owner') // owner, writer, reader
   },
   (t) => ({
-    compoundKey: primaryKey({ columns: [t.calendarId, t.userId] })
+    calendarIdIdx: index('calendar_members_calendar_id_idx').on(t.calendarId),
+    userIdIdx: index('calendar_members_user_id_idx').on(t.userId)
   })
 )
 
@@ -157,12 +124,7 @@ export const event = mysqlTable('events', {
 
   // Recurrence Fields
   recurrenceRule: text('recurrence_rule'),
-  exdates: text('exdates'),
-
-  // Deprecated (Keep for migration)
-  userId: varchar('user_id', { length: 255 }).references(() => user.id, {
-    onDelete: 'set null'
-  })
+  exdates: text('exdates')
 })
 
 export const note = mysqlTable('notes', {
@@ -175,9 +137,7 @@ export const note = mysqlTable('notes', {
 })
 
 export const eventShare = mysqlTable('event_shares', {
-  id: varchar('id', { length: 255 })
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
+  ...baseColumns,
   eventId: varchar('event_id', { length: 255 })
     .notNull()
     .references(() => event.id, { onDelete: 'cascade' }),
@@ -185,8 +145,7 @@ export const eventShare = mysqlTable('event_shares', {
   inviteeEmail: varchar('invitee_email', { length: 255 }).notNull(),
   inviteeId: varchar('invitee_id', { length: 255 }), // Optional until they join
   status: varchar('status', { length: 50 }).default('pending'), // pending, accepted, rejected
-  permissions: varchar('permissions', { length: 50 }).default('read'), // read, write
-  createdAt: timestamp('created_at').defaultNow()
+  permissions: varchar('permissions', { length: 50 }).default('read') // read, write
 })
 
 export type User = InferSelectModel<typeof user>
@@ -197,9 +156,6 @@ export type NewAccount = InferInsertModel<typeof account>
 
 export type Session = InferSelectModel<typeof session>
 export type NewSession = InferInsertModel<typeof session>
-
-export type VerificationToken = InferSelectModel<typeof verificationToken>
-export type NewVerificationToken = InferInsertModel<typeof verificationToken>
 
 export type Folder = InferSelectModel<typeof calendar>
 export type NewFolder = InferInsertModel<typeof calendar>

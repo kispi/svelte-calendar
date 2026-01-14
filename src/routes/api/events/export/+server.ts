@@ -1,8 +1,8 @@
 import type { RequestHandler } from './$types'
 import { db } from '$lib/server/db'
-import { event } from '$lib/server/db/schema'
+import { event, calendarMember } from '$lib/server/db/schema'
 import { error } from '@sveltejs/kit'
-import { eq } from 'drizzle-orm'
+import { eq, inArray } from 'drizzle-orm'
 import { createEvents, type EventAttributes } from 'ics'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -16,10 +16,23 @@ export const GET: RequestHandler = async ({ locals }) => {
   }
 
   try {
+    // Fetch calendars the user is a member of
+    const members = await db
+      .select({ calendarId: calendarMember.calendarId })
+      .from(calendarMember)
+      .where(eq(calendarMember.userId, session.user.id))
+
+    const calendarIds = members.map((m) => m.calendarId)
+
+    if (calendarIds.length === 0) {
+      // Return empty ICS immediately if no calendars
+      return new Response('', { status: 200 }) // Or handling empty logic below
+    }
+
     const allEvents = await db
       .select()
       .from(event)
-      .where(eq(event.userId, session.user.id))
+      .where(inArray(event.calendarId, calendarIds))
 
     const icsEvents: EventAttributes[] = allEvents.map((e) => {
       let start = dayjs(e.startTime)
@@ -63,6 +76,7 @@ export const GET: RequestHandler = async ({ locals }) => {
           end.hour(),
           end.minute()
         ],
+        recurrenceRule: e.recurrenceRule || undefined,
         title: e.title || '(No Title)',
         location: e.location || '',
         uid: e.id.includes('@') ? e.id : `${e.id}@justodo.vibrew.ai`,

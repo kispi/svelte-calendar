@@ -8,7 +8,6 @@ import {
   user,
   account,
   session,
-  verificationToken,
   calendar,
   calendarMember
 } from '$lib/server/db/schema'
@@ -16,8 +15,8 @@ import {
 const drizzleAdapter = DrizzleAdapter(db, {
   usersTable: user,
   accountsTable: account,
-  sessionsTable: session,
-  verificationTokensTable: verificationToken
+  // @ts-ignore
+  sessionsTable: session
 })
 
 export const { handle } = SvelteKitAuth({

@@ -84,7 +84,13 @@
   // Auto-select all calendars if empty state (first load)
   $effect(() => {
     if (calendarsQuery.data && visibleCalendarIds.length === 0 && isReady) {
-      visibleCalendarIds = calendarsQuery.data.map((c: any) => c.id)
+      const primary = calendarsQuery.data.find((c: any) => c.isPrimary)
+      if (primary) {
+        visibleCalendarIds = [primary.id]
+      } else {
+        // Fallback: Select all calendars
+        visibleCalendarIds = calendarsQuery.data.map((c: any) => c.id)
+      }
     }
   })
 

@@ -73,6 +73,14 @@ const translations = {
       greeting:
         'Hello! I am your Justodo Assistant.\n\nTry asking:\n"How many Gym sessions did I log last month?"\n"Summarize my \'Project Alpha\' notes from this week."\n"Plan a 3-day trip to Seoul based on my travel notes."\n"What were my major expenses in my January notes?"',
       title: 'Justodo Assistant'
+    },
+    recurrence: {
+      label: 'Repeat',
+      none: 'None',
+      daily: 'Daily',
+      weekly: 'Weekly',
+      monthly: 'Monthly',
+      yearly: 'Yearly'
     }
   },
   kr: {
@@ -135,6 +143,14 @@ const translations = {
     common_ui: {
       onboarding: '일정과 메모를 한 곳에서. 심플한 하루 관리.',
       kakaoStart: '카카오로 시작하기'
+    },
+    recurrence: {
+      label: '반복',
+      none: '반복 없음',
+      daily: '매일',
+      weekly: '매주',
+      monthly: '매월',
+      yearly: '매년'
     },
     chatbot: {
       placeholder: '무엇이든 물어보세요...',

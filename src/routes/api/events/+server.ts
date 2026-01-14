@@ -1,7 +1,7 @@
 ﻿import { db } from '$lib/server/db'
 import { event, calendar, calendarMember } from '$lib/server/db/schema'
 import { json, error } from '@sveltejs/kit'
-import { eq, asc, and, or, like, inArray, gte, lte } from 'drizzle-orm'
+import { eq, asc, and, or, like, inArray, gte, lte, isNotNull } from 'drizzle-orm'
 
 import type { RequestHandler } from './$types'
 
@@ -44,8 +44,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       const start = new Date(startDateStr)
       const end = new Date(endDateStr)
 
-      // Filter events that start before the query end date.
-      conditions.push(lte(event.startTime, end))
+      // Filter events that start before the query end date OR are recurring
+      conditions.push(
+        or(lte(event.startTime, end), isNotNull(event.recurrenceRule))!
+      )
     }
 
     let query = db
@@ -77,6 +79,9 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     if (startDateStr && endDateStr) {
       const start = new Date(startDateStr)
       filteredEvents = events.filter((e) => {
+        // Always include recurring events (expansion happens on frontend)
+        if (e.recurrenceRule) return true
+
         const eEnd = e.endTime ? new Date(e.endTime) : new Date(e.startTime!)
         return eEnd >= start
       })

@@ -10,6 +10,7 @@
   } from '$lib/server/db/schema'
   import Dropdown from './Dropdown.svelte'
   import { toast } from '$lib/toast.svelte.js'
+  import { RRule } from 'rrule'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
@@ -46,6 +47,75 @@
       curr = curr.add(1, 'day')
     }
     return arr
+  })
+
+  // Expand Recurring Events
+  let processedEvents = $derived.by(() => {
+    let allEvents: any[] = []
+    // Safety check for date validity
+    const viewStart = startDate.toDate()
+    const viewEnd = endDate.toDate()
+
+    for (const event of events) {
+      if (!event.startTime) continue
+
+      if (!event.recurrenceRule) {
+        allEvents.push(event)
+        continue
+      }
+
+      try {
+        const eventStart = new Date(event.startTime)
+        // Parse the rule string
+        const options = RRule.parseString(event.recurrenceRule)
+        // Set start date
+        options.dtstart = eventStart
+
+        const rule = new RRule(options)
+        const instances = rule.between(viewStart, viewEnd, true)
+
+        // Calculate duration
+        const duration = event.endTime
+          ? dayjs(event.endTime).diff(dayjs(event.startTime))
+          : 60 * 60 * 1000 // 1 hour default
+
+        // Parse exdates
+        let exdates: string[] = []
+        try {
+          if (event.exdates) {
+            exdates = JSON.parse(event.exdates)
+          }
+        } catch (e) {
+          console.warn('Failed to parse exdates', e)
+        }
+
+        for (const date of instances) {
+          // Check exdates
+          const isExcluded = exdates.some((ex) =>
+            dayjs(ex).isSame(dayjs(date), 'day')
+          )
+          if (isExcluded) continue
+
+          const instanceStart = dayjs(date)
+          const instanceEnd = instanceStart.add(duration, 'ms')
+
+          // Shallow copy with new times
+          allEvents.push({
+            ...event,
+            id: `${event.id}_${date.getTime()}`, // Temporary unique ID
+            originalId: event.id, // Keep reference to master ID
+            startTime: instanceStart.toISOString() as any, // Cast for Drizzle type match
+            endTime: instanceEnd.toISOString() as any,
+            recurrenceRule: null, // It's an instance, don't re-expand
+            isRecurring: true
+          })
+        }
+      } catch (err) {
+        console.warn('Failed to expand recurrence', err, event)
+        allEvents.push(event) // Fallback to showing master only
+      }
+    }
+    return allEvents
   })
 
   // Navigation handlers
@@ -174,7 +244,7 @@
   }
 
   function getEventsForDay(day: Dayjs) {
-    return events.filter((event) => {
+    return processedEvents.filter((event) => {
       // 1. Basic date check
       if (!event.startTime) return false
       const eventDate = dayjs(event.startTime)
@@ -423,27 +493,61 @@
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             {@const color = getEventColor(event.calendarId)}
-            <div
-              class="px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
+            <button
+              type="button"
+              class="w-full text-left px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
                              {event.type === 'diary'
                 ? 'bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100'
                 : 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200'}"
               style={event.type !== 'diary' && color
                 ? `background-color: ${color}20; color: ${color}; border-color: ${color}40;`
                 : ''}
-              role="button"
               onclick={(e) => {
                 e.stopPropagation()
+                // Handle recurring instances: open master event
+                if (event.isRecurring && event.originalId) {
+                  const master = events.find((e) => e.id === event.originalId)
+                  if (master) {
+                    toast.info(
+                      i18n.locale === 'kr'
+                        ? '반복 일정의 원본을 엽니다'
+                        : 'Opening recurring event series'
+                    )
+                    onEventClick(master)
+                    return
+                  }
+                }
                 onEventClick(event)
               }}
             >
-              {#if event.type === 'schedule' && event.startTime}
-                <span class="hidden sm:inline opacity-60 mr-1"
-                  >[{dayjs(event.startTime).format('HH:mm')}]</span
-                >
-              {/if}
-              {event.title}
-            </div>
+              <div class="flex items-center gap-1">
+                {#if event.recurrenceRule || event.isRecurring}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-repeat shrink-0"
+                    ><path d="m17 2 4 4-4 4" /><path
+                      d="M3 11v-1a4 4 0 0 1 4-4h14"
+                    /><path d="m7 22-4-4 4-4" /><path
+                      d="M21 13v1a4 4 0 0 1-4 4H3"
+                    /></svg
+                  >
+                {/if}
+                {#if event.type === 'schedule' && event.startTime}
+                  <span class="hidden sm:inline opacity-60 text-[10px]"
+                    >{dayjs(event.startTime).format('HH:mm')}</span
+                  >
+                {/if}
+                <span class="truncate">{event.title}</span>
+              </div>
+            </button>
           {/each}
         </div>
       </div>

@@ -10,7 +10,12 @@
   let { events, close }: ImportProps = $props()
 
   // Default: Select all
-  let selectedIds = $state<Set<string>>(new Set(events.map((e) => e.id)))
+  let selectedIds = $state<Set<string>>(new Set())
+
+  $effect(() => {
+    // Initialize or update selection when events change
+    selectedIds = new Set(events.map((e) => e.id))
+  })
 
   function toggle(id: string) {
     if (selectedIds.has(id)) {

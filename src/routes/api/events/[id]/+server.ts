@@ -79,6 +79,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
         startTime: startTime ? new Date(startTime) : null,
         endTime: endTime ? new Date(endTime) : null,
         recurrenceRule: recurrenceRule || null,
+        exdates: body.exdates, // Allow updating exdates
         calendarId: calendarId || undefined, // Update if provided
         updatedAt: new Date()
       })

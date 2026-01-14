@@ -130,20 +130,8 @@
       { preventCloseOnClickBackdrop: true }
     )
     if (result?.success) {
-      if (result.event) {
-        // Local update
-        queryClient.setQueryData(['events'], (old: any[] | undefined) => {
-          const updated = [...(old || []), result.event]
-          // Re-sort by startTime if it exists
-          return updated.sort((a, b) => {
-            if (!a.startTime) return 1
-            if (!b.startTime) return -1
-            return dayjs(a.startTime).diff(dayjs(b.startTime))
-          })
-        })
-      } else {
-        queryClient.invalidateQueries({ queryKey: ['events'] })
-      }
+      // Refresh events to ensure all instances (recurring, moved calendars) are up to date
+      queryClient.invalidateQueries({ queryKey: ['events'] })
     }
   }
 
@@ -156,22 +144,8 @@
       { preventCloseOnClickBackdrop: true }
     )
     if (result?.success) {
-      if (result.event) {
-        // Local update
-        queryClient.setQueryData(['events'], (old: any[] | undefined) => {
-          if (!old) return [result.event]
-          return old.map((e) => (e.id === result.event.id ? result.event : e))
-        })
-      } else if (result.deletedId) {
-        // Local remove
-        queryClient.setQueryData(['events'], (old: any[] | undefined) => {
-          if (!old) return []
-          return old.filter((e) => e.id !== result.deletedId)
-        })
-      } else {
-        // If it was a create (result.success without event/deletedId)
-        queryClient.invalidateQueries({ queryKey: ['events'] })
-      }
+      // Refresh events to ensure all instances (recurring, moved calendars) are up to date
+      queryClient.invalidateQueries({ queryKey: ['events'] })
     }
   }
 
@@ -475,6 +449,7 @@
                 <button
                   onclick={() => (showMobileSidebar = false)}
                   class="p-2 -mr-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
+                  aria-label="Close menu"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

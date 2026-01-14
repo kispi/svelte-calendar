@@ -38,6 +38,10 @@
   let newCalendarName = $state('')
   let newCalendarColor = $state('#3b82f6') // Blue default
 
+  function focusNode(node: HTMLElement) {
+    node.focus()
+  }
+
   const PRESET_COLORS = [
     '#ef4444', // Red
     '#f97316', // Orange
@@ -149,7 +153,7 @@
         bind:value={newCalendarName}
         placeholder={i18n.locale === 'kr' ? '캘린더 이름' : 'Calendar Name'}
         class="w-full text-sm font-medium border-b border-slate-100 focus:border-justodo-green-400 outline-none pb-1 mb-3 placeholder:text-slate-300"
-        autoFocus
+        use:focusNode
       />
 
       <div class="flex flex-wrap gap-1.5 mb-3">

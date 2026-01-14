@@ -35,6 +35,8 @@
   let searchResults = $state<any[]>([])
   let showDropdown = $state(false)
   let showCalendarDropdown = $state(false)
+  let recurrenceRule = $state('')
+  let showRecurrenceDropdown = $state(false)
 
   // Fetch Calendars
   const calendarsQuery = createQuery(() => ({
@@ -117,6 +119,7 @@
       startTime = start.format('HH:mm')
       endTime = end.format('HH:mm')
       calendarId = event.calendarId || ''
+      recurrenceRule = event.recurrenceRule || ''
     } else if (selectedDate) {
       baseDate = selectedDate.format('YYYY-MM-DD')
       startTime = '09:00'
@@ -280,7 +283,8 @@
           type: formData.get('type'),
           startTime: startISO,
           endTime: endISO,
-          calendarId: payloadCalendarId || undefined
+          calendarId: payloadCalendarId || undefined,
+          recurrenceRule: formData.get('recurrenceRule')
         }
 
         fetch(`/api/events/${event.id}`, {
@@ -322,7 +326,8 @@
           type: formData.get('type'),
           startTime: startISO,
           endTime: endISO,
-          calendarId: payloadCalendarId || undefined
+          calendarId: payloadCalendarId || undefined,
+          recurrenceRule: formData.get('recurrenceRule')
         }
 
         fetch('/api/events', {
@@ -631,6 +636,94 @@
                   >Primary</span
                 >
               {/if}
+            </div>
+          {/snippet}
+        </Dropdown>
+      </div>
+    </div>
+
+    <!-- Recurrence Section -->
+    <div class="flex items-center gap-4 relative z-20">
+      <div class="text-slate-400">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-repeat"
+          ><path d="m17 2 4 4-4 4" /><path d="M3 11v-1a4 4 0 0 1 4-4h14" /><path
+            d="m7 22-4-4 4-4"
+          /><path d="M21 13v1a4 4 0 0 1-4 4H3" /></svg
+        >
+      </div>
+      <div class="relative flex-1">
+        <input type="hidden" name="recurrenceRule" value={recurrenceRule} />
+        <button
+          type="button"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm font-medium text-slate-600 flex items-center justify-between group"
+          onclick={(e) => {
+            e.stopPropagation()
+            showRecurrenceDropdown = !showRecurrenceDropdown
+          }}
+        >
+          <span>
+            {#if !recurrenceRule}
+              {i18n.t('recurrence.none')}
+            {:else if recurrenceRule === 'FREQ=DAILY'}
+              {i18n.t('recurrence.daily')}
+            {:else if recurrenceRule === 'FREQ=WEEKLY'}
+              {i18n.t('recurrence.weekly')}
+            {:else if recurrenceRule === 'FREQ=MONTHLY'}
+              {i18n.t('recurrence.monthly')}
+            {:else if recurrenceRule === 'FREQ=YEARLY'}
+              {i18n.t('recurrence.yearly')}
+            {:else}
+              {recurrenceRule}
+            {/if}
+          </span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-chevron-down text-slate-400 group-hover:text-slate-600 transition-colors"
+            ><path d="m6 9 6 6 6-6" /></svg
+          >
+        </button>
+
+        <Dropdown
+          items={[
+            { label: 'recurrence.none', value: '' },
+            { label: 'recurrence.daily', value: 'FREQ=DAILY' },
+            { label: 'recurrence.weekly', value: 'FREQ=WEEKLY' },
+            { label: 'recurrence.monthly', value: 'FREQ=MONTHLY' },
+            { label: 'recurrence.yearly', value: 'FREQ=YEARLY' }
+          ]}
+          show={showRecurrenceDropdown}
+          onSelect={(item) => {
+            recurrenceRule = item.value
+            showRecurrenceDropdown = false
+          }}
+          onClose={() => (showRecurrenceDropdown = false)}
+          containerClass="w-full"
+        >
+          {#snippet children(item: any)}
+            <div
+              role="presentation"
+              class="px-3 py-2 text-sm border-b border-slate-50 last:border-0 hover:bg-slate-50 flex items-center gap-2"
+              onmousedown={(e) => e.preventDefault()}
+            >
+              <div class="font-medium text-slate-700">{i18n.t(item.label)}</div>
             </div>
           {/snippet}
         </Dropdown>

@@ -73,16 +73,28 @@
   let searchResults = $state<CalendarEvent[]>([])
   let isSearching = $state(false)
   let showSearchDropdown = $state(false)
-  let justCompositionEnded = $state(false)
+  let lastSearchedQuery = $state('')
 
-  let compositionEndTimeout: ReturnType<typeof setTimeout>
+  let searchInput = $state<HTMLInputElement>()
 
   async function performSearch(query: string) {
+    // If input is not focused, don't open dropdown
+    // This prevents dropdown from opening when composition ends due to blur
+    if (searchInput && document.activeElement !== searchInput) {
+      return
+    }
+
     const trimmedQuery = query.trim()
 
     if (trimmedQuery.length === 0) {
       searchResults = []
       showSearchDropdown = false
+      lastSearchedQuery = ''
+      return
+    }
+
+    if (trimmedQuery === lastSearchedQuery) {
+      showSearchDropdown = true
       return
     }
 
@@ -92,8 +104,13 @@
         `/api/events?query=${encodeURIComponent(trimmedQuery)}`
       )
       if (res.ok) {
+        // Double check focus after async await
+        if (searchInput && document.activeElement !== searchInput) {
+          return
+        }
         searchResults = await res.json()
         showSearchDropdown = true
+        lastSearchedQuery = trimmedQuery
       }
     } catch (e) {
       console.error('Search failed:', e)
@@ -108,23 +125,7 @@
   )
 
   function handleSearchInput() {
-    // Skip search if this was triggered immediately after compositionend
-    // This prevents duplicate API call when blur happens during Korean IME composition
-    if (justCompositionEnded) {
-      return
-    }
-
     debouncedSearch(searchQuery)
-  }
-
-  function handleCompositionEnd() {
-    // Set flag to skip input handler for a short duration after compositionend
-    // This prevents duplicate API calls when blur happens during Korean IME composition
-    clearTimeout(compositionEndTimeout)
-    justCompositionEnded = true
-    compositionEndTimeout = setTimeout(() => {
-      justCompositionEnded = false
-    }, 100)
   }
 
   function handleSelectSearchResult(event: CalendarEvent) {
@@ -230,10 +231,10 @@
       <div class="relative group">
         <input
           type="text"
+          bind:this={searchInput}
           bind:value={searchQuery}
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
-          oncompositionend={handleCompositionEnd}
           placeholder={i18n.t('common.searchPlaceholder')}
           class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2.5 text-sm transition-all outline-none"
         />

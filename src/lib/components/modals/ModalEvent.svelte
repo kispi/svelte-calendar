@@ -584,7 +584,7 @@
         <input type="hidden" name="calendarId" value={calendarId} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm font-bold text-slate-700 flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm font-medium text-slate-700 flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showCalendarDropdown = !showCalendarDropdown

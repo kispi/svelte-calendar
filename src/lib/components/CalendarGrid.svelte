@@ -10,7 +10,7 @@
   } from '$lib/server/db/schema'
   import Dropdown from './Dropdown.svelte'
   import { toast } from '$lib/toast.svelte.js'
-  import { RRule } from 'rrule'
+  import { RRule } from '$lib/utils/rrule'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
@@ -71,7 +71,7 @@
         // Set start date
         options.dtstart = eventStart
 
-        const rule = new RRule(options)
+        const rule = new RRule(options as any)
         const instances = rule.between(viewStart, viewEnd, true)
 
         // Calculate duration

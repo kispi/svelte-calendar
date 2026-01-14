@@ -19,7 +19,7 @@ const drizzleAdapter = DrizzleAdapter(db, {
   sessionsTable: session
 })
 
-export const { handle } = SvelteKitAuth({
+const { handle: authHandle } = SvelteKitAuth({
   adapter: drizzleAdapter,
   providers: [
     Kakao({
@@ -64,3 +64,8 @@ export const { handle } = SvelteKitAuth({
   },
   trustHost: true
 })
+
+import { sequence } from '@sveltejs/kit/hooks'
+import type { Handle } from '@sveltejs/kit'
+
+export const handle = authHandle

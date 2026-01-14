@@ -589,6 +589,7 @@
             e.stopPropagation()
             showCalendarDropdown = !showCalendarDropdown
           }}
+          onmousedown={(e) => e.stopPropagation()}
         >
           <span class="truncate">
             {calendarsQuery.data?.find((c: any) => c.id === calendarId)?.name ||
@@ -670,6 +671,7 @@
             e.stopPropagation()
             showRecurrenceDropdown = !showRecurrenceDropdown
           }}
+          onmousedown={(e) => e.stopPropagation()}
         >
           <span>
             {#if !recurrenceRule}

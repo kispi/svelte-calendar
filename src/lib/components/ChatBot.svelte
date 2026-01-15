@@ -136,10 +136,10 @@
 </script>
 
 <div
-  class="fixed bottom-4 right-1/2 translate-x-1/2 z-50 w-full max-w-7xl px-4 sm:px-6 lg:px-8 pointer-events-none"
+  class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4 pointer-events-none"
 >
-  <div class="relative w-full">
-    <div class="absolute bottom-0 right-0 flex flex-col items-end gap-4">
+  <div class="relative">
+    <div class="flex flex-col items-end gap-4">
       {#if isOpen}
         <div
           transition:slide={{ axis: 'y', duration: 300 }}

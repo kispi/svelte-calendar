@@ -13,13 +13,25 @@
     onToggle: (id: string, visible: boolean) => void
     class?: string
     children?: any
+    activeTab?: string
+    onSignOut?: () => void
+    onImport?: () => void
+    onExport?: () => void
+    onLocaleChange?: () => void
+    onTabChange?: () => void
   }
 
   let {
     visibleCalendarIds = [],
     onToggle,
     class: className = '',
-    children
+    children,
+    activeTab = $bindable('calendar'),
+    onSignOut,
+    onImport,
+    onExport,
+    onLocaleChange,
+    onTabChange
   }: SidebarProps = $props()
 
   const queryClient = useQueryClient()
@@ -116,30 +128,103 @@
 <div
   class="w-64 h-full flex flex-col border-r border-slate-100 bg-slate-50/50 p-4 {className}"
 >
-  <!-- Calendars Header -->
-  <div class="flex items-center justify-between mb-4">
-    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">
-      {i18n.locale === 'kr' ? '내 캘린더' : 'My Calendars'}
-    </h2>
+  <!-- Navigation -->
+  <div class="mb-6 space-y-1">
     <button
-      class="text-slate-400 hover:text-justodo-green-600 transition-colors"
-      onclick={() => (isCreating = !isCreating)}
-      title="Add Calendar"
+      onclick={() => {
+        activeTab = 'calendar'
+        onTabChange?.()
+      }}
+      class="w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors {activeTab ===
+      'calendar'
+        ? 'bg-justodo-green-100/50 text-justodo-green-700'
+        : 'text-slate-600 hover:bg-slate-100'}"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
+        width="18"
+        height="18"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
-        class="lucide lucide-plus"
-        ><path d="M5 12h14" /><path d="M12 5v14" /></svg
+        class="lucide lucide-calendar"
+        ><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line
+          x1="16"
+          x2="16"
+          y1="2"
+          y2="6"
+        /><line x1="8" x2="8" y1="2" y2="6" /><line
+          x1="3"
+          x2="21"
+          y1="10"
+          y2="10"
+        /></svg
+      >
+      <span class="text-sm font-bold tracking-tight"
+        >{i18n.t('nav.calendar')}</span
       >
     </button>
+    <button
+      onclick={() => {
+        activeTab = 'notes'
+        onTabChange?.()
+      }}
+      class="w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors {activeTab ===
+      'notes'
+        ? 'bg-justodo-green-100/50 text-justodo-green-700'
+        : 'text-slate-600 hover:bg-slate-100'}"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-sticky-note"
+        ><path
+          d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"
+        /><path d="M15 3v5h6" /><path d="M7 11h10" /><path d="M7 15h10" /></svg
+      >
+      <span class="text-sm font-bold tracking-tight">{i18n.t('nav.notes')}</span
+      >
+    </button>
+  </div>
+
+  <div class="h-px bg-slate-200 mb-6"></div>
+
+  <!-- Calendars Header -->
+  <div class="flex items-center justify-between mb-4 px-2">
+    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-widest">
+      {i18n.locale === 'kr' ? '내 캘린더' : 'My Calendars'}
+    </h2>
+    <div class="flex items-center gap-2">
+      <button
+        class="text-slate-400 hover:text-justodo-green-600 transition-colors"
+        onclick={() => (isCreating = !isCreating)}
+        title="Add Calendar"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-plus"
+          ><path d="M5 12h14" /><path d="M12 5v14" /></svg
+        >
+      </button>
+    </div>
   </div>
 
   <!-- Create Form -->
@@ -191,13 +276,13 @@
 
   <!-- List -->
   {#if query.isLoading}
-    <div class="space-y-2">
+    <div class="space-y-2 px-2">
       {#each { length: 3 } as _}
         <Skeleton class="h-6 w-full" />
       {/each}
     </div>
   {:else if query.data}
-    <div class="space-y-1">
+    <div class="space-y-1 overflow-y-auto flex-1 px-2 custom-scrollbar">
       {#each query.data as cal (cal.id)}
         <div
           class="group flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-white/60 transition-colors"
@@ -271,4 +356,94 @@
   {/if}
 
   {@render children?.()}
+
+  <!-- Footer Actions -->
+  {#if !children}
+    <div class="mt-auto pt-6 border-t border-slate-200/60 flex flex-col gap-1">
+      <div class="px-2 mb-2">
+        <span
+          class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"
+          >{i18n.t('common.settings')}</span
+        >
+      </div>
+
+      {#if activeTab === 'calendar'}
+        <button
+          onclick={onImport}
+          class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-import"
+            ><path d="M12 3v12" /><path d="m8 11 4 4 4-4" /><path
+              d="M8 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5h-3"
+            /></svg
+          >
+          <span class="text-sm font-medium">{i18n.t('nav.import')}</span>
+        </button>
+
+        <button
+          onclick={onExport}
+          class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-download"
+            ><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
+              points="7 10 12 15 17 10"
+            /><line x1="12" x2="12" y1="15" y2="3" /></svg
+          >
+          <span class="text-sm font-medium">{i18n.t('nav.export')}</span>
+        </button>
+      {/if}
+
+      <button
+        onclick={onLocaleChange}
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+      >
+        <span class="text-base">{i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}</span>
+        <span class="text-sm font-medium"
+          >{i18n.t(`locale.${i18n.locale}`)}</span
+        >
+      </button>
+
+      <button
+        onclick={onSignOut}
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-md text-red-500 hover:text-red-600 hover:bg-red-50 transition-colors mt-2"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-log-out"
+          ><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" /><polyline
+            points="16 17 21 12 16 7"
+          /><line x1="21" x2="9" y1="12" y2="12" /></svg
+        >
+        <span class="text-sm font-medium">{i18n.t('nav.signOut')}</span>
+      </button>
+    </div>
+  {/if}
 </div>

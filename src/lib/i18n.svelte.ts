@@ -14,7 +14,8 @@ const translations = {
       confirm: 'Confirm',
       search: 'Search',
       searchPlaceholder: 'Search events...',
-      today: 'Today'
+      today: 'Today',
+      settings: 'Settings'
     },
     nav: {
       calendar: 'CALENDAR',
@@ -91,7 +92,8 @@ const translations = {
       confirm: '확인',
       search: '검색',
       searchPlaceholder: '일정 검색...',
-      today: '이번 달'
+      today: '이번 달',
+      settings: '설정'
     },
     nav: {
       calendar: '달력',

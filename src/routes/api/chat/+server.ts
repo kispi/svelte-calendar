@@ -7,7 +7,7 @@ import {
   type Content
 } from '@google/generative-ai'
 import { db } from '$lib/server/db'
-import { event as eventTable, note as noteTable } from '$lib/server/db/schema'
+import { event as eventTable, note as noteTable, calendar as calendarTable } from '$lib/server/db/schema'
 import { eq, and, gte, lte, asc, or, like } from 'drizzle-orm'
 import dayjs from 'dayjs'
 
@@ -34,7 +34,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         {
           name: 'get_events',
           description:
-            'Fetch events for the current user within a specific time range.',
+            'Fetch events. Returns a CSV string (id|title|start|end|desc).',
           parameters: {
             type: SchemaType.OBJECT,
             properties: {
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         {
           name: 'get_notes',
           description:
-            'Search for user notes. Can filter by a search term in title or content.',
+            'Search notes. Returns a CSV string (id|title|date|content).',
           parameters: {
             type: SchemaType.OBJECT,
             properties: {
@@ -111,8 +111,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       Today is ${dayjs(clientDate || undefined).format('YYYY-MM-DD dddd')}.
       
       # Capabilities
-      - Use 'get_events' to search for past or future events (calendar).
-      - Use 'get_notes' to search within the user's personal notes.
+      - Use 'get_events' to search for events. Returns CSV format (id|title|startTime|endTime|description).
+      - Use 'get_notes' to search notes. Returns CSV format (id|title|updatedAt|content).
       - Use 'move_to_date' when the user clearly wants to navigate the calendar view to a specific time.
 
       # Data Interpretation
@@ -137,8 +137,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
   // Handle function calls in a loop (for complex multi-step queries)
   let callCount = 0
-  // Fix: Access functionCall on parts correctly. Response structure depends on SDK version,
-  // assuming response.functionCalls() or response.candidates[0].content.parts
   while (
     response.candidates?.[0]?.content?.parts?.some((p) => p.functionCall) &&
     callCount < 5
@@ -156,11 +154,23 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             endDate: string
           }
           const events = await db
-            .select()
+            .select({
+              id: eventTable.id,
+              title: eventTable.title,
+              description: eventTable.description,
+              location: eventTable.location,
+              startTime: eventTable.startTime,
+              endTime: eventTable.endTime,
+              type: eventTable.type
+            })
             .from(eventTable)
+            .innerJoin(
+              calendarTable,
+              eq(eventTable.calendarId, calendarTable.id)
+            )
             .where(
               and(
-                eq(eventTable.userId, userId),
+                eq(calendarTable.userId, userId),
                 gte(
                   eventTable.startTime,
                   dayjs(startDate).startOf('day').toDate()

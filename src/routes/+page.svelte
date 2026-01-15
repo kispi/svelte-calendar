@@ -313,47 +313,6 @@
   }
 </script>
 
-{#snippet navActions()}
-  {#if activeTab === 'calendar'}
-    <input
-      type="file"
-      accept=".ics"
-      bind:this={fileInput}
-      onchange={onFileSelected}
-      class="hidden"
-    />
-    <button
-      onclick={handleImport}
-      class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
-    >
-      {i18n.t('nav.import')}
-    </button>
-
-    <span class="w-1 h-1 rounded-full bg-slate-200"></span>
-
-    <button
-      onclick={handleExport}
-      class="text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest"
-    >
-      {i18n.t('nav.export')}
-    </button>
-
-    <span class="w-1 h-1 rounded-full bg-slate-200"></span>
-  {/if}
-
-  <button
-    onclick={handleOpenLocale}
-    class="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 hover:text-justodo-green-600 transition-colors uppercase tracking-widest group"
-  >
-    <span
-      class="text-xs filter saturate-0 group-hover:saturate-100 transition-all"
-    >
-      {i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}
-    </span>
-    {i18n.t(`locale.${i18n.locale}`)}
-  </button>
-{/snippet}
-
 <svelte:head>
   <title>Justodo | {i18n.t('nav.calendar')} & {i18n.t('nav.notes')}</title>
   <meta
@@ -385,11 +344,20 @@
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
       <!-- Sidebar -->
-      {#if activeTab === 'calendar'}
-        <div class="hidden md:block h-full">
-          <Sidebar {visibleCalendarIds} onToggle={toggleCalendar} />
-        </div>
-      {/if}
+      <div class="hidden md:block h-full">
+        <Sidebar
+          {visibleCalendarIds}
+          onToggle={toggleCalendar}
+          bind:activeTab
+          onSignOut={confirmSignOut}
+          onImport={handleImport}
+          onExport={handleExport}
+          onLocaleChange={() => {
+            const next = i18n.locale === 'kr' ? 'en' : 'kr'
+            i18n.setLocale(next)
+          }}
+        />
+      </div>
 
       <div class="flex-1 flex flex-col h-full overflow-hidden bg-white">
         <div
@@ -397,40 +365,35 @@
         >
           <div class="flex items-center gap-3">
             <!-- Mobile Menu Toggle -->
-            {#if activeTab === 'calendar'}
-              <button
-                class="md:hidden text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors"
-                onclick={() => (showMobileSidebar = true)}
-                aria-label="Open Menu"
+            <button
+              class="md:hidden text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors"
+              onclick={() => (showMobileSidebar = true)}
+              aria-label="Open Menu"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            {/if}
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
             <h1
               class="text-3xl font-black tracking-tight flex items-center gap-3"
             >
               <span class="text-justodo-green-600">Justodo</span>
             </h1>
           </div>
-          <div class="hidden sm:flex items-center gap-3">
-            {@render navActions()}
-          </div>
         </div>
 
         <!-- Mobile Sidebar Drawer -->
-        {#if showMobileSidebar && activeTab === 'calendar'}
+        {#if showMobileSidebar}
           <div class="fixed inset-0 z-[150] md:hidden">
             <!-- Backdrop -->
             <div
@@ -474,268 +437,62 @@
                 <Sidebar
                   {visibleCalendarIds}
                   onToggle={toggleCalendar}
+                  bind:activeTab
                   class="w-full h-full border-none bg-white p-4"
-                >
-                  {#snippet children()}
-                    <!-- Mobile Footer Actions -->
-                    <div
-                      class="mt-auto pt-6 border-t border-slate-100 space-y-4"
-                    >
-                      <div class="flex flex-col gap-2">
-                        <p
-                          class="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2"
-                        >
-                          {i18n.t('common.settings')}
-                        </p>
-
-                        <!-- Import -->
-                        <button
-                          onclick={() => {
-                            handleImport()
-                            showMobileSidebar = false // Optional: close on action?
-                          }}
-                          class="w-full text-left px-2 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded flex items-center gap-3"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="lucide lucide-upload"
-                            ><path
-                              d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                            /><polyline points="17 8 12 3 7 8" /><line
-                              x1="12"
-                              x2="12"
-                              y1="3"
-                              y2="15"
-                            /></svg
-                          >
-                          {i18n.t('nav.import')}
-                        </button>
-
-                        <!-- Export -->
-                        <button
-                          onclick={() => {
-                            handleExport()
-                            showMobileSidebar = false
-                          }}
-                          class="w-full text-left px-2 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded flex items-center gap-3"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            class="lucide lucide-download"
-                            ><path
-                              d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
-                            /><polyline points="7 10 12 15 17 10" /><line
-                              x1="12"
-                              x2="12"
-                              y1="15"
-                              y2="3"
-                            /></svg
-                          >
-                          {i18n.t('nav.export')}
-                        </button>
-
-                        <!-- Locale -->
-                        <button
-                          onclick={() => {
-                            handleOpenLocale()
-                            showMobileSidebar = false
-                          }}
-                          class="w-full text-left px-2 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 rounded flex items-center gap-3"
-                        >
-                          <span class="text-base"
-                            >{i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}</span
-                          >
-                          {i18n.t(`locale.${i18n.locale}`)}
-                        </button>
-                      </div>
-
-                      <!-- User Info / Sign Out -->
-                      <button
-                        onclick={confirmSignOut}
-                        class="w-full text-left px-2 py-2 text-sm font-medium text-red-500 hover:bg-red-50 rounded flex items-center gap-3 mt-2"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          class="lucide lucide-log-out"
-                          ><path
-                            d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"
-                          /><polyline points="16 17 21 12 16 7" /><line
-                            x1="21"
-                            x2="9"
-                            y1="12"
-                            y2="12"
-                          /></svg
-                        >
-                        {i18n.t('nav.signOut')}
-                      </button>
-                    </div>
-                  {/snippet}
-                </Sidebar>
+                  onSignOut={confirmSignOut}
+                  onImport={handleImport}
+                  onExport={handleExport}
+                  onLocaleChange={() => {
+                    const next = i18n.locale === 'kr' ? 'en' : 'kr'
+                    i18n.setLocale(next)
+                  }}
+                  onTabChange={() => (showMobileSidebar = false)}
+                />
               </div>
             </div>
           </div>
         {/if}
 
-        <div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-hidden relative">
-          {#if query.isError}
-            <div
-              class="h-full flex flex-col items-center justify-center bg-red-50 rounded border border-red-100 shadow-sm"
-            >
-              <p class="text-red-500 font-bold mb-2">Failed to load events</p>
-              <button
-                onclick={() => query.refetch()}
-                class="text-red-600 underline">Try again</button
+        <div
+          class="flex-1 overflow-hidden relative flex flex-col items-center bg-slate-50/30"
+        >
+          <div class="w-full h-full flex flex-col p-4 sm:p-6 lg:p-8 relative">
+            {#if query.isError}
+              <div
+                class="h-full flex flex-col items-center justify-center bg-red-50 rounded border border-red-100 shadow-sm"
               >
-            </div>
-          {:else if !query.data && query.isLoading}
-            <CalendarSkeleton />
-          {:else if activeTab === 'calendar'}
-            <CalendarGrid
-              bind:currentDate
-              events={query.data || []}
-              calendars={calendarsQuery.data || []}
-              {visibleCalendarIds}
-              onDateClick={handleDateClick}
-              onEventClick={handleEventClick}
-            />
-
-            <!-- Loading Overlay -->
-            <div
-              class="absolute inset-0 p-4 sm:p-6 lg:p-8 bg-white/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
-              class:opacity-0={!query.isFetching}
-              class:opacity-100={query.isFetching}
-              class:pointer-events-auto={query.isFetching}
-            >
+                <p class="text-red-500 font-bold mb-2">Failed to load events</p>
+                <button
+                  onclick={() => query.refetch()}
+                  class="text-red-600 underline">Try again</button
+                >
+              </div>
+            {:else if !query.data && query.isLoading}
               <CalendarSkeleton />
-            </div>
-          {:else}
-            <div class="h-full overflow-y-auto">
-              <NotesView />
-            </div>
-          {/if}
-        </div>
+            {:else if activeTab === 'calendar'}
+              <CalendarGrid
+                bind:currentDate
+                events={query.data || []}
+                calendars={calendarsQuery.data || []}
+                {visibleCalendarIds}
+                onDateClick={handleDateClick}
+                onEventClick={handleEventClick}
+              />
 
-        <!-- Bottom Dock -->
-        <div class="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100]">
-          <div
-            class="bg-white/80 backdrop-blur-xl p-1.5 rounded-2xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.12)] flex items-center gap-1"
-          >
-            <button
-              onclick={() => (activeTab = 'calendar')}
-              class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
-                            {activeTab === 'calendar'
-                ? 'bg-slate-900 text-white shadow-lg scale-105'
-                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-calendar-days"
-                ><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line
-                  x1="16"
-                  x2="16"
-                  y1="2"
-                  y2="6"
-                /><line x1="8" x2="8" y1="2" y2="6" /><line
-                  x1="3"
-                  x2="21"
-                  y1="10"
-                  y2="10"
-                /><path d="M8 14h.01" /><path d="M12 14h.01" /><path
-                  d="M16 14h.01"
-                /><path d="M8 18h.01" /><path d="M12 18h.01" /><path
-                  d="M16 18h.01"
-                /></svg
+              <!-- Loading Overlay -->
+              <div
+                class="absolute inset-0 p-4 sm:p-6 lg:p-8 bg-white/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
+                class:opacity-0={!query.isFetching}
+                class:opacity-100={query.isFetching}
+                class:pointer-events-auto={query.isFetching}
               >
-              <span class="text-[10px] font-black uppercase tracking-tighter"
-                >{i18n.t('nav.calendar')}</span
-              >
-            </button>
-
-            <button
-              onclick={() => (activeTab = 'notes')}
-              class="flex flex-col items-center gap-1 px-5 py-2 rounded-xl transition-all duration-300
-                            {activeTab === 'notes'
-                ? 'bg-slate-900 text-white shadow-lg scale-105'
-                : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'}"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-sticky-note"
-                ><path
-                  d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8Z"
-                /><path d="M15 3v5h6" /><path d="M7 11h10" /><path
-                  d="M7 15h10"
-                /></svg
-              >
-              <span class="text-[10px] font-black uppercase tracking-tighter"
-                >{i18n.t('nav.notes')}</span
-              >
-            </button>
-
-            <div class="h-6 w-px bg-slate-200 mx-1"></div>
-
-            <button
-              onclick={confirmSignOut}
-              class="px-3 py-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
-              title={i18n.t('nav.signOut')}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-log-out"
-              >
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-            </button>
+                <CalendarSkeleton />
+              </div>
+            {:else}
+              <div class="h-full overflow-y-auto w-full">
+                <NotesView />
+              </div>
+            {/if}
           </div>
         </div>
       </div>

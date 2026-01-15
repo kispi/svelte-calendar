@@ -25,6 +25,11 @@
     currentDate?: Dayjs
   }
 
+  interface ExtendedEvent extends CalendarEvent {
+    isRecurring?: boolean
+    originalId?: string
+  }
+
   let {
     events = [],
     calendars = [],
@@ -52,7 +57,7 @@
 
   // Expand Recurring Events
   let processedEvents = $derived.by(() => {
-    let allEvents: any[] = []
+    let allEvents: ExtendedEvent[] = []
     // Safety check for date validity
     const viewStart = startDate.toDate()
     const viewEnd = endDate.toDate()
@@ -82,11 +87,12 @@
 
         // Parse exdates
         let exdates: string[] = []
-          if (event.exdates) {
+        if (event.exdates) {
+          try {
             exdates = JSON.parse(event.exdates)
+          } catch (e) {
+            // ignore
           }
-        } catch (e) {
-          logger.warn('Failed to parse exdates', { error: e })
         }
 
         for (const date of instances) {
@@ -104,11 +110,10 @@
             ...event,
             id: `${event.id}_${date.getTime()}`, // Temporary unique ID
             originalId: event.id, // Keep reference to master ID
-            startTime: instanceStart.toISOString() as any, // Cast for Drizzle type match
-            endTime: instanceEnd.toISOString() as any,
+            startTime: instanceStart.toDate(), // Use Date object
+            endTime: instanceEnd.toDate(), // Use Date object
             recurrenceRule: null, // It's an instance, don't re-expand
             isRecurring: true
-          })
           })
         }
       } catch (err) {
@@ -490,24 +495,26 @@
         </div>
 
         <div class="space-y-1 overflow-y-auto max-h-[80px] custom-scrollbar">
-          {#each getEventsForDay(day) as event}
+          {#each getEventsForDay(day) as calEvent}
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
-            {@const color = getEventColor(event.calendarId)}
+            {@const color = getEventColor(calEvent.calendarId)}
             <button
               type="button"
               class="w-full text-left px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
-                             {event.type === 'diary'
+                             {calEvent.type === 'diary'
                 ? 'bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100'
                 : 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200'}"
-              style={event.type !== 'diary' && color
+              style={calEvent.type !== 'diary' && color
                 ? `background-color: ${color}20; color: ${color}; border-color: ${color}40;`
                 : ''}
               onclick={(e) => {
                 e.stopPropagation()
                 // Handle recurring instances: open master event
-                if (event.isRecurring && event.originalId) {
-                  const master = events.find((e) => e.id === event.originalId)
+                if (calEvent.isRecurring && calEvent.originalId) {
+                  const master = events.find(
+                    (e) => e.id === calEvent.originalId
+                  )
                   if (master) {
                     toast.info(
                       i18n.locale === 'kr'
@@ -518,11 +525,11 @@
                     return
                   }
                 }
-                onEventClick(event)
+                onEventClick(calEvent)
               }}
             >
               <div class="flex items-center gap-1">
-                {#if event.recurrenceRule || event.isRecurring}
+                {#if calEvent.recurrenceRule || calEvent.isRecurring}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="10"
@@ -541,12 +548,12 @@
                     /></svg
                   >
                 {/if}
-                {#if event.type === 'schedule' && event.startTime}
+                {#if calEvent.type === 'schedule' && calEvent.startTime}
                   <span class="hidden sm:inline opacity-60 text-[10px]"
-                    >{dayjs(event.startTime).format('HH:mm')}</span
+                    >{dayjs(calEvent.startTime).format('HH:mm')}</span
                   >
                 {/if}
-                <span class="truncate">{event.title}</span>
+                <span class="truncate">{calEvent.title}</span>
               </div>
             </button>
           {/each}

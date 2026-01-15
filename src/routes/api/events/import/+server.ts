@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db'
 import { event, calendar } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { error, json } from '@sveltejs/kit'
 import { eq, asc } from 'drizzle-orm'
 import ical from 'node-ical'
@@ -152,7 +153,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
       message: `Found ${parsedEvents.length} events`
     })
   } catch (e) {
-    console.error('Import Error:', e)
+    logger.error('Import Error:', { error: e })
     const message = e instanceof Error ? e.message : 'Unknown error'
     throw error(500, 'Internal Server Error: ' + message)
   }

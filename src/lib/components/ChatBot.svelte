@@ -2,6 +2,7 @@
   import { slide, fade } from 'svelte/transition'
   import dayjs from 'dayjs'
   import { i18n } from '$lib/i18n.svelte.js'
+  import { logger } from '$lib/logger'
 
   interface ChatProps {
     onMoveToDate: (date: string) => void
@@ -67,7 +68,7 @@
         onMoveToDate(data.moveToDate)
       }
     } catch (err) {
-      console.error('Chat error:', err)
+      logger.error('Chat error:', { error: err })
       messages = [
         ...messages,
         {

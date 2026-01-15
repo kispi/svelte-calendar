@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db'
 import { event, calendarMember } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { error, json } from '@sveltejs/kit'
 import { eq, and, inArray, or } from 'drizzle-orm'
 
@@ -95,7 +96,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
     if (!updated) throw error(404, 'Event not found or permission denied')
     return json(updated)
   } catch (e) {
-    console.error('Events Update API Error:', e)
+    logger.error('Events Update API Error:', { error: e })
     const status =
       e instanceof Error && 'status' in (e as any) ? (e as any).status : 500
     const message = e instanceof Error ? e.message : 'Internal Server Error'
@@ -134,7 +135,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
     return json({ success: true })
   } catch (e) {
-    console.error('Events Delete API Error:', e)
+    logger.error('Events Delete API Error:', { error: e })
     const status =
       e instanceof Error && 'status' in (e as any) ? (e as any).status : 500
     const message = e instanceof Error ? e.message : 'Internal Server Error'

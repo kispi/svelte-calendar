@@ -1,4 +1,5 @@
 import { json } from '@sveltejs/kit'
+import { logger } from '$lib/logger'
 import { KAKAO_CLIENT_SECRET } from '$env/static/private'
 import type { RequestHandler } from './$types'
 
@@ -26,7 +27,7 @@ export const GET: RequestHandler = async ({ url }) => {
     const data = await response.json()
     return json(data)
   } catch (error) {
-    console.error('Kakao API Error:', error)
+    logger.error('Kakao API Error:', { error })
     return json({ documents: [] }, { status: 500 })
   }
 }

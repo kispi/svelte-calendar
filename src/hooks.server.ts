@@ -3,6 +3,7 @@ import Kakao from '@auth/sveltekit/providers/kakao'
 import { DrizzleAdapter } from '@auth/drizzle-adapter'
 import { db } from '$lib/server/db'
 import { env } from '$env/dynamic/private'
+import { logger } from '$lib/logger'
 
 import {
   user,
@@ -56,9 +57,9 @@ const { handle: authHandle } = SvelteKitAuth({
           userId: user.id,
           role: 'owner'
         })
-        console.log(`Created default calendar for user ${user.id}`)
+        logger.info(`Created default calendar for user ${user.id}`)
       } catch (e) {
-        console.error('Failed to create default calendar', e)
+        logger.error('Failed to create default calendar', { error: e })
       }
     }
   },

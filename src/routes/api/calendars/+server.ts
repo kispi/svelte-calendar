@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db'
 import { calendar, calendarMember } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
 import { eq, and, or } from 'drizzle-orm'
 import type { RequestHandler } from './$types'
@@ -27,7 +28,7 @@ export const GET: RequestHandler = async ({ locals }) => {
 
     return json(calendars)
   } catch (e) {
-    console.error('Calendars List API Error:', e)
+    logger.error('Calendars List API Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }
@@ -70,7 +71,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     return json(newCalendar)
   } catch (e) {
-    console.error('Calendars Create API Error:', e)
+    logger.error('Calendars Create API Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }

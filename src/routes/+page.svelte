@@ -20,6 +20,7 @@
   import { signIn, signOut } from '@auth/sveltekit/client'
   import { untrack } from 'svelte'
   import type { PageData } from './$types'
+  import { logger } from '$lib/logger'
 
   let { data }: { data: PageData } = $props()
 
@@ -49,7 +50,7 @@
           untrack(() => (visibleCalendarIds = parsed))
         }
       } catch (e) {
-        console.error('Failed to parse visible calendars', e)
+        logger.error('Failed to parse visible calendars', { error: e })
       }
     }
     isReady = true
@@ -191,11 +192,11 @@
         popup.location.href = response.url
       } else {
         popup.close()
-        console.error('Failed to get auth URL', response)
+        logger.error('Failed to get auth URL', { response })
       }
     } catch (e) {
       popup.close()
-      console.error(e)
+      logger.error('Login Popup Error', { error: e })
     }
 
     // 4. Poll for closure
@@ -288,7 +289,7 @@
         toast.error(i18n.t('toast.importError'), { position: 'top' })
       }
     } catch (err) {
-      console.error(err)
+      logger.error('Import process failed', { error: err })
       toast.error(i18n.t('toast.importError'), { position: 'top' })
     } finally {
       target.value = ''

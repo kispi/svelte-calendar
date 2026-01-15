@@ -11,6 +11,7 @@
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
   import { createQuery } from '@tanstack/svelte-query'
+  import { logger } from '$lib/logger'
 
   interface ModalProps {
     event?: any
@@ -66,7 +67,7 @@
         showDropdown = true
       }
     } catch (err) {
-      console.error('Search failed', err)
+      logger.error('Search failed', { error: err })
     }
   }
 
@@ -195,7 +196,7 @@
           alert(err.message || 'Delete failed')
         }
       } catch (err) {
-        console.error('Delete failed', err)
+        logger.error('Delete failed', { error: err })
         alert('Delete failed')
       }
     }
@@ -302,7 +303,7 @@
             }
           })
           .catch((err) => {
-            console.error('Update failed', err)
+            logger.error('Update failed', { error: err })
             alert('Update failed')
           })
         return
@@ -345,7 +346,7 @@
             }
           })
           .catch((err) => {
-            console.error('Creation failed', err)
+            logger.error('Creation failed', { error: err })
             alert('Creation failed')
           })
         return
@@ -613,7 +614,7 @@
         <Dropdown
           items={calendarsQuery.data || []}
           show={showCalendarDropdown}
-          onSelect={(cal) => {
+          onSelect={(cal: any) => {
             calendarId = cal.id
             showCalendarDropdown = false
           }}

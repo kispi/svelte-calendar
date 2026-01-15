@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db'
 import { note } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { error, json } from '@sveltejs/kit'
 import { eq, and } from 'drizzle-orm'
 
@@ -20,7 +21,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 
     return json({ success: true })
   } catch (e) {
-    console.error('Notes Delete API Error:', e)
+    logger.error('Notes Delete API Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }
@@ -48,7 +49,7 @@ export const PUT: RequestHandler = async ({ params, request, locals }) => {
     if (!updated) throw error(404, 'Note not found')
     return json(updated)
   } catch (e) {
-    console.error('Notes Update API Error:', e)
+    logger.error('Notes Update API Error:', { error: e })
     const status =
       e instanceof Error && 'status' in e ? /** @type {any} */ e.status : 500
     const message = e instanceof Error ? e.message : 'Internal Server Error'

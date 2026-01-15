@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db'
 import { note } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
 import { eq, desc } from 'drizzle-orm'
 
@@ -17,7 +18,7 @@ export const GET: RequestHandler = async ({ locals }) => {
       .orderBy(desc(note.updatedAt))
     return json(allNotes)
   } catch (e) {
-    console.error('Notes API Error:', e)
+    logger.error('Notes API Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }
@@ -40,7 +41,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     return json(inserted)
   } catch (e) {
-    console.error('Notes API Error:', e)
+    logger.error('Notes API Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }

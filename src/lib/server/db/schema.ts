@@ -165,3 +165,20 @@ export type NewEvent = InferInsertModel<typeof event>
 
 export type Note = InferSelectModel<typeof note>
 export type NewNote = InferInsertModel<typeof note>
+
+export const chatLog = mysqlTable('chat_logs', {
+  ...baseColumns,
+  userId: varchar('user_id', { length: 255 })
+    .notNull()
+    .references(() => user.id, { onDelete: 'cascade' }),
+  request: text('request'), // User's message
+  response: text('response'), // AI's full response
+  functionCalls: text('function_calls'), // JSON string of function calls made
+  model: varchar('model', { length: 50 }),
+  startTime: datetime('start_time'),
+  duration: int('duration'), // in milliseconds
+  isSuccess: tinyint('is_success').default(1),
+})
+
+export type ChatLog = InferSelectModel<typeof chatLog>
+export type NewChatLog = InferInsertModel<typeof chatLog>

@@ -1,0 +1,1 @@
+ALTER TABLE `chat_logs` ADD `is_success` tinyint DEFAULT 1;

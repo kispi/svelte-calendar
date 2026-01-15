@@ -5,6 +5,7 @@
   import { modal } from '$lib/modal.svelte.js'
   import ModalConfirm from './modals/ModalConfirm.svelte'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
+  import { logger } from '$lib/logger'
 
   import Skeleton from '$lib/components/ui/Skeleton.svelte'
 
@@ -89,7 +90,7 @@
         queryClient.invalidateQueries({ queryKey: ['calendars'] })
       }
     } catch (err) {
-      console.error('Failed to create calendar', err)
+      logger.error('Failed to create calendar', { error: err })
     }
   }
 
@@ -109,7 +110,7 @@
           queryClient.invalidateQueries({ queryKey: ['events'] })
         }
       } catch (err) {
-        console.error('Failed to delete', err)
+        logger.error('Failed to delete', { error: err })
       }
     }
   }

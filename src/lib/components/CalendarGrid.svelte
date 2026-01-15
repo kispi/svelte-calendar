@@ -11,6 +11,7 @@
   import Dropdown from './Dropdown.svelte'
   import { toast } from '$lib/toast.svelte.js'
   import { RRule } from '$lib/utils/rrule'
+  import { logger } from '$lib/logger'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
@@ -81,12 +82,11 @@
 
         // Parse exdates
         let exdates: string[] = []
-        try {
           if (event.exdates) {
             exdates = JSON.parse(event.exdates)
           }
         } catch (e) {
-          console.warn('Failed to parse exdates', e)
+          logger.warn('Failed to parse exdates', { error: e })
         }
 
         for (const date of instances) {
@@ -109,9 +109,10 @@
             recurrenceRule: null, // It's an instance, don't re-expand
             isRecurring: true
           })
+          })
         }
       } catch (err) {
-        console.warn('Failed to expand recurrence', err, event)
+        logger.warn('Failed to expand recurrence', { error: err, event })
         allEvents.push(event) // Fallback to showing master only
       }
     }
@@ -190,7 +191,7 @@
         lastSearchedQuery = trimmedQuery
       }
     } catch (e) {
-      console.error('Search failed:', e)
+      logger.error('Search failed:', { error: e })
     } finally {
       isSearching = false
     }

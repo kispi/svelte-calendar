@@ -1,5 +1,6 @@
 ﻿import { db } from '$lib/server/db'
 import { event, calendar, calendarMember } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
 import { eq, asc, and, or, like, inArray, gte, lte, isNotNull } from 'drizzle-orm'
 
@@ -89,7 +90,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 
     return json(filteredEvents)
   } catch (e) {
-    console.error('API Error:', e)
+    logger.error('API Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }
@@ -182,7 +183,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
     return json(newEvent)
   } catch (e) {
-    console.error('Events Create API Error:', e)
+    logger.error('Events Create API Error:', { error: e })
     const status =
       e instanceof Error && 'status' in (e as any) ? (e as any).status : 500
     const message = e instanceof Error ? e.message : 'Internal Server Error'

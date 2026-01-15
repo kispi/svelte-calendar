@@ -1,6 +1,7 @@
 import type { RequestHandler } from './$types'
 import { db } from '$lib/server/db'
 import { event, calendarMember } from '$lib/server/db/schema'
+import { logger } from '$lib/logger'
 import { error } from '@sveltejs/kit'
 import { eq, inArray } from 'drizzle-orm'
 import { createEvents, type EventAttributes } from 'ics'
@@ -134,10 +135,10 @@ export const GET: RequestHandler = async ({ locals }) => {
     })
 
     if (icsError) {
-      console.error('ICS Generation Error Object:', icsError)
-      console.error(
+      logger.error('ICS Generation Error Object:', { error: icsError })
+      logger.error(
         'ICS Input Data Example:',
-        JSON.stringify(icsEvents.slice(0, 3), null, 2)
+        { data: JSON.stringify(icsEvents.slice(0, 3), null, 2) }
       )
       throw error(
         500,
@@ -153,7 +154,7 @@ export const GET: RequestHandler = async ({ locals }) => {
       }
     })
   } catch (e) {
-    console.error('Export Error:', e)
+    logger.error('Export Error:', { error: e })
     throw error(500, 'Internal Server Error')
   }
 }

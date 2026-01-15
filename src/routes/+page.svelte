@@ -213,6 +213,7 @@
 
   async function handleExport() {
     window.location.href = '/api/events/export'
+    showMobileSidebar = false
     toast.success(
       i18n.locale === 'kr' ? '일정을 내보냅니다' : 'Exporting events...',
       {
@@ -247,6 +248,7 @@
         const result = await res.json()
 
         if (result.preview && result.events?.length > 0) {
+          showMobileSidebar = false
           // 2. Show Selection Modal
           const modalResult = await modal.show(
             ModalImportCalendar,
@@ -537,6 +539,13 @@
   {/if}
 
   {#if data.session}
+    <input
+      type="file"
+      class="hidden"
+      accept=".ics"
+      bind:this={fileInput}
+      onchange={onFileSelected}
+    />
     <ChatBot onMoveToDate={handleMoveToDate} />
   {/if}
 </main>

@@ -16,14 +16,34 @@
   let title = $state('')
   let content = $state('')
   let lastSyncedNoteId = $state<string | null>(null)
+  let lastSyncedUpdatedAt = $state<number>(0)
+
+  function getTime(date: any): number {
+    return date ? new Date(date).getTime() : 0
+  }
 
   $effect(() => {
-    // Only synchronize local state when the selected note actually changes (ID change).
-    // This completely prevents background sync/refetches from resetting the cursor.
-    if (note && note.id !== lastSyncedNoteId) {
-      title = note.title || ''
-      content = note.content || ''
-      lastSyncedNoteId = note.id
+    if (note) {
+      const noteTime = getTime(note.updatedAt)
+
+      // 1. If it's a completely new note (ID change), always load it.
+      if (note.id !== lastSyncedNoteId) {
+        title = note.title || ''
+        content = note.content || ''
+        lastSyncedNoteId = note.id
+        lastSyncedUpdatedAt = noteTime
+      }
+      // 2. If it's the same note, but the incoming data is NEWER than what we last synced,
+      //    update our local state. This handles background refetches and multi-tab edits.
+      //    We ignore updates that are older or equal to avoid overwriting optimistic updates or unsaved work.
+      else if (noteTime > lastSyncedUpdatedAt) {
+        // Only update if content actually differs to avoid cursor jumps if incidental
+        if (note.content !== content || note.title !== title) {
+          title = note.title || ''
+          content = note.content || ''
+        }
+        lastSyncedUpdatedAt = noteTime
+      }
     }
   })
 

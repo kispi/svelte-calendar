@@ -307,11 +307,11 @@
 >
   <!-- Header -->
   <div
-    class="p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between bg-gradient-to-r from-justodo-green-50 to-white border-b border-justodo-green-100 gap-4"
+    class="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-justodo-green-50 to-white border-b border-justodo-green-100 gap-4"
   >
     <div class="flex items-center gap-2">
       <select
-        class="bg-transparent text-xl sm:text-2xl font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
+        class="bg-transparent text-xl md:text-2xl font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
         value={currentDate.month()}
         onchange={handleMonthChange}
       >
@@ -320,7 +320,7 @@
         {/each}
       </select>
       <select
-        class="bg-transparent text-xl sm:text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
+        class="bg-transparent text-xl md:text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
         value={currentDate.year()}
         onchange={handleYearChange}
       >
@@ -549,7 +549,7 @@
                   >
                 {/if}
                 {#if calEvent.type === 'schedule' && calEvent.startTime}
-                  <span class="hidden sm:inline opacity-60 text-[10px]"
+                  <span class="hidden md:inline opacity-60 text-[10px]"
                     >{dayjs(calEvent.startTime).format('HH:mm')}</span
                   >
                 {/if}

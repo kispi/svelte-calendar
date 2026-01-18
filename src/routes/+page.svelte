@@ -27,8 +27,12 @@
   let activeTab = $state('calendar') // 'calendar' | 'notes'
   let currentDate = $state(dayjs())
   let isReady = $state(false)
+  let isSidebarOpen = $state(false)
   let visibleCalendarIds = $state<string[]>([])
-  let showMobileSidebar = $state(false)
+
+  $effect(() => {
+    isSidebarOpen = window.innerWidth >= 1024
+  })
 
   function handleMoveToDate(dateStr: string) {
     activeTab = 'calendar'
@@ -213,7 +217,7 @@
 
   async function handleExport() {
     window.location.href = '/api/events/export'
-    showMobileSidebar = false
+    if (window.innerWidth < 1024) isSidebarOpen = false
     toast.success(
       i18n.locale === 'kr' ? '일정을 내보냅니다' : 'Exporting events...',
       {
@@ -248,7 +252,7 @@
         const result = await res.json()
 
         if (result.preview && result.events?.length > 0) {
-          showMobileSidebar = false
+          if (window.innerWidth < 1024) isSidebarOpen = false
           // 2. Show Selection Modal
           const modalResult = await modal.show(
             ModalImportCalendar,
@@ -316,6 +320,12 @@
   }
 </script>
 
+<svelte:window
+  onfocus={() => {
+    queryClient.invalidateQueries({ queryKey: ['events'] })
+  }}
+/>
+
 <svelte:head>
   <title>Justodo | {i18n.t('nav.calendar')} & {i18n.t('nav.notes')}</title>
   <meta
@@ -347,30 +357,32 @@
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
       <!-- Sidebar -->
-      <div class="hidden md:block h-full">
-        <Sidebar
-          {visibleCalendarIds}
-          onToggle={toggleCalendar}
-          bind:activeTab
-          onSignOut={confirmSignOut}
-          onImport={handleImport}
-          onExport={handleExport}
-          onLocaleChange={() => {
-            const next = i18n.locale === 'kr' ? 'en' : 'kr'
-            i18n.setLocale(next)
-          }}
-        />
-      </div>
+      {#if isSidebarOpen}
+        <div class="hidden lg:block h-full">
+          <Sidebar
+            {visibleCalendarIds}
+            onToggle={toggleCalendar}
+            bind:activeTab
+            onSignOut={confirmSignOut}
+            onImport={handleImport}
+            onExport={handleExport}
+            onLocaleChange={() => {
+              const next = i18n.locale === 'kr' ? 'en' : 'kr'
+              i18n.setLocale(next)
+            }}
+          />
+        </div>
+      {/if}
 
       <div class="flex-1 flex flex-col h-full overflow-hidden bg-white">
         <div
-          class="px-4 sm:px-6 lg:px-8 py-6 pb-0 flex items-center justify-between"
+          class="px-4 md:px-6 lg:px-8 py-6 pb-0 flex items-center justify-between"
         >
           <div class="flex items-center gap-3">
-            <!-- Mobile Menu Toggle -->
+            <!-- Sidebar Toggle -->
             <button
-              class="md:hidden text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors"
-              onclick={() => (showMobileSidebar = true)}
+              class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors"
+              onclick={() => (isSidebarOpen = !isSidebarOpen)}
               aria-label="Open Menu"
             >
               <svg
@@ -396,13 +408,13 @@
         </div>
 
         <!-- Mobile Sidebar Drawer -->
-        {#if showMobileSidebar}
-          <div class="fixed inset-0 z-[150] md:hidden">
+        {#if isSidebarOpen}
+          <div class="fixed inset-0 z-[150] lg:hidden">
             <!-- Backdrop -->
             <div
               class="absolute inset-0 bg-black/20 backdrop-blur-sm"
               role="presentation"
-              onclick={() => (showMobileSidebar = false)}
+              onclick={() => (isSidebarOpen = false)}
             ></div>
             <!-- Drawer -->
             <div
@@ -416,7 +428,7 @@
                   >Justodo</span
                 >
                 <button
-                  onclick={() => (showMobileSidebar = false)}
+                  onclick={() => (isSidebarOpen = false)}
                   class="p-2 -mr-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
                   aria-label="Close menu"
                 >
@@ -449,7 +461,9 @@
                     const next = i18n.locale === 'kr' ? 'en' : 'kr'
                     i18n.setLocale(next)
                   }}
-                  onTabChange={() => (showMobileSidebar = false)}
+                  onTabChange={() => {
+                    if (window.innerWidth < 1024) isSidebarOpen = false
+                  }}
                 />
               </div>
             </div>
@@ -459,7 +473,7 @@
         <div
           class="flex-1 overflow-hidden relative flex flex-col items-center bg-slate-50/30"
         >
-          <div class="w-full h-full flex flex-col p-4 sm:p-6 lg:p-8 relative">
+          <div class="w-full h-full flex flex-col p-4 md:p-6 lg:p-8 relative">
             {#if query.isError}
               <div
                 class="h-full flex flex-col items-center justify-center bg-red-50 rounded border border-red-100 shadow-sm"
@@ -484,7 +498,7 @@
 
               <!-- Loading Overlay -->
               <div
-                class="absolute inset-0 p-4 sm:p-6 lg:p-8 bg-white/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
+                class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-white/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
                 class:opacity-0={!query.isFetching}
                 class:opacity-100={query.isFetching}
                 class:pointer-events-auto={query.isFetching}

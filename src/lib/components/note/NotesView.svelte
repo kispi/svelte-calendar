@@ -96,6 +96,12 @@
   }
 </script>
 
+<svelte:window
+  onfocus={() => {
+    queryClient.invalidateQueries({ queryKey: ['notes'] })
+  }}
+/>
+
 <div
   class="h-[700px] bg-white rounded border border-slate-100 shadow-xl overflow-hidden flex flex-col md:flex-row relative"
 >
@@ -114,13 +120,13 @@
       >
       <button
         onclick={handleCreateNote}
-        class="p-1.5 text-slate-400 hover:text-slate-800 hover:bg-white rounded shadow-sm transition-all active:scale-95"
+        class="p-1.5 text-slate-400 hover:text-slate-800 transition-colors active:scale-95"
         aria-label={i18n.t('notes.create')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

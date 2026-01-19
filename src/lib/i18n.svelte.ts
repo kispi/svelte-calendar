@@ -2,7 +2,7 @@ import { browser } from '$app/environment'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import 'dayjs/locale/en'
-import { settings } from './settings.svelte.js'
+import { settings } from '$lib/store/settings.svelte.js'
 
 type Locale = 'en' | 'kr'
 

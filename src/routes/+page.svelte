@@ -2,7 +2,7 @@
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
   import Sidebar from '$lib/components/Sidebar.svelte'
   import { i18n } from '$lib/i18n.svelte.js'
-  import { settings } from '$lib/settings.svelte.js'
+  import { settings } from '$lib/store/settings.svelte.js'
   import { toast } from '$lib/toast.svelte.js'
   import { modal } from '$lib/modal.svelte.js'
   import ModalEvent from '$lib/components/modals/ModalEvent.svelte'

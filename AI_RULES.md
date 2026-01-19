@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-**Justodo** is a calendar scheduler & note-taking web application built with SvelteKit.
+**Gravex.app** is a calendar scheduler & note-taking web application built with SvelteKit.
 
 - **Vibe**: Sophisticated Evergreen green (`#059669`), Modern, Professional, Rounded (4px), Soft shadows.
 - **Goals**: Intuitive UX, lightweight, visually premium.
@@ -14,13 +14,15 @@
   - 🚫 NO legacy stores (`writable`, `readable`).
   - ✅ USE `$state`, `$derived`, `$effect`, `$props`.
 - **Styling**: Tailwind CSS (v3).
-  - Custom colors defined in `tailwind.config.js` (`justodo-green`).
+  - Custom colors defined in `tailwind.config.js` (`gravex-green`).
 - **Database**: Drizzle ORM + MySQL.
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
   - **Date Types**: Use `Date` objects for `datetime`/`timestamp` columns in Drizzle (Drizzle handles conversion to/from MySQL format automatically).
 - **Date Handling**: `dayjs`.
 - **Components**: `flatpickr` for date inputs.
-- **Client State**: `@tanstack/svelte-query` for data fetching and caching.
+- **Client State**:
+  - `@tanstack/svelte-query` for data fetching and caching.
+  - **Settings Store**: Use `src/lib/settings.svelte.ts` for user preferences (tabs, locale, visibility). 🚫 DO NOT use `localStorage` directly in components.
 
 ## 3. Coding Conventions
 

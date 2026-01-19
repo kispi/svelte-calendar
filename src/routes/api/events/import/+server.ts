@@ -121,7 +121,7 @@ export const POST: RequestHandler = async ({ locals, request }) => {
           // @ts-ignore
           title: item.summary || 'Untitled Event',
           description:
-            (item.description || '').split('\n\n--- JUSTODO METADATA ---')[0] ||
+            (item.description || '').split('\n\n--- GRAVEX CALENDAR METADATA ---')[0] ||
             '',
           location: item.location || '',
           locationAddress: (() => {

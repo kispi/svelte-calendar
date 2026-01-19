@@ -130,8 +130,8 @@ export const GET: RequestHandler = async ({ locals }) => {
     }
 
     const { error: icsError, value } = createEvents(icsEvents, {
-      productId: '-//Justodo//Calendar//EN',
-      calName: 'Justodo Calendar'
+      productId: '-//Gravex//Calendar//EN',
+      calName: 'Gravex Calendar'
     })
 
     if (icsError) {

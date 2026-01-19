@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'justodo-green': {
+        'gravex-green': {
           DEFAULT: '#059669',
           50: '#ECFDF5',
           100: '#D1FAE5',

@@ -307,7 +307,7 @@
 >
   <!-- Header -->
   <div
-    class="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-justodo-green-50 to-white border-b border-justodo-green-100 gap-4"
+    class="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-gravex-green-50 to-white border-b border-gravex-green-100 gap-4"
   >
     <div class="flex items-center gap-2">
       <select
@@ -340,11 +340,11 @@
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
-          class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-justodo-green-200 focus:ring-4 focus:ring-justodo-green-500/10 rounded-xl px-10 py-2 text-sm transition-all outline-none"
+          class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-gravex-green-200 focus:ring-4 focus:ring-gravex-green-500/10 rounded-xl px-10 py-2 text-sm transition-all outline-none"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-justodo-green-500 transition-colors"
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-green-500 transition-colors"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -411,7 +411,7 @@
       <button
         onclick={goToday}
         aria-label={i18n.t('common.today')}
-        class="px-3 py-2 text-xs font-bold text-slate-600 hover:text-justodo-green-600 hover:bg-slate-100 rounded transition-colors uppercase tracking-wider"
+        class="px-3 py-2 text-xs font-bold text-slate-600 hover:text-gravex-green-600 hover:bg-slate-100 rounded transition-colors uppercase tracking-wider"
       >
         {i18n.t('common.today')}
       </button>
@@ -472,7 +472,7 @@
         class="
                     min-h-[80px] border-b border-r border-slate-50 p-2 transition-colors
                     {day.isSame(monthStart, 'month')
-          ? 'bg-white hover:bg-justodo-green-50/30'
+          ? 'bg-white hover:bg-gravex-green-50/30'
           : 'bg-slate-50/30 text-slate-300'}
                     cursor-pointer relative
                 "
@@ -486,7 +486,7 @@
             class="
                         text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
                         {day.isSame(dayjs(), 'day')
-              ? 'bg-justodo-green-500 text-white shadow-md shadow-justodo-green-200'
+              ? 'bg-gravex-green-500 text-white shadow-md shadow-gravex-green-200'
               : ''}
                     "
           >

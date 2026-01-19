@@ -377,7 +377,7 @@
         id="title"
         bind:value={title}
         required
-        class="w-full text-2xl font-black text-slate-900 border-b-2 border-transparent focus:border-justodo-green-500 outline-none transition-all placeholder:text-slate-200 pb-2"
+        class="w-full text-2xl font-black text-slate-900 border-b-2 border-transparent focus:border-gravex-green-500 outline-none transition-all placeholder:text-slate-200 pb-2"
         placeholder={i18n.t('event.title')}
         aria-label={i18n.t('event.title')}
       />
@@ -427,7 +427,7 @@
                   allowInput: true
                 }}
                 bind:value={startTime}
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
                 aria-label={i18n.t('event.startTime')}
               />
               <span class="text-slate-300">−</span>
@@ -442,13 +442,13 @@
                   allowInput: true
                 }}
                 bind:value={endTime}
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-justodo-green-400 focus:ring-1 focus:ring-justodo-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
                 aria-label={i18n.t('event.endTime')}
               />
             </div>
           {:else}
             <div
-              class="text-[11px] font-bold px-2 py-0.5 bg-justodo-green-50 text-justodo-green-600 rounded inline-block w-fit"
+              class="text-[11px] font-bold px-2 py-0.5 bg-gravex-green-50 text-gravex-green-600 rounded inline-block w-fit"
             >
               {i18n.t('event.allDayDiary')}
             </div>
@@ -491,7 +491,7 @@
           oninput={handleLocationInput}
           onfocus={handleFocus}
           autocomplete="off"
-          class="w-full px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm placeholder:text-slate-300 pr-8"
+          class="w-full px-0 py-1 border-b border-transparent focus:border-gravex-green-400 outline-none transition-all text-sm placeholder:text-slate-300 pr-8"
           placeholder={i18n.t('event.location')}
           aria-label={i18n.t('event.location')}
         />
@@ -508,7 +508,7 @@
                 })
               }
             }}
-            class="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-justodo-green-500 transition-colors"
+            class="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-gravex-green-500 transition-colors"
             aria-label="Navigate"
           >
             <svg
@@ -585,7 +585,7 @@
         <input type="hidden" name="calendarId" value={calendarId} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm font-medium text-slate-700 flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-green-400 outline-none transition-all text-sm font-medium text-slate-700 flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showCalendarDropdown = !showCalendarDropdown
@@ -667,7 +667,7 @@
         <input type="hidden" name="recurrenceRule" value={recurrenceRule} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-justodo-green-400 outline-none transition-all text-sm font-medium text-slate-600 flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-green-400 outline-none transition-all text-sm font-medium text-slate-600 flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showRecurrenceDropdown = !showRecurrenceDropdown
@@ -764,11 +764,11 @@
           <div
             class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
             {type === 'schedule'
-              ? 'border-justodo-green-500'
+              ? 'border-gravex-green-500'
               : 'border-slate-300 group-hover:border-slate-400'}"
           >
             {#if type === 'schedule'}
-              <div class="w-2 h-2 rounded-full bg-justodo-green-500"></div>
+              <div class="w-2 h-2 rounded-full bg-gravex-green-500"></div>
             {/if}
           </div>
           <span
@@ -791,11 +791,11 @@
           <div
             class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all
             {type === 'diary'
-              ? 'border-justodo-green-500'
+              ? 'border-gravex-green-500'
               : 'border-slate-300 group-hover:border-slate-400'}"
           >
             {#if type === 'diary'}
-              <div class="w-2 h-2 rounded-full bg-justodo-green-500"></div>
+              <div class="w-2 h-2 rounded-full bg-gravex-green-500"></div>
             {/if}
           </div>
           <span
@@ -833,7 +833,7 @@
         id="description"
         bind:value={description}
         use:autoResize
-        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-justodo-green-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-slate-300"
+        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-gravex-green-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-slate-300"
         placeholder={i18n.t('event.description')}
         aria-label={i18n.t('event.description')}
       ></textarea>

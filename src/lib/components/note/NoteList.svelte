@@ -70,7 +70,7 @@
               </div>
               {#if activeNoteId === note.id}
                 <div
-                  class="absolute left-0 top-3 bottom-3 w-1 bg-justodo-green-600 rounded-r shadow-[0_0_8px_rgba(5,150,105,0.4)]"
+                  class="absolute left-0 top-3 bottom-3 w-1 bg-gravex-green-600 rounded-r shadow-[0_0_8px_rgba(5,150,105,0.4)]"
                 ></div>
               {/if}
             </button>

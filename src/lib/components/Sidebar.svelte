@@ -177,7 +177,7 @@
       }}
       class="w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors {activeTab ===
       'calendar'
-        ? 'bg-justodo-green-100/50 text-justodo-green-700'
+        ? 'bg-gravex-green-100/50 text-gravex-green-700'
         : 'text-slate-600 hover:bg-slate-100'}"
     >
       <svg
@@ -214,7 +214,7 @@
       }}
       class="w-full flex items-center gap-3 px-3 py-2 rounded-md transition-colors {activeTab ===
       'notes'
-        ? 'bg-justodo-green-100/50 text-justodo-green-700'
+        ? 'bg-gravex-green-100/50 text-gravex-green-700'
         : 'text-slate-600 hover:bg-slate-100'}"
     >
       <svg
@@ -246,7 +246,7 @@
     </h2>
     <div class="flex items-center gap-2">
       <button
-        class="text-slate-400 hover:text-justodo-green-600 transition-colors"
+        class="text-slate-400 hover:text-gravex-green-600 transition-colors"
         onclick={() => (isCreating = !isCreating)}
         title="Add Calendar"
       >
@@ -277,7 +277,7 @@
         type="text"
         bind:value={newCalendarName}
         placeholder={i18n.locale === 'kr' ? '캘린더 이름' : 'Calendar Name'}
-        class="w-full text-sm font-medium border-b border-slate-100 focus:border-justodo-green-400 outline-none pb-1 mb-3 placeholder:text-slate-300"
+        class="w-full text-sm font-medium border-b border-slate-100 focus:border-gravex-green-400 outline-none pb-1 mb-3 placeholder:text-slate-300"
         use:focusNode
       />
 
@@ -306,7 +306,7 @@
         </button>
         <button
           type="submit"
-          class="text-[10px] uppercase font-bold text-justodo-green-600 hover:text-justodo-green-700"
+          class="text-[10px] uppercase font-bold text-gravex-green-600 hover:text-gravex-green-700"
         >
           {i18n.t('common.save')}
         </button>
@@ -370,7 +370,7 @@
                   // Let's rely on Enter or Check button to save.
                   // actually, blur saving is standard, but let's stick to explicit actions to avoid confusion with the cancel button.
                 }}
-                class="w-full bg-transparent border-b border-justodo-green-500 rounded-none px-0 py-0 text-sm font-medium text-slate-900 focus:outline-none focus:ring-0 h-5 leading-tight placeholder:text-slate-300"
+                class="w-full bg-transparent border-b border-gravex-green-500 rounded-none px-0 py-0 text-sm font-medium text-slate-900 focus:outline-none focus:ring-0 h-5 leading-tight placeholder:text-slate-300"
                 use:focusNode
               />
             {:else}
@@ -389,7 +389,7 @@
           >
             {#if editingId === cal.id}
               <button
-                class="text-justodo-green-600 hover:text-justodo-green-700 p-1"
+                class="text-gravex-green-600 hover:text-gravex-green-700 p-1"
                 onclick={(e) => {
                   e.stopPropagation()
                   saveEdit()

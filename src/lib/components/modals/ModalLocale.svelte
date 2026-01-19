@@ -58,7 +58,7 @@
         onclick={() => handleSelect(opt.code)}
         class="w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all group
           {i18n.locale === opt.code
-          ? 'border-justodo-green-500 bg-justodo-green-50/30'
+          ? 'border-gravex-green-500 bg-gravex-green-50/30'
           : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'}"
       >
         <div class="flex items-center gap-4">
@@ -79,7 +79,7 @@
 
         {#if i18n.locale === opt.code}
           <div
-            class="w-6 h-6 rounded-full bg-justodo-green-500 flex items-center justify-center shadow-lg shadow-justodo-green-200"
+            class="w-6 h-6 rounded-full bg-gravex-green-500 flex items-center justify-center shadow-lg shadow-gravex-green-200"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

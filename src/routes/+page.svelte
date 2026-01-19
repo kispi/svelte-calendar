@@ -388,7 +388,7 @@
             <h1
               class="text-3xl font-black tracking-tight flex items-center gap-3"
             >
-              <span class="text-justodo-green-600">
+              <span class="text-gravex-green-600">
                 {settings.lastActiveTab === 'calendar' ? 'Calender' : 'Notes'}
               </span>
             </h1>
@@ -412,7 +412,7 @@
               <div
                 class="flex items-center justify-between p-4 border-b border-slate-100 shrink-0"
               >
-                <span class="font-black text-xl text-justodo-green-600"
+                <span class="font-black text-xl text-gravex-green-600"
                   >Gravex.app</span
                 >
                 <button

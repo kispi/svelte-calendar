@@ -62,28 +62,27 @@ class SettingsState {
     migrate() {
         try {
             const legacyTab = localStorage.getItem('last_active_tab')
-            const legacyCalendars = localStorage.getItem('visible_calendars')
-            const legacyLocale = localStorage.getItem('justodo_locale')
-
             if (legacyTab === 'calendar' || legacyTab === 'notes') {
-                this.data.lastActiveTab = legacyTab
+                this.lastActiveTab = legacyTab
             }
 
+            const legacyCalendars = localStorage.getItem('visible_calendars')
             if (legacyCalendars) {
-                const parsed = JSON.parse(legacyCalendars)
-                if (Array.isArray(parsed)) {
-                    this.data.visibleCalendarIds = parsed
+                try {
+                    this.visibleCalendarIds = JSON.parse(legacyCalendars)
+                } catch (e) {
+                    console.error('Failed to parse legacy visible calendars', e)
                 }
             }
 
+            const legacyLocale = localStorage.getItem('justodo_locale')
             if (legacyLocale === 'en' || legacyLocale === 'kr') {
-                this.data.locale = legacyLocale
+                this.locale = legacyLocale
             }
 
-            // Save new format
-            this.save()
+            // Save new format (handled by setters)
 
-            // Cleanup
+            // Clean up old keys
             localStorage.removeItem('last_active_tab')
             localStorage.removeItem('visible_calendars')
             localStorage.removeItem('justodo_locale')

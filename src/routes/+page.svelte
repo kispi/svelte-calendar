@@ -2,6 +2,7 @@
   import CalendarGrid from '$lib/components/CalendarGrid.svelte'
   import Sidebar from '$lib/components/Sidebar.svelte'
   import { i18n } from '$lib/i18n.svelte.js'
+  import { settings } from '$lib/settings.svelte.js'
   import { toast } from '$lib/toast.svelte.js'
   import { modal } from '$lib/modal.svelte.js'
   import ModalEvent from '$lib/components/modals/ModalEvent.svelte'
@@ -18,60 +19,27 @@
     keepPreviousData
   } from '@tanstack/svelte-query'
   import { signIn, signOut } from '@auth/sveltekit/client'
-  import { untrack } from 'svelte'
   import type { PageData } from './$types'
   import { logger } from '$lib/logger'
 
   let { data }: { data: PageData } = $props()
 
-  let activeTab = $state('calendar') // 'calendar' | 'notes'
   let currentDate = $state(dayjs())
   let isReady = $state(false)
   let isSidebarOpen = $state(false)
-  let visibleCalendarIds = $state<string[]>([])
 
   $effect(() => {
     isSidebarOpen = window.innerWidth >= 1024
+    // Small delay to ensure client-side hydration for settings
+    setTimeout(() => {
+      isReady = true
+    }, 0)
   })
 
   function handleMoveToDate(dateStr: string) {
-    activeTab = 'calendar'
+    settings.lastActiveTab = 'calendar'
     currentDate = dayjs(dateStr)
   }
-
-  // Persist tab selection and calendar visibility
-  $effect(() => {
-    const savedTab = localStorage.getItem('last_active_tab')
-    if (savedTab && (savedTab === 'calendar' || savedTab === 'notes')) {
-      untrack(() => (activeTab = savedTab))
-    }
-
-    const savedCalendars = localStorage.getItem('visible_calendars')
-    if (savedCalendars) {
-      try {
-        const parsed = JSON.parse(savedCalendars)
-        if (Array.isArray(parsed)) {
-          untrack(() => (visibleCalendarIds = parsed))
-        }
-      } catch (e) {
-        logger.error('Failed to parse visible calendars', { error: e })
-      }
-    }
-    isReady = true
-  })
-
-  $effect(() => {
-    localStorage.setItem('last_active_tab', activeTab)
-  })
-
-  $effect(() => {
-    if (visibleCalendarIds.length > 0) {
-      localStorage.setItem(
-        'visible_calendars',
-        JSON.stringify(visibleCalendarIds)
-      )
-    }
-  })
 
   const queryClient = useQueryClient()
 
@@ -88,22 +56,28 @@
 
   // Auto-select all calendars if empty state (first load)
   $effect(() => {
-    if (calendarsQuery.data && visibleCalendarIds.length === 0 && isReady) {
+    if (
+      calendarsQuery.data &&
+      settings.visibleCalendarIds.length === 0 &&
+      isReady
+    ) {
       const primary = calendarsQuery.data.find((c: any) => c.isPrimary)
       if (primary) {
-        visibleCalendarIds = [primary.id]
+        settings.visibleCalendarIds = [primary.id]
       } else {
         // Fallback: Select all calendars
-        visibleCalendarIds = calendarsQuery.data.map((c: any) => c.id)
+        settings.visibleCalendarIds = calendarsQuery.data.map((c: any) => c.id)
       }
     }
   })
 
   function toggleCalendar(id: string, visible: boolean) {
     if (visible) {
-      visibleCalendarIds = [...visibleCalendarIds, id]
+      settings.visibleCalendarIds = [...settings.visibleCalendarIds, id]
     } else {
-      visibleCalendarIds = visibleCalendarIds.filter((cid) => cid !== id)
+      settings.visibleCalendarIds = settings.visibleCalendarIds.filter(
+        (cid) => cid !== id
+      )
     }
   }
 
@@ -125,7 +99,7 @@
       if (!res.ok) throw new Error('Failed to fetch events')
       return res.json()
     },
-    enabled: !!data.session && activeTab === 'calendar' && isReady,
+    enabled: !!data.session && settings.lastActiveTab === 'calendar' && isReady,
     placeholderData: keepPreviousData
   }))
 
@@ -327,25 +301,30 @@
 />
 
 <svelte:head>
-  <title>Justodo | {i18n.t('nav.calendar')} & {i18n.t('nav.notes')}</title>
+  <title>
+    {settings.lastActiveTab === 'calendar' ? 'Calender' : 'Notes'} | Gravex.app
+  </title>
   <meta
     name="description"
-    content="Justodo is a clean, minimal planner that combines a powerful calendar with smart note-taking. Sync your schedule and manage your tasks with ease."
+    content="Gravex.app is a clean, minimal planner that combines a powerful calendar with smart note-taking. Sync your schedule and manage your tasks with ease."
   />
 
   <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="Justodo | Simple Calendar & Smart Notes" />
+  <meta
+    property="og:title"
+    content="Gravex.app | Simple Calendar & Smart Notes"
+  />
   <meta
     property="og:description"
     content="A minimal, high-performance planner for managing your schedule and notes in one place."
   />
   <meta property="og:image" content="/logo.png" />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://justodo.gravex.app" />
+  <meta property="og:url" content="https://gravex.app" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Justodo | Simple Planner" />
+  <meta name="twitter:title" content="Gravex.app | Simple Planner" />
   <meta
     name="twitter:description"
     content="The minimal calendar and notes app you've been looking for."
@@ -360,9 +339,9 @@
       {#if isSidebarOpen}
         <div class="hidden lg:block h-full">
           <Sidebar
-            {visibleCalendarIds}
+            visibleCalendarIds={settings.visibleCalendarIds}
             onToggle={toggleCalendar}
-            bind:activeTab
+            bind:activeTab={settings.lastActiveTab}
             onSignOut={confirmSignOut}
             onImport={handleImport}
             onExport={handleExport}
@@ -370,7 +349,14 @@
               const next = i18n.locale === 'kr' ? 'en' : 'kr'
               i18n.setLocale(next)
             }}
-          />
+          >
+            <!-- Footer in Sidebar -->
+            <div class="mt-auto pt-6 px-2 pb-2">
+              <p class="text-[10px] text-slate-300 font-medium">
+                &copy; 2026~ Gravex.app<br />All rights reserved.
+              </p>
+            </div>
+          </Sidebar>
         </div>
       {/if}
 
@@ -402,7 +388,9 @@
             <h1
               class="text-3xl font-black tracking-tight flex items-center gap-3"
             >
-              <span class="text-justodo-green-600">Justodo</span>
+              <span class="text-justodo-green-600">
+                {settings.lastActiveTab === 'calendar' ? 'Calender' : 'Notes'}
+              </span>
             </h1>
           </div>
         </div>
@@ -425,7 +413,7 @@
                 class="flex items-center justify-between p-4 border-b border-slate-100 shrink-0"
               >
                 <span class="font-black text-xl text-justodo-green-600"
-                  >Justodo</span
+                  >Gravex.app</span
                 >
                 <button
                   onclick={() => (isSidebarOpen = false)}
@@ -448,11 +436,11 @@
                 </button>
               </div>
 
-              <div class="flex-1 overflow-hidden">
+              <div class="flex-1 overflow-hidden flex flex-col">
                 <Sidebar
-                  {visibleCalendarIds}
+                  visibleCalendarIds={settings.visibleCalendarIds}
                   onToggle={toggleCalendar}
-                  bind:activeTab
+                  bind:activeTab={settings.lastActiveTab}
                   class="w-full h-full border-none bg-white p-4"
                   onSignOut={confirmSignOut}
                   onImport={handleImport}
@@ -464,7 +452,13 @@
                   onTabChange={() => {
                     if (window.innerWidth < 1024) isSidebarOpen = false
                   }}
-                />
+                >
+                  <div class="mt-auto pt-6 px-2 pb-2">
+                    <p class="text-[10px] text-slate-300 font-medium">
+                      &copy; 2026~ Gravex.app<br />All rights reserved.
+                    </p>
+                  </div>
+                </Sidebar>
               </div>
             </div>
           </div>
@@ -486,12 +480,12 @@
               </div>
             {:else if !query.data && query.isLoading}
               <CalendarSkeleton />
-            {:else if activeTab === 'calendar'}
+            {:else if settings.lastActiveTab === 'calendar'}
               <CalendarGrid
                 bind:currentDate
                 events={query.data || []}
                 calendars={calendarsQuery.data || []}
-                {visibleCalendarIds}
+                visibleCalendarIds={settings.visibleCalendarIds}
                 onDateClick={handleDateClick}
                 onEventClick={handleEventClick}
               />
@@ -507,7 +501,7 @@
               </div>
             {:else}
               <div class="h-full overflow-y-auto w-full">
-                <NotesView />
+                <NotesView initialNoteId={settings.lastNoteId} />
               </div>
             {/if}
           </div>

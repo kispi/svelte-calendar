@@ -4,10 +4,17 @@
   import NoteEditor from './NoteEditor.svelte'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
+  import { settings } from '$lib/settings.svelte.js'
   import ModalConfirm from '../modals/ModalConfirm.svelte'
 
+  let { initialNoteId = null }: { initialNoteId?: string | null } = $props()
+
   const queryClient = useQueryClient()
-  let activeNoteId = $state<string | null>(null)
+  let activeNoteId = $state<string | null>(initialNoteId)
+
+  $effect(() => {
+    settings.lastNoteId = activeNoteId
+  })
 
   const notesQuery = createQuery(() => ({
     queryKey: ['notes'],

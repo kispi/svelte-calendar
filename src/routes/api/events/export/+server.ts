@@ -80,7 +80,7 @@ export const GET: RequestHandler = async ({ locals }) => {
         recurrenceRule: e.recurrenceRule || undefined,
         title: e.title || '(No Title)',
         location: e.location || '',
-        uid: e.id.includes('@') ? e.id : `${e.id}@justodo.gravex.app`,
+        uid: e.id.includes('@') ? e.id : `${e.id}@gravex.app`,
         created: [
           created.isValid() ? created.year() : start.year(),
           created.isValid() ? created.month() + 1 : start.month() + 1,
@@ -101,7 +101,7 @@ export const GET: RequestHandler = async ({ locals }) => {
         geo: e.lat && e.lng ? { lat: e.lat, lon: e.lng } : undefined,
         description: [
           e.description || '',
-          e.locationAddress || e.placeId ? '\n\n--- JUSTODO METADATA ---' : '',
+          e.locationAddress || e.placeId ? '\n\n--- GRAVEX CALENDAR METADATA ---' : '',
           e.locationAddress ? `ADDRESS:${e.locationAddress}` : '',
           e.placeId ? `PLACE_ID:${e.placeId}` : ''
         ]
@@ -117,7 +117,7 @@ export const GET: RequestHandler = async ({ locals }) => {
         'VERSION:2.0',
         'CALSCALE:GREGORIAN',
         'METHOD:PUBLISH',
-        'PRODID:-//Justodo//Calendar//EN',
+        'PRODID:-//Gravex//Calendar//EN',
         'END:VCALENDAR'
       ].join('\r\n')
 

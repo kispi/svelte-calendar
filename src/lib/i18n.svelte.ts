@@ -2,6 +2,7 @@ import { browser } from '$app/environment'
 import dayjs from 'dayjs'
 import 'dayjs/locale/ko'
 import 'dayjs/locale/en'
+import { settings } from './settings.svelte.js'
 
 type Locale = 'en' | 'kr'
 
@@ -72,8 +73,8 @@ const translations = {
       placeholder: 'Ask me anything...',
       error: 'The model is currently busy. Please try again in a moment.',
       greeting:
-        'Hello! I am your Justodo Assistant.\n\nTry asking:\n"How many Gym sessions did I log last month?"\n"Summarize my \'Project Alpha\' notes from this week."\n"Plan a 3-day trip to Seoul based on my travel notes."\n"What were my major expenses in my January notes?"',
-      title: 'Justodo Assistant'
+        'Hello! I am your Gravex.app Assistant.\n\nTry asking:\n"How many Gym sessions did I log last month?"\n"Summarize my \'Project Alpha\' notes from this week."\n"Plan a 3-day trip to Seoul based on my travel notes."\n"What were my major expenses in my January notes?"',
+      title: 'Gravex.app Assistant'
     },
     recurrence: {
       label: 'Repeat',
@@ -159,34 +160,25 @@ const translations = {
       error:
         '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
       greeting:
-        '안녕하세요! Justodo 어시스턴트입니다.\n\n저를 이렇게 활용해보세요:\n"지난달 헬스장 몇 번 갔는지 요약해줘."\n"이번 주 \'프로젝트 A\' 관련 메모들 핵심만 뽑아줘."\n"메모장에 적어둔 예산 계획이랑 지출 내역 비교해줘."\n"다음 주 미팅 일정들 시간순으로 정리해줘."',
-      title: 'Justodo 어시스턴트'
+        '안녕하세요! Gravex.app 어시스턴트입니다.\n\n저를 이렇게 활용해보세요:\n"지난달 헬스장 몇 번 갔는지 요약해줘."\n"이번 주 \'프로젝트 A\' 관련 메모들 핵심만 뽑아줘."\n"메모장에 적어둔 예산 계획이랑 지출 내역 비교해줘."\n"다음 주 미팅 일정들 시간순으로 정리해줘."',
+      title: 'Gravex.app 어시스턴트'
     }
   }
 }
 
 class I18nState {
-  locale = $state<Locale>('en')
-
   constructor() {
     if (browser) {
-      const saved = localStorage.getItem('justodo_locale')
-      if (saved === 'kr' || saved === 'en') {
-        this.locale = saved as Locale
-      } else {
-        // Detect system language
-        const sysLang = navigator.language.startsWith('ko') ? 'kr' : 'en'
-        this.locale = sysLang
-      }
       this.updateDayjs()
     }
   }
 
+  get locale() {
+    return settings.locale
+  }
+
   setLocale(locale: Locale) {
-    this.locale = locale
-    if (browser) {
-      localStorage.setItem('justodo_locale', locale)
-    }
+    settings.locale = locale
     this.updateDayjs()
   }
 
@@ -216,3 +208,4 @@ class I18nState {
 }
 
 export const i18n = new I18nState()
+

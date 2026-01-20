@@ -584,7 +584,7 @@
         <span class="text-sm font-medium">{i18n.t('nav.signOut')}</span>
       </button>
 
-      <div class="mt-4 px-2 text-center lg:hidden">
+      <div class="mt-4 px-2 text-center">
         <p class="text-[10px] text-slate-300 font-medium">
           &copy; 2026~ Gravex.app<br />All rights reserved.
         </p>

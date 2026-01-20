@@ -349,14 +349,7 @@
               const next = i18n.locale === 'kr' ? 'en' : 'kr'
               i18n.setLocale(next)
             }}
-          >
-            <!-- Footer in Sidebar -->
-            <div class="mt-auto pt-6 px-2 pb-2">
-              <p class="text-[10px] text-slate-300 font-medium">
-                &copy; 2026~ Gravex.app<br />All rights reserved.
-              </p>
-            </div>
-          </Sidebar>
+          />
         </div>
       {/if}
 
@@ -452,13 +445,7 @@
                   onTabChange={() => {
                     if (window.innerWidth < 1024) isSidebarOpen = false
                   }}
-                >
-                  <div class="mt-auto pt-6 px-2 pb-2">
-                    <p class="text-[10px] text-slate-300 font-medium">
-                      &copy; 2026~ Gravex.app<br />All rights reserved.
-                    </p>
-                  </div>
-                </Sidebar>
+                />
               </div>
             </div>
           </div>

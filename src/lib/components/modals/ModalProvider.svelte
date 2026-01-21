@@ -4,13 +4,13 @@
 </script>
 
 {#if modal.stack.length > 0}
-  <div class="fixed inset-0 z-[100]">
+  <div class="fixed inset-0 z-[200]">
     {#each modal.stack as item, i (item.id)}
       <!-- Container for Backdrop and Modal -->
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <div
-        class="fixed inset-0 overflow-y-auto z-[100]"
+        class="fixed inset-0 overflow-y-auto z-[200]"
         onclick={(e) => {
           if (
             e.target === e.currentTarget &&

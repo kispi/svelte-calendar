@@ -53,6 +53,7 @@
 
   let editingId = $state<string | null>(null)
   let editName = $state('')
+  let editColor = $state('')
 
   function focusNode(node: HTMLElement) {
     node.focus()
@@ -121,6 +122,7 @@
   function startEdit(cal: any) {
     editingId = cal.id
     editName = cal.name
+    editColor = cal.color
   }
 
   async function saveEdit() {
@@ -133,7 +135,7 @@
       const res = await fetch(`/api/calendars/${editingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: editName })
+        body: JSON.stringify({ name: editName, color: editColor })
       })
 
       if (res.ok) {
@@ -324,146 +326,110 @@
   {:else if query.data}
     <div class="space-y-1 overflow-y-auto flex-1 px-2 custom-scrollbar">
       {#each query.data as cal (cal.id)}
-        <div
-          class="group flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-white/60 transition-colors"
-        >
-          <label
-            class="flex items-center gap-3 cursor-pointer select-none flex-1 min-w-0"
+        {#if editingId === cal.id}
+          <!-- Edit Mode -->
+          <div
+            class="bg-white p-2.5 rounded-md shadow-sm border border-gravex-green-100 mb-1"
           >
-            <div class="relative flex items-center justify-center">
-              <input
-                type="checkbox"
-                class="peer appearance-none w-4 h-4 rounded border border-slate-300 checked:border-transparent transition-all"
-                style="background-color: {visibleCalendarIds.includes(cal.id)
-                  ? cal.color
-                  : 'transparent'}; border-color: {visibleCalendarIds.includes(
-                  cal.id
-                )
-                  ? cal.color
-                  : '#cbd5e1'}"
-                checked={visibleCalendarIds.includes(cal.id)}
-                onchange={(e) => onToggle(cal.id, e.currentTarget.checked)}
-              />
-              <svg
-                class="absolute w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><polyline points="20 6 9 17 4 12"></polyline></svg
-              >
-            </div>
-
-            {#if editingId === cal.id}
+            <form
+              onsubmit={(e) => {
+                e.preventDefault()
+                saveEdit()
+              }}
+            >
               <input
                 type="text"
                 bind:value={editName}
-                onclick={(e) => e.preventDefault()}
-                onkeydown={handleKeydown}
-                onblur={() => {
-                  // Optional: Auto-save on blur, or let user click check?
-                  // User asked for check button, but keeping blur save is often good UX.
-                  // However, if we add a cancel button, blur-save might be annoying if they clicked cancel?
-                  // Let's rely on Enter or Check button to save.
-                  // actually, blur saving is standard, but let's stick to explicit actions to avoid confusion with the cancel button.
-                }}
-                class="w-full bg-transparent border-b border-gravex-green-500 rounded-none px-0 py-0 text-sm font-medium text-slate-900 focus:outline-none focus:ring-0 h-5 leading-tight placeholder:text-slate-300"
+                class="w-full text-sm font-medium border-b border-slate-100 focus:border-gravex-green-400 outline-none pb-1 mb-2 placeholder:text-slate-300"
                 use:focusNode
+                onkeydown={handleKeydown}
               />
-            {:else}
+              <div class="flex flex-wrap gap-1.5 mb-3">
+                {#each PRESET_COLORS as color}
+                  <button
+                    type="button"
+                    class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-slate-200"
+                    style="background-color: {color}; transform: {editColor ===
+                    color
+                      ? 'scale(1.2)'
+                      : 'scale(1)'}"
+                    onclick={() => (editColor = color)}
+                    aria-label="Select color"
+                  ></button>
+                {/each}
+              </div>
+              <div class="flex justify-end gap-2">
+                <button
+                  type="button"
+                  class="text-[10px] uppercase font-bold text-slate-400 hover:text-slate-600"
+                  onclick={() => (editingId = null)}
+                  title="Cancel"
+                >
+                  {i18n.t('common.cancel')}
+                </button>
+                <button
+                  type="submit"
+                  class="text-[10px] uppercase font-bold text-gravex-green-600 hover:text-gravex-green-700"
+                  title="Save"
+                >
+                  {i18n.t('common.save')}
+                </button>
+              </div>
+            </form>
+          </div>
+        {:else}
+          <!-- View Mode -->
+          <div
+            class="group flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-white/60 transition-colors"
+          >
+            <label
+              class="flex items-center gap-3 cursor-pointer select-none flex-1 min-w-0"
+            >
+              <div class="relative flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  class="peer appearance-none w-4 h-4 rounded border border-slate-300 checked:border-transparent transition-all"
+                  style="background-color: {visibleCalendarIds.includes(cal.id)
+                    ? cal.color
+                    : 'transparent'}; border-color: {visibleCalendarIds.includes(
+                    cal.id
+                  )
+                    ? cal.color
+                    : '#cbd5e1'}"
+                  checked={visibleCalendarIds.includes(cal.id)}
+                  onchange={(e) => onToggle(cal.id, e.currentTarget.checked)}
+                />
+                <svg
+                  class="absolute w-2.5 h-2.5 text-white opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><polyline points="20 6 9 17 4 12"></polyline></svg
+                >
+              </div>
+
               <span
                 class="text-sm font-medium text-slate-700 truncate h-5 leading-tight block"
                 >{cal.name}</span
               >
-            {/if}
-          </label>
+            </label>
 
-          <!-- Actions -->
-          <div
-            class="flex items-center transition-all {editingId === cal.id
-              ? 'opacity-100'
-              : 'opacity-0 group-hover:opacity-100'}"
-          >
-            {#if editingId === cal.id}
-              <button
-                class="text-gravex-green-600 hover:text-gravex-green-700 p-1"
-                onclick={(e) => {
-                  e.stopPropagation()
-                  saveEdit()
-                }}
-                title="Save"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-check"><path d="M20 6 9 17 4 12" /></svg
-                >
-              </button>
-              <button
-                class="text-slate-400 hover:text-slate-600 p-1"
-                onclick={(e) => {
-                  e.stopPropagation()
-                  editingId = null
-                }}
-                title="Cancel"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-x"
-                  ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
-                >
-              </button>
-            {:else if cal.role === 'owner'}
-              <button
-                class="text-slate-300 hover:text-slate-500 p-1"
-                onclick={(e) => {
-                  e.stopPropagation()
-                  startEdit(cal)
-                }}
-                title="Edit"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-pencil"
-                  ><path
-                    d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
-                  /><path d="m15 5 4 4" /></svg
-                >
-              </button>
-              {#if !cal.isPrimary}
+            <!-- Actions -->
+            <div
+              class="flex items-center transition-all opacity-0 group-hover:opacity-100"
+            >
+              {#if cal.role === 'owner'}
                 <button
-                  class="text-slate-300 hover:text-red-400 p-1"
+                  class="text-slate-300 hover:text-slate-500 p-1"
                   onclick={(e) => {
                     e.stopPropagation()
-                    handleDelete(cal.id, cal.name)
+                    startEdit(cal)
                   }}
-                  title="Delete Calendar"
+                  title="Edit"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -475,21 +441,47 @@
                     stroke-width="2"
                     stroke-linecap="round"
                     stroke-linejoin="round"
-                    class="lucide lucide-trash-2"
-                    ><path d="M3 6h18" /><path
-                      d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
-                    /><path d="M8 6V4c0-1 1-2 2-2h4c0 1 1 2 2 2v2" /><line
-                      x1="10"
-                      x2="10"
-                      y1="11"
-                      y2="17"
-                    /><line x1="14" x2="14" y1="11" y2="17" /></svg
+                    class="lucide lucide-pencil"
+                    ><path
+                      d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"
+                    /><path d="m15 5 4 4" /></svg
                   >
                 </button>
+                {#if !cal.isPrimary}
+                  <button
+                    class="text-slate-300 hover:text-red-400 p-1"
+                    onclick={(e) => {
+                      e.stopPropagation()
+                      handleDelete(cal.id, cal.name)
+                    }}
+                    title="Delete Calendar"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-trash-2"
+                      ><path d="M3 6h18" /><path
+                        d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+                      /><path d="M8 6V4c0-1 1-2 2-2h4c0 1 1 2 2 2v2" /><line
+                        x1="10"
+                        x2="10"
+                        y1="11"
+                        y2="17"
+                      /><line x1="14" x2="14" y1="11" y2="17" /></svg
+                    >
+                  </button>
+                {/if}
               {/if}
-            {/if}
+            </div>
           </div>
-        </div>
+        {/if}
       {/each}
     </div>
   {/if}

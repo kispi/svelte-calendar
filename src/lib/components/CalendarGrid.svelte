@@ -502,10 +502,8 @@
             <button
               type="button"
               class="w-full text-left px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
-                             {calEvent.type === 'diary'
-                ? 'bg-purple-50 text-purple-700 border-purple-100 hover:bg-purple-100'
-                : 'bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200'}"
-              style={calEvent.type !== 'diary' && color
+                             bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200"
+              style={color
                 ? `background-color: ${color}20; color: ${color}; border-color: ${color}40;`
                 : ''}
               onclick={(e) => {

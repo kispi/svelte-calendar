@@ -1,4 +1,4 @@
-﻿import { db } from '$lib/server/db'
+import { db } from '$lib/server/db'
 import { event, calendar, calendarMember } from '$lib/server/db/schema'
 import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'

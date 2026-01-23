@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        'gravex-green': {
+        'gravex-primary': {
           DEFAULT: '#6366F1', // Indigo 500
           50: '#EEF2FF',
           100: '#E0E7FF',

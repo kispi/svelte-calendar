@@ -111,24 +111,25 @@
 />
 
 <div
-  class="h-[700px] bg-white rounded border border-slate-100 shadow-xl overflow-hidden flex flex-col md:flex-row relative"
+  class="h-[700px] bg-white dark:bg-slate-900 rounded border border-slate-100 dark:border-slate-700 shadow-xl overflow-hidden flex flex-col md:flex-row relative"
 >
   <!-- Sidebar -->
   <div
     class="w-full md:w-80 shrink-0 min-w-0 {activeNoteId
       ? 'hidden md:flex'
-      : 'flex'} flex-col h-full border-r border-slate-100"
+      : 'flex'} flex-col h-full border-r border-slate-100 dark:border-slate-700"
   >
     <!-- List Header -->
     <div
-      class="flex h-14 items-center justify-between px-6 shrink-0 border-b border-slate-50 bg-slate-50/50"
+      class="flex h-14 items-center justify-between px-6 shrink-0 border-b border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50"
     >
-      <span class="text-xs font-bold text-slate-400 uppercase tracking-widest"
+      <span
+        class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest"
         >{i18n.t('notes.list')}</span
       >
       <button
         onclick={handleCreateNote}
-        class="p-1.5 text-slate-400 hover:text-slate-800 transition-colors active:scale-95"
+        class="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors active:scale-95"
         aria-label={i18n.t('notes.create')}
       >
         <svg
@@ -174,7 +175,7 @@
       />
     {:else}
       <div
-        class="flex-1 flex flex-col items-center justify-center text-slate-300 bg-slate-50/30"
+        class="flex-1 flex flex-col items-center justify-center text-slate-300 dark:text-slate-600 bg-slate-50/30 dark:bg-slate-800/30"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

@@ -48,7 +48,10 @@ const translations = {
       back: 'Back to list',
       deleteTitle: 'Delete Note',
       deleteMessage:
-        'Are you sure you want to delete this note? This cannot be undone.'
+        'Are you sure you want to delete this note? This cannot be undone.',
+      noContent: 'No additional text',
+      untitled: 'Untitled Note',
+      noNotesYet: 'No notes yet'
     },
     toast: {
       exportSuccess: 'Successfully exported {count} events!',
@@ -126,7 +129,10 @@ const translations = {
       back: '목록으로 돌아가기',
       deleteTitle: '노트 삭제',
       deleteMessage:
-        '이 노트를 삭제하시겠습니까? 삭제된 내용은 복구할 수 없습니다.'
+        '이 노트를 삭제하시겠습니까? 삭제된 내용은 복구할 수 없습니다.',
+      noContent: '내용 없음',
+      untitled: '제목 없는 노트',
+      noNotesYet: '노트가 없습니다'
     },
     toast: {
       exportSuccess: '{count}개의 일정을 성공적으로 내보냈습니다!',

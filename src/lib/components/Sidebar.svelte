@@ -180,7 +180,7 @@
       }}
       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {activeTab ===
       'calendar'
-        ? 'bg-white dark:bg-slate-800 text-gravex-green-600 dark:text-gravex-green-400 shadow-sm dark:shadow-none font-bold'
+        ? 'bg-white dark:bg-slate-800 text-gravex-primary-600 dark:text-gravex-primary-400 shadow-sm dark:shadow-none font-bold'
         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 font-medium'}"
     >
       <svg
@@ -215,7 +215,7 @@
       }}
       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {activeTab ===
       'notes'
-        ? 'bg-white dark:bg-slate-800 text-gravex-green-600 dark:text-gravex-green-400 shadow-sm dark:shadow-none font-bold'
+        ? 'bg-white dark:bg-slate-800 text-gravex-primary-600 dark:text-gravex-primary-400 shadow-sm dark:shadow-none font-bold'
         : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 font-medium'}"
     >
       <svg
@@ -246,7 +246,7 @@
     </h2>
     <div class="flex items-center gap-2">
       <button
-        class="text-slate-400 hover:text-gravex-green-600 dark:hover:text-gravex-green-400 transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+        class="text-slate-400 hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
         onclick={() => (isCreating = !isCreating)}
         title="Add Calendar"
       >
@@ -271,13 +271,13 @@
   {#if isCreating}
     <form
       onsubmit={handleCreate}
-      class="mb-4 bg-slate-800 p-3 rounded-xl shadow-lg border border-slate-700/50 animate-in slide-in-from-top-2 fade-in duration-200 mx-2"
+      class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700/50 animate-in slide-in-from-top-2 fade-in duration-200 mx-2"
     >
       <input
         type="text"
         bind:value={newCalendarName}
         placeholder={i18n.locale === 'kr' ? '캘린더 이름' : 'Calendar Name'}
-        class="w-full text-sm font-medium bg-transparent border-b border-slate-600 focus:border-gravex-green-500 outline-none pb-1 mb-3 placeholder:text-slate-500 text-white"
+        class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
         use:focusNode
       />
 
@@ -285,7 +285,7 @@
         {#each PRESET_COLORS as color}
           <button
             type="button"
-            class="w-4 h-4 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-slate-700"
+            class="w-4 h-4 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-slate-800 ring-slate-400 dark:ring-slate-700"
             style="background-color: {color}; transform: {newCalendarColor ===
             color
               ? 'scale(1.2)'
@@ -300,13 +300,13 @@
         <button
           type="button"
           onclick={() => (isCreating = false)}
-          class="text-[10px] uppercase font-bold text-slate-500 hover:text-slate-300 transition-colors"
+          class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
         >
           {i18n.t('common.cancel')}
         </button>
         <button
           type="submit"
-          class="text-[10px] uppercase font-bold text-gravex-green-400 hover:text-gravex-green-300 transition-colors"
+          class="text-[10px] uppercase font-bold text-gravex-primary-600 dark:text-gravex-primary-400 hover:text-gravex-primary-700 dark:hover:text-gravex-primary-300 transition-colors"
         >
           {i18n.t('common.save')}
         </button>
@@ -327,7 +327,7 @@
         {#if editingId === cal.id}
           <!-- Edit Mode -->
           <div
-            class="bg-slate-800 p-2.5 rounded-xl shadow-lg border border-slate-700/50 mb-1"
+            class="bg-white dark:bg-slate-800 p-2.5 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700/50 mb-1"
           >
             <form
               onsubmit={(e) => {
@@ -338,7 +338,7 @@
               <input
                 type="text"
                 bind:value={editName}
-                class="w-full text-sm font-medium bg-transparent border-b border-slate-600 focus:border-gravex-green-500 outline-none pb-1 mb-2 placeholder:text-slate-500 text-white"
+                class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-2 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
                 use:focusNode
                 onkeydown={handleKeydown}
               />
@@ -346,7 +346,7 @@
                 {#each PRESET_COLORS as color}
                   <button
                     type="button"
-                    class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-slate-700"
+                    class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-slate-800 ring-slate-400 dark:ring-slate-700"
                     style="background-color: {color}; transform: {editColor ===
                     color
                       ? 'scale(1.2)'
@@ -359,7 +359,7 @@
               <div class="flex justify-end gap-2">
                 <button
                   type="button"
-                  class="text-[10px] uppercase font-bold text-slate-500 hover:text-slate-300 transition-colors"
+                  class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
                   onclick={() => (editingId = null)}
                   title="Cancel"
                 >
@@ -367,7 +367,7 @@
                 </button>
                 <button
                   type="submit"
-                  class="text-[10px] uppercase font-bold text-gravex-green-400 hover:text-gravex-green-300 transition-colors"
+                  class="text-[10px] uppercase font-bold text-gravex-primary-600 dark:text-gravex-primary-400 hover:text-gravex-primary-700 dark:hover:text-gravex-primary-300 transition-colors"
                   title="Save"
                 >
                   {i18n.t('common.save')}

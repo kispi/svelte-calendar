@@ -51,8 +51,7 @@
   const { debounced: handleInput, cleanup } = createDebounce(() => {
     const lines = content.split('\n')
     const derivedTitle =
-      lines[0].trim().substring(0, 50) ||
-      (i18n.locale === 'kr' ? '제목 없는 노트' : 'Untitled Note')
+      lines[0].trim().substring(0, 50) || i18n.t('notes.untitled')
 
     onSave({
       title: title || derivedTitle,
@@ -65,16 +64,16 @@
   })
 </script>
 
-<div class="flex flex-col h-full bg-white overflow-hidden">
+<div class="flex flex-col h-full bg-white dark:bg-slate-900 overflow-hidden">
   <!-- Toolbar -->
   <div
-    class="h-14 border-b border-slate-100 flex items-center justify-between px-6 shrink-0"
+    class="h-14 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between px-6 shrink-0"
   >
     <div class="flex items-center">
       {#if onBack}
         <button
           onclick={onBack}
-          class="md:hidden p-2 -ml-2 text-slate-400 hover:text-slate-800 rounded-full transition-all"
+          class="md:hidden p-2 -ml-2 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 rounded-full transition-all"
           aria-label={i18n.t('notes.back')}
         >
           <svg
@@ -95,7 +94,7 @@
     <div class="flex items-center gap-2">
       <button
         onclick={onDelete}
-        class="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-all"
+        class="p-2 text-slate-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded transition-all"
         aria-label={i18n.t('notes.deleteTitle')}
       >
         <svg
@@ -129,13 +128,13 @@
         placeholder={i18n.t('notes.title')}
         bind:value={title}
         oninput={handleInput}
-        class="text-3xl font-black text-slate-900 border-none outline-none placeholder:text-slate-200"
+        class="text-3xl font-black text-slate-900 dark:text-white border-none outline-none placeholder:text-slate-200 dark:placeholder:text-slate-700 bg-transparent"
       />
       <textarea
         placeholder={i18n.t('notes.placeholder')}
         bind:value={content}
         oninput={handleInput}
-        class="flex-1 w-full text-lg leading-relaxed text-slate-700 border-none outline-none resize-none placeholder:text-slate-200 min-h-[500px]"
+        class="flex-1 w-full text-lg leading-relaxed text-slate-700 dark:text-slate-300 border-none outline-none resize-none placeholder:text-slate-200 dark:placeholder:text-slate-700 min-h-[500px] bg-transparent"
       ></textarea>
     </div>
   </div>

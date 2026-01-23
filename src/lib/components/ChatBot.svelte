@@ -236,7 +236,7 @@
     <!-- Header (Draggable) -->
     <div
       onmousedown={startDrag}
-      class="bg-gravex-green-600/90 p-4 flex items-center justify-between shadow-sm cursor-move select-none"
+      class="bg-gravex-primary-600/90 p-4 flex items-center justify-between shadow-sm cursor-move select-none"
     >
       <div class="flex items-center gap-2">
         <div class="w-2 h-2 bg-green-300 rounded-full"></div>
@@ -279,7 +279,7 @@
             <div
               class="max-w-[85%] px-4 py-2.5 rounded-lg text-sm shadow-sm break-words
                        {msg.role === 'user'
-                ? 'bg-gravex-green-600 text-white rounded-br-none'
+                ? 'bg-gravex-primary-600 text-white rounded-br-none'
                 : 'bg-white/80 text-slate-700 border border-slate-100 rounded-bl-none'}"
             >
               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -310,13 +310,13 @@
           placeholder={i18n.t('chatbot.placeholder')}
           rows="1"
           disabled={isLoading}
-          class="w-full bg-slate-50/50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-200 transition-all resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"
+          class="w-full bg-slate-50/50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 transition-all resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"
         ></textarea>
         <button
           onclick={sendMessage}
           disabled={!inputMessage.trim() || isLoading}
           aria-label="Send Message"
-          class="bg-gravex-green-600 hover:bg-gravex-green-700 disabled:bg-slate-300 text-white p-2.5 rounded-md transition-all shadow-sm active:scale-95 shrink-0"
+          class="bg-gravex-primary-600 hover:bg-gravex-primary-700 disabled:bg-slate-300 text-white p-2.5 rounded-md transition-all shadow-sm active:scale-95 shrink-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -365,7 +365,7 @@
   <div class="relative">
     <button
       onclick={toggleChat}
-      class="pointer-events-auto bg-gravex-green-600 hover:bg-gravex-green-700 text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 active:rotate-12 group relative"
+      class="pointer-events-auto bg-gravex-primary-600 hover:bg-gravex-primary-700 text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 active:rotate-12 group relative"
     >
       {#if isOpen}
         <svg

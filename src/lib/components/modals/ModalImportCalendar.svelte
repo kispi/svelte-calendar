@@ -56,7 +56,7 @@
   <div class="flex items-center justify-between mb-4 px-1">
     <button
       onclick={toggleAll}
-      class="text-sm font-bold text-gravex-green-600 hover:text-gravex-green-700"
+      class="text-sm font-bold text-gravex-primary-600 hover:text-gravex-primary-700"
     >
       {selectedIds.size === events.length
         ? i18n.locale === 'kr'
@@ -83,7 +83,7 @@
             type="checkbox"
             checked={selectedIds.has(event.id)}
             onchange={() => toggle(event.id)}
-            class="w-4 h-4 rounded text-gravex-green-600 focus:ring-gravex-green-500 border-slate-300"
+            class="w-4 h-4 rounded text-gravex-primary-600 focus:ring-gravex-primary-500 border-slate-300"
           />
         </div>
         <div class="flex-1 min-w-0">

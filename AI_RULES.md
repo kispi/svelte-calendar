@@ -2,19 +2,19 @@
 
 ## 1. Project Overview
 
-**Gravex.app** is a calendar scheduler & note-taking web application built with SvelteKit.
+This is a calendar scheduler & note-taking web application built with SvelteKit, included in gravex.app.
 
-- **Vibe**: Sophisticated Evergreen green (`#059669`), Modern, Professional, Rounded (4px), Soft shadows.
+- **Vibe**: Sophisticated Evergreen green (`#6366F1`), Modern, Professional, Rounded (4px), Soft shadows.
 - **Goals**: Intuitive UX, lightweight, visually premium.
 
 ## 2. Tech Stack (Strict)
 
 - **Framework**: SvelteKit (App Router)
 - **UI Engine**: Svelte 5 (Runes mode ONLY).
-  - 🚫 NO legacy stores (`writable`, `readable`).
-  - ✅ USE `$state`, `$derived`, `$effect`, `$props`.
+  - ?�� NO legacy stores (`writable`, `readable`).
+  - ??USE `$state`, `$derived`, `$effect`, `$props`.
 - **Styling**: Tailwind CSS (v3).
-  - Custom colors defined in `tailwind.config.js` (`gravex-green`).
+  - Custom colors defined in `tailwind.config.js` (`gravex-primary`).
 - **Database**: Drizzle ORM + MySQL.
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
   - **Date Types**: Use `Date` objects for `datetime`/`timestamp` columns in Drizzle (Drizzle handles conversion to/from MySQL format automatically).
@@ -22,7 +22,7 @@
 - **Components**: `flatpickr` for date inputs.
 - **Client State**:
   - `@tanstack/svelte-query` for data fetching and caching.
-  - **Settings Store**: Use `src/lib/settings.svelte.ts` for user preferences (tabs, locale, visibility). 🚫 DO NOT use `localStorage` directly in components.
+  - **Settings Store**: Use `src/lib/settings.svelte.ts` for user preferences (tabs, locale, visibility). ? DO NOT use `localStorage` directly in components.
 
 ## 3. Coding Conventions
 
@@ -63,3 +63,18 @@
 - **Local State Sync**: After `POST`, `PUT`, or `DELETE`, manually update the client-side cache (e.g., `queryClient.setQueryData`) to reflect changes immediately.
 - **No Redundant Fetches**: Avoid re-fetching the entire list (`invalidateQueries`) after individual CRUD operations if the result can be updated locally.
 - **Conditional Fetching**: Queries should be `enabled` only for the active view or tab to minimize network traffic on load and tab switching.
+
+
+## Internationalization (i18n) Rules
+
+- **Never use inline ternary operators for locale checks in templates**
+  - Bad: {i18n.locale === 'kr' ? 'Korean' : 'English'}
+  - Good: {i18n.t('key.name')}
+
+- **Always define translation keys in src/lib/i18n.svelte.ts**
+  - Add keys to both en and kr translation objects
+  - Use nested structure for organization (e.g., notes.noContent, common.save)
+
+- **Use i18n.t() for all user-facing text**
+  - Extract logic from templates into helper functions if needed
+  - Keep templates clean and readable

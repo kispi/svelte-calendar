@@ -13,11 +13,14 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#059669",
+  "theme_color": "#6366F1",
   "background_color": "#ffffff",
   "display": "standalone",
   "start_url": "/",
   "description": "A sophisticated calendar scheduler & note-taking app.",
   "orientation": "portrait",
-  "categories": ["productivity", "utilities"]
+  "categories": [
+    "productivity",
+    "utilities"
+  ]
 }

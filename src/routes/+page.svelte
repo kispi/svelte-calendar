@@ -329,7 +329,7 @@
 </svelte:head>
 
 <main
-  class="h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300 selection:bg-gravex-green-500/30"
+  class="h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300 selection:bg-gravex-primary-500/30"
 >
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
@@ -387,7 +387,7 @@
 
       <!-- Main Content Card -->
       <div
-        class="flex-1 flex flex-col h-full overflow-hidden p-0 lg:py-4 lg:pr-4 transition-all duration-300"
+        class="flex-1 flex flex-col h-full overflow-hidden p-0 lg:p-4 transition-all duration-300"
       >
         <div
           class="flex-1 bg-white dark:bg-slate-900 rounded-none lg:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-0 lg:border border-slate-200/50 dark:border-slate-800 transition-colors duration-300"

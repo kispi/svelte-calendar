@@ -50,7 +50,7 @@
       <button
         type="button"
         onclick={() => handleSelect(item)}
-        class="w-full text-left hover:bg-gravex-green-50 transition-colors"
+        class="w-full text-left hover:bg-gravex-primary-50 transition-colors"
       >
         {@render children(item)}
       </button>

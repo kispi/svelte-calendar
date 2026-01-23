@@ -298,11 +298,11 @@
       if (previousMonth !== newMonth) {
         // Show toast notification when navigating to a different month
         const dateStr = currentDate.format(
-          i18n.locale === 'kr' ? 'YYYY년 M월 D일' : 'MMMM D, YYYY'
+          i18n.locale === 'kr' ? 'YYYY년M월D일' : 'MMMM D, YYYY'
         )
         toast.info(
           i18n.locale === 'kr'
-            ? `${dateStr}로 이동했습니다`
+            ? `${dateStr}로 이동했습니다.`
             : `Navigated to ${dateStr}`,
           { position: 'top' }
         )
@@ -391,7 +391,7 @@
     <div class="relative z-20">
       <button
         onclick={openMonthPicker}
-        class="flex items-center gap-2 text-3xl font-black text-slate-900 dark:text-white hover:text-gravex-green-600 dark:hover:text-gravex-green-400 transition-colors cursor-pointer group select-none tracking-tight"
+        class="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors cursor-pointer group select-none tracking-tight"
       >
         <span>{headerDateDisplay}</span>
         <svg
@@ -404,7 +404,7 @@
           stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="text-slate-300 group-hover:text-gravex-green-500 transition-colors"
+          class="text-slate-300 group-hover:text-gravex-primary-500 transition-colors"
           ><path d="m6 9 6 6 6-6" /></svg
         >
       </button>
@@ -420,11 +420,11 @@
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
-          class="w-full bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-gravex-green-200 focus:ring-4 focus:ring-gravex-green-500/10 dark:focus:ring-gravex-green-500/20 rounded-xl px-10 py-2.5 text-sm font-medium transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600 dark:text-white"
+          class="w-full bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-gravex-primary-200 focus:ring-4 focus:ring-gravex-primary-500/10 dark:focus:ring-gravex-primary-500/20 rounded-xl px-10 py-2.5 text-sm font-medium transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600 dark:text-white"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-green-500 transition-colors"
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-primary-500 transition-colors"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -469,7 +469,7 @@
               <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0">
                   <div
-                    class="font-bold text-slate-800 truncate group-hover/item:text-gravex-green-700 transition-colors"
+                    class="font-bold text-slate-800 truncate group-hover/item:text-gravex-primary-700 transition-colors"
                   >
                     {result.title}
                   </div>
@@ -495,7 +495,7 @@
       <button
         onclick={goToday}
         aria-label={i18n.t('common.today')}
-        class="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-gravex-green-600 dark:hover:text-gravex-green-400 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all uppercase tracking-wider shadow-sm hover:shadow"
+        class="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all uppercase tracking-wider shadow-sm hover:shadow"
       >
         {i18n.t('common.today')}
       </button>
@@ -560,7 +560,7 @@
         class="
                     min-h-[80px] border-b border-r border-slate-50 dark:border-slate-700 p-2 transition-colors
                     {day.isSame(monthStart, 'month')
-          ? 'bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-gravex-green-900/10'
+          ? 'bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-gravex-primary-900/10'
           : 'bg-slate-50/30 dark:bg-slate-800/30 text-slate-300 dark:text-slate-700'}
                     cursor-pointer relative
                 "
@@ -575,7 +575,7 @@
               class="
                           text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full shrink-0
                           {day.isSame(dayjs(), 'day')
-                ? 'bg-gravex-green-500 text-white'
+                ? 'bg-gravex-primary-500 text-white'
                 : 'text-slate-700 dark:text-slate-300'}
                           {(systemEvent &&
                 systemEvent.isRedDay &&

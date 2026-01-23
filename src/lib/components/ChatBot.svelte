@@ -309,7 +309,8 @@
           onkeydown={handleKeydown}
           placeholder={i18n.t('chatbot.placeholder')}
           rows="1"
-          class="w-full bg-slate-50/50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-200 transition-all resize-none max-h-32"
+          disabled={isLoading}
+          class="w-full bg-slate-50/50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-200 transition-all resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"
         ></textarea>
         <button
           onclick={sendMessage}

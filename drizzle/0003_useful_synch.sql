@@ -1,1 +1,0 @@
-ALTER TABLE `accounts` MODIFY COLUMN `expires_at` timestamp;

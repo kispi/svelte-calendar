@@ -5,6 +5,7 @@
   import { settings } from '$lib/store/settings.svelte'
   import { modal } from '$lib/modal.svelte.js'
   import ModalConfirm from './modals/ModalConfirm.svelte'
+  import ModalConfirmDanger from './modals/ModalConfirmDanger.svelte'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import { logger } from '$lib/logger'
 
@@ -158,11 +159,11 @@
   }
 
   const handleDeleteAccount = async () => {
-    const confirmed = await modal.show(ModalConfirm, {
-      title: i18n.t('nav.deleteAccount'),
+    const confirmed = await modal.show(ModalConfirmDanger, {
+      title: i18n.t('nav.deleteAccountTitle'),
       message: i18n.t('nav.deleteAccountConfirm'),
-      confirmText: i18n.t('nav.deleteAccount'),
-      confirmClass: 'btn-primary'
+      confirmText: i18n.t('nav.deleteAccountPhrase'),
+      actionText: i18n.t('nav.deleteAccount')
     })
 
     if (confirmed) {

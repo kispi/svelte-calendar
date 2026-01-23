@@ -469,9 +469,9 @@
   {:else}
     <div class="relative h-screen">
       <div
-        class="absolute inset-0 bg-white/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded border border-slate-100"
+        class="absolute inset-0 bg-white/60 dark:bg-slate-950/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded border border-slate-100 dark:border-slate-800"
       >
-        <p class="text-xl font-bold text-slate-700 dark:text-slate-200 mb-6">
+        <p class="text-xl font-bold text-slate-900 dark:text-white mb-6">
           {i18n.t('common_ui.onboarding')}
         </p>
         <button

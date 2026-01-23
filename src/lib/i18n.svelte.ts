@@ -29,6 +29,9 @@ const translations = {
       deleteAccount: 'Delete Account',
       deleteAccountConfirm:
         'Are you sure you want to delete your account?\nYou can rejoin with the same account, but events and notes cannot be restored.\nWe recommend making a backup of your data by "Exporting" before deleting your account.',
+      deleteAccountTitle: 'Delete Account',
+      deleteAccountPhrase: 'DELETE ACCOUNT',
+      deleteAccountInputLabel: 'Type "{text}" to confirm'
     },
     event: {
       new: 'New Event',
@@ -114,6 +117,9 @@ const translations = {
       deleteAccount: '계정 삭제',
       deleteAccountConfirm:
         '정말 계정을 삭제하시겠습니까?\n동일한 계정으로 재가입은 가능하지만, 일정과 노트 등은 복구할 수 없습니다.\n계정 삭제 전 "내보내기"를 하여 일정을 백업해두시기를 권장합니다.',
+      deleteAccountTitle: '계정 삭제',
+      deleteAccountPhrase: '계정 삭제',
+      deleteAccountInputLabel: '아래 입력창에 "{text}"를 입력하세요'
     },
     event: {
       new: '새 일정',

@@ -157,6 +157,31 @@
     }
   }
 
+  const handleDeleteAccount = async () => {
+    const confirmed = await modal.show(ModalConfirm, {
+      title: i18n.t('nav.deleteAccount'),
+      message: i18n.t('nav.deleteAccountConfirm'),
+      confirmText: i18n.t('nav.deleteAccount'),
+      confirmClass: 'btn-primary'
+    })
+
+    if (confirmed) {
+      try {
+        const userId = $page.data.session?.user?.id
+        if (!userId) return
+
+        const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' })
+        if (res.ok) {
+          window.location.href = '/'
+        } else {
+          logger.error('Failed to delete account')
+        }
+      } catch (err) {
+        logger.error('Failed to delete account', { error: err })
+      }
+    }
+  }
+
   // Initialize visibility
   $effect(() => {
     if (query.data && visibleCalendarIds.length === 0) {
@@ -242,7 +267,7 @@
   <!-- Calendars Header -->
   <div class="flex items-center justify-between mb-4 px-3">
     <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-      {i18n.locale === 'kr' ? '내 캘린더' : 'My Calendars'}
+      {i18n.t('nav.myCalendars')}
     </h2>
     <div class="flex items-center gap-2">
       <button
@@ -623,6 +648,33 @@
           /><line x1="21" x2="9" y1="12" y2="12" /></svg
         >
         <span class="text-sm font-medium">{i18n.t('nav.signOut')}</span>
+      </button>
+
+      <button
+        onclick={handleDeleteAccount}
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-50 dark:text-red-400/70 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors mt-1"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-trash-2"
+          ><path d="M3 6h18" /><path
+            d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"
+          /><path d="M8 6V4c0-1 1-2 2-2h4c0 1 1 2 2 2v2" /><line
+            x1="10"
+            x2="10"
+            y1="11"
+            y2="17"
+          /><line x1="14" x2="14" y1="11" y2="17" /></svg
+        >
+        <span class="text-sm font-medium">{i18n.t('nav.deleteAccount')}</span>
       </button>
 
       <div class="mt-4 px-2 text-center text-xs text-slate-700 font-medium">

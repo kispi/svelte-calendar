@@ -168,9 +168,9 @@ export type NewNote = InferInsertModel<typeof note>
 
 export const chatLog = mysqlTable('chat_logs', {
   ...baseColumns,
-  userId: varchar('user_id', { length: 255 })
-    .notNull()
-    .references(() => user.id, { onDelete: 'cascade' }),
+  userId: varchar('user_id', { length: 255 }).references(() => user.id, {
+    onDelete: 'set null'
+  }),
   request: text('request'), // User's message
   response: text('response'), // AI's full response
   functionCalls: text('function_calls'), // JSON string of function calls made

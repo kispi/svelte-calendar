@@ -20,11 +20,15 @@ const translations = {
     },
     nav: {
       calendar: 'CALENDAR',
+      myCalendars: 'MY CALENDARS',
       notes: 'NOTES',
       signOut: 'Sign Out',
       signOutConfirm: 'Are you sure you want to sign out?',
       import: 'Import',
-      export: 'Export'
+      export: 'Export',
+      deleteAccount: 'Delete Account',
+      deleteAccountConfirm:
+        'Are you sure you want to delete your account?\nYou can rejoin with the same account, but events and notes cannot be restored.\nWe recommend making a backup of your data by "Exporting" before deleting your account.',
     },
     event: {
       new: 'New Event',
@@ -101,11 +105,15 @@ const translations = {
     },
     nav: {
       calendar: '달력',
+      myCalendars: '내 캘린더',
       notes: '메모',
       signOut: '로그아웃',
       signOutConfirm: '로그아웃 하시겠습니까?',
       import: '가져오기',
-      export: '내보내기'
+      export: '내보내기',
+      deleteAccount: '계정 삭제',
+      deleteAccountConfirm:
+        '정말 계정을 삭제하시겠습니까?\n동일한 계정으로 재가입은 가능하지만, 일정과 노트 등은 복구할 수 없습니다.\n계정 삭제 전 "내보내기"를 하여 일정을 백업해두시기를 권장합니다.',
     },
     event: {
       new: '새 일정',

@@ -383,17 +383,15 @@
   })
 </script>
 
-<div
-  class="bg-white rounded border border-slate-100 shadow-xl overflow-hidden h-full flex flex-col"
->
+<div class="h-full flex flex-col bg-white dark:bg-slate-900">
   <!-- Header -->
   <div
-    class="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-gravex-green-50 to-white border-b border-gravex-green-100 gap-4"
+    class="px-4 py-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-4"
   >
     <div class="relative z-20">
       <button
         onclick={openMonthPicker}
-        class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-slate-800 hover:text-gravex-green-700 transition-colors cursor-pointer group select-none"
+        class="flex items-center gap-2 text-3xl font-black text-slate-900 dark:text-white hover:text-gravex-green-600 dark:hover:text-gravex-green-400 transition-colors cursor-pointer group select-none tracking-tight"
       >
         <span>{headerDateDisplay}</span>
         <svg
@@ -403,7 +401,7 @@
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2.5"
+          stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
           class="text-slate-300 group-hover:text-gravex-green-500 transition-colors"
@@ -413,7 +411,7 @@
     </div>
 
     <!-- Search Bar -->
-    <div class="flex-1 max-w-md w-full mx-4">
+    <div class="flex-1 max-w-sm w-full mx-4">
       <div class="relative group">
         <input
           type="text"
@@ -422,11 +420,11 @@
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
-          class="w-full bg-slate-100/50 border-transparent focus:bg-white focus:border-gravex-green-200 focus:ring-4 focus:ring-gravex-green-500/10 rounded-xl px-10 py-2 text-sm transition-all outline-none"
+          class="w-full bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-gravex-green-200 focus:ring-4 focus:ring-gravex-green-500/10 dark:focus:ring-gravex-green-500/20 rounded-xl px-10 py-2.5 text-sm font-medium transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600 dark:text-white"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-green-500 transition-colors"
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-green-500 transition-colors"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -465,10 +463,14 @@
           onClose={() => (showSearchDropdown = false)}
         >
           {#snippet children(result: CalendarEvent)}
-            <div class="px-4 py-3 border-b border-slate-50 last:border-b-0">
+            <div
+              class="px-4 py-3 border-b border-slate-50 last:border-b-0 group/item hover:bg-slate-50"
+            >
               <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0">
-                  <div class="font-semibold text-slate-800 truncate">
+                  <div
+                    class="font-bold text-slate-800 truncate group-hover/item:text-gravex-green-700 transition-colors"
+                  >
                     {result.title}
                   </div>
                   {#if result.description}
@@ -478,8 +480,8 @@
                   {/if}
                 </div>
                 {#if result.startTime}
-                  <div class="text-xs text-slate-400 ml-2 shrink-0">
-                    {dayjs(result.startTime).format('MMM D, YYYY')}
+                  <div class="text-xs text-slate-400 ml-2 shrink-0 font-medium">
+                    {dayjs(result.startTime).format('MMM D')}
                   </div>
                 {/if}
               </div>
@@ -489,27 +491,27 @@
       </div>
     </div>
 
-    <div class="flex gap-2">
+    <div class="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
       <button
         onclick={goToday}
         aria-label={i18n.t('common.today')}
-        class="px-3 py-2 text-xs font-bold text-slate-600 hover:text-gravex-green-600 hover:bg-slate-100 rounded transition-colors uppercase tracking-wider"
+        class="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-gravex-green-600 dark:hover:text-gravex-green-400 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all uppercase tracking-wider shadow-sm hover:shadow"
       >
         {i18n.t('common.today')}
       </button>
+      <div class="w-px bg-slate-300 dark:bg-slate-600 my-1 mx-1"></div>
       <button
         onclick={prevMonth}
-        aria-label={i18n.locale === 'kr' ? '이전 달' : 'Previous Month'}
-        class="p-2 hover:bg-slate-100 rounded transition-colors text-slate-400 hover:text-slate-600"
+        class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:shadow-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="2.5"
           stroke-linecap="round"
           stroke-linejoin="round"
           class="lucide lucide-chevron-left"><path d="m15 18-6-6 6-6" /></svg
@@ -517,17 +519,16 @@
       </button>
       <button
         onclick={nextMonth}
-        aria-label={i18n.locale === 'kr' ? '다음 달' : 'Next Month'}
-        class="p-2 hover:bg-slate-100 rounded transition-colors text-slate-400 hover:text-slate-600"
+        class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:shadow-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          stroke-width="2"
+          stroke-width="2.5"
           stroke-linecap="round"
           stroke-linejoin="round"
           class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6" /></svg
@@ -537,10 +538,12 @@
   </div>
 
   <!-- Weekdays -->
-  <div class="grid grid-cols-7 border-b border-slate-100 bg-slate-50/50">
+  <div
+    class="grid grid-cols-7 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"
+  >
     {#each weekdays as day}
       <div
-        class="py-3 text-center text-xs font-bold text-slate-400 uppercase tracking-wider"
+        class="py-4 text-center text-xs font-black text-slate-400 uppercase tracking-widest"
       >
         {day}
       </div>
@@ -555,10 +558,10 @@
       {@const normalEvents = dayEvents.filter((e) => !isSystemEvent(e))}
       <div
         class="
-                    min-h-[80px] border-b border-r border-slate-50 p-2 transition-colors
+                    min-h-[80px] border-b border-r border-slate-50 dark:border-slate-700 p-2 transition-colors
                     {day.isSame(monthStart, 'month')
-          ? 'bg-white hover:bg-gravex-green-50/30'
-          : 'bg-slate-50/30 text-slate-300'}
+          ? 'bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-gravex-green-900/10'
+          : 'bg-slate-50/30 dark:bg-slate-800/30 text-slate-300 dark:text-slate-700'}
                     cursor-pointer relative
                 "
         role="button"
@@ -572,13 +575,13 @@
               class="
                           text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full shrink-0
                           {day.isSame(dayjs(), 'day')
-                ? 'bg-gravex-green-500 text-white shadow-md shadow-gravex-green-200'
-                : ''}
+                ? 'bg-gravex-green-500 text-white'
+                : 'text-slate-700 dark:text-slate-300'}
                           {(systemEvent &&
                 systemEvent.isRedDay &&
                 !day.isSame(dayjs(), 'day')) ||
               (day.day() === 0 && !day.isSame(dayjs(), 'day'))
-                ? 'text-red-500'
+                ? '!text-red-500'
                 : ''}
                       "
             >
@@ -588,7 +591,7 @@
               <span
                 class="text-xs font-normal truncate ml-1 flex-1 {systemEvent.isRedDay
                   ? 'text-red-500'
-                  : 'text-slate-500'}"
+                  : 'text-slate-500 dark:text-slate-400'}"
                 title={systemEvent.title}
               >
                 {systemEvent.title}
@@ -604,11 +607,8 @@
             {@const color = getEventColor(calEvent.calendarId)}
             <button
               type="button"
-              class="w-full text-left px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
-                              bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200"
-              style={color
-                ? `background-color: ${color}20; color: ${color}; border-color: ${color}40;`
-                : ''}
+              class="w-full text-left px-1 py-0.5 text-xs font-semibold rounded-[2px] truncate transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+              style={color ? `color: ${color};` : 'color: #64748b;'}
               onclick={(e) => {
                 e.stopPropagation()
                 // Handle recurring instances: open master event

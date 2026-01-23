@@ -328,12 +328,47 @@
   <meta name="twitter:image" content="/logo.png" />
 </svelte:head>
 
-<main class="h-screen flex flex-col relative overflow-hidden">
+<main
+  class="h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300 selection:bg-gravex-green-500/30"
+>
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
       <!-- Sidebar -->
       {#if isSidebarOpen}
-        <div class="hidden lg:block h-full">
+        <!-- Mobile Drawer -->
+        <div
+          class="fixed inset-0 z-[100] lg:hidden"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+            onclick={() => (isSidebarOpen = false)}
+            aria-hidden="true"
+          ></div>
+          <div
+            class="absolute inset-y-0 left-0 w-72 bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-300"
+          >
+            <Sidebar
+              visibleCalendarIds={settings.visibleCalendarIds}
+              onToggle={toggleCalendar}
+              bind:activeTab={settings.lastActiveTab}
+              onSignOut={confirmSignOut}
+              onImport={handleImport}
+              onExport={handleExport}
+              onLocaleChange={() => {
+                const next = i18n.locale === 'kr' ? 'en' : 'kr'
+                i18n.setLocale(next)
+              }}
+              class="h-full border-none"
+            />
+          </div>
+        </div>
+
+        <!-- Desktop Sidebar -->
+        <div
+          class="hidden lg:block h-full transition-all duration-300 ease-in-out"
+        >
           <Sidebar
             visibleCalendarIds={settings.visibleCalendarIds}
             onToggle={toggleCalendar}
@@ -345,147 +380,94 @@
               const next = i18n.locale === 'kr' ? 'en' : 'kr'
               i18n.setLocale(next)
             }}
+            class="bg-transparent border-none text-slate-400 w-72"
           />
         </div>
       {/if}
 
-      <div class="flex-1 flex flex-col h-full overflow-hidden bg-white">
+      <!-- Main Content Card -->
+      <div
+        class="flex-1 flex flex-col h-full overflow-hidden p-0 lg:py-4 lg:pr-4 transition-all duration-300"
+      >
         <div
-          class="px-4 md:px-6 lg:px-8 py-6 pb-0 flex items-center justify-between"
+          class="flex-1 bg-white dark:bg-slate-900 rounded-none lg:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-0 lg:border border-slate-200/50 dark:border-slate-800 transition-colors duration-300"
         >
-          <div class="flex items-center gap-3">
-            <!-- Sidebar Toggle -->
-            <button
-              class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-2 rounded-lg transition-colors"
-              onclick={() => (isSidebarOpen = !isSidebarOpen)}
-              aria-label="Open Menu"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+          <!-- Header -->
+          <div
+            class="px-4 md:px-6 lg:px-8 py-5 flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-20 transition-colors duration-300"
+          >
+            <div class="flex items-center gap-4">
+              <!-- Sidebar Toggle -->
+              <button
+                class="text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all"
+                onclick={() => (isSidebarOpen = !isSidebarOpen)}
+                aria-label="Toggle Sidebar"
               >
-                <path d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-            <h1
-              class="text-3xl font-black tracking-tight flex items-center gap-3"
-            >
-              <span class="text-gravex-green-600">
-                {settings.lastActiveTab === 'calendar' ? 'Calender' : 'Notes'}
-              </span>
-            </h1>
-          </div>
-        </div>
-
-        <!-- Mobile Sidebar Drawer -->
-        {#if isSidebarOpen}
-          <div class="fixed inset-0 z-[150] lg:hidden">
-            <!-- Backdrop -->
-            <div
-              class="absolute inset-0 bg-black/20 backdrop-blur-sm"
-              role="presentation"
-              onclick={() => (isSidebarOpen = false)}
-            ></div>
-            <!-- Drawer -->
-            <div
-              class="absolute left-0 top-0 bottom-0 w-[280px] bg-white shadow-2xl animate-in slide-in-from-left duration-300 flex flex-col"
-            >
-              <!-- Drawer Header -->
-              <div
-                class="flex items-center justify-between p-4 border-b border-slate-100 shrink-0"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                  <path d="M9 3v18" />
+                </svg>
+              </button>
+              <h1
+                class="text-2xl font-black tracking-tight flex items-center gap-3 text-slate-900 dark:text-white transition-colors"
               >
-                <span class="font-black text-xl text-gravex-green-600"
-                  >Gravex.app</span
-                >
-                <button
-                  onclick={() => (isSidebarOpen = false)}
-                  class="p-2 -mr-2 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors"
-                  aria-label="Close menu"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    class="lucide lucide-x"
-                    ><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
-                  >
-                </button>
-              </div>
-
-              <div class="flex-1 overflow-hidden flex flex-col">
-                <Sidebar
-                  visibleCalendarIds={settings.visibleCalendarIds}
-                  onToggle={toggleCalendar}
-                  bind:activeTab={settings.lastActiveTab}
-                  class="w-full h-full border-none bg-white p-4"
-                  onSignOut={confirmSignOut}
-                  onImport={handleImport}
-                  onExport={handleExport}
-                  onLocaleChange={() => {
-                    const next = i18n.locale === 'kr' ? 'en' : 'kr'
-                    i18n.setLocale(next)
-                  }}
-                  onTabChange={() => {
-                    if (window.innerWidth < 1024) isSidebarOpen = false
-                  }}
-                />
-              </div>
+                {settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'}
+              </h1>
             </div>
           </div>
-        {/if}
 
-        <div
-          class="flex-1 overflow-hidden relative flex flex-col items-center bg-slate-50/30"
-        >
-          <div class="w-full h-full flex flex-col p-4 md:p-6 lg:p-8 relative">
-            {#if query.isError}
-              <div
-                class="h-full flex flex-col items-center justify-center bg-red-50 rounded border border-red-100 shadow-sm"
-              >
-                <p class="text-red-500 font-bold mb-2">Failed to load events</p>
-                <button
-                  onclick={() => query.refetch()}
-                  class="text-red-600 underline">Try again</button
+          <!-- Content -->
+          <div
+            class="flex-1 overflow-hidden relative flex flex-col items-center bg-white dark:bg-slate-900 transition-colors duration-300"
+          >
+            <div class="w-full h-full flex flex-col p-0 md:p-2 lg:p-4 relative">
+              {#if query.isError}
+                <div
+                  class="h-full flex flex-col items-center justify-center bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-100 dark:border-red-900/50 shadow-sm m-4"
                 >
-              </div>
-            {:else if !query.data && query.isLoading}
-              <CalendarSkeleton />
-            {:else if settings.lastActiveTab === 'calendar'}
-              <CalendarGrid
-                bind:currentDate
-                events={query.data || []}
-                calendars={calendarsQuery.data || []}
-                visibleCalendarIds={settings.visibleCalendarIds}
-                onDateClick={handleDateClick}
-                onEventClick={handleEventClick}
-              />
+                  <p class="text-red-500 dark:text-red-400 font-bold mb-2">
+                    Failed to load events
+                  </p>
+                  <button onclick={() => query.refetch()} class="btn-danger"
+                    >Try again</button
+                  >
+                </div>
+              {:else if !query.data && query.isLoading}
+                <div class="p-4"><CalendarSkeleton /></div>
+              {:else if settings.lastActiveTab === 'calendar'}
+                <CalendarGrid
+                  bind:currentDate
+                  events={query.data || []}
+                  calendars={calendarsQuery.data || []}
+                  visibleCalendarIds={settings.visibleCalendarIds}
+                  onDateClick={handleDateClick}
+                  onEventClick={handleEventClick}
+                />
 
-              <!-- Loading Overlay -->
-              <div
-                class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-white/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
-                class:opacity-0={!query.isFetching}
-                class:opacity-100={query.isFetching}
-              >
-                <CalendarSkeleton />
-              </div>
-            {:else}
-              <div class="h-full overflow-y-auto w-full">
-                <NotesView initialNoteId={settings.lastNoteId} />
-              </div>
-            {/if}
+                <!-- Loading Overlay -->
+                <div
+                  class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-white/50 dark:bg-slate-900/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
+                  class:opacity-0={!query.isFetching}
+                  class:opacity-100={query.isFetching}
+                >
+                  <CalendarSkeleton />
+                </div>
+              {:else}
+                <div class="h-full overflow-y-auto w-full px-4">
+                  <NotesView initialNoteId={settings.lastNoteId} />
+                </div>
+              {/if}
+            </div>
           </div>
         </div>
       </div>

@@ -5,13 +5,15 @@ export interface SettingsData {
   visibleCalendarIds: string[]
   locale: 'en' | 'kr'
   lastNoteId: string | null
+  theme: 'light' | 'dark'
 }
 
 const DEFAULT_SETTINGS: SettingsData = {
   lastActiveTab: 'calendar',
   visibleCalendarIds: [],
   locale: 'en',
-  lastNoteId: null
+  lastNoteId: null,
+  theme: 'light'
 }
 
 const createSettings = () => {
@@ -66,6 +68,13 @@ const createSettings = () => {
     },
     set lastNoteId(id: string | null) {
       data.lastNoteId = id
+      save()
+    },
+    get theme() {
+      return data.theme
+    },
+    set theme(value: 'light' | 'dark') {
+      data.theme = value
       save()
     }
   }

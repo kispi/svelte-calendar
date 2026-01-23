@@ -12,6 +12,7 @@
   import { toast } from '$lib/toast.svelte.js'
   import { RRule } from '$lib/utils/rrule'
   import { logger } from '$lib/logger'
+  import { getAllHolidays } from '$lib/holidays'
 
   dayjs.extend(isSameOrBefore)
   dayjs.extend(localeData)
@@ -62,6 +63,56 @@
     // Safety check for date validity
     const viewStart = startDate.toDate()
     const viewEnd = endDate.toDate()
+
+    // Inject Client-Side Holidays
+    // Determine years to fetch (Current year of view +/- 1 usually safe)
+    const years = new Set<number>()
+    years.add(startDate.year())
+    years.add(endDate.year())
+
+    const generatedHolidays: ExtendedEvent[] = []
+
+    // Using import from existing tool
+    // We need to import getAllHolidays. I'll add the import in a separate tool call if needed or assume it's there?
+    // Let's add the import line first in another step or try to reference if I can.
+    // wait, I can edit multiple chunks? ReplaceFileContent is single chunk.
+    // I will assume I add the import at the top later.
+
+    // Actually, I can just write the logic here assuming getAllHolidays is imported.
+
+    for (const y of years) {
+      // @ts-ignore - getAllHolidays will be imported
+      const hols = getAllHolidays(y)
+      for (const h of hols) {
+        const [yStr, mStr, dStr] = h.date.split('-').map(Number)
+        const start = new Date(yStr, mStr - 1, dStr, 0, 0, 0)
+        const end = new Date(yStr, mStr - 1, dStr, 23, 59, 59)
+
+        generatedHolidays.push({
+          id: `holiday-${h.date}-${h.title}`,
+          title: h.title,
+          description: '공휴일',
+          location: null,
+          lat: null,
+          lng: null,
+          locationAddress: null,
+          placeId: null,
+          startTime: start,
+          endTime: end,
+          type: 'holiday',
+          calendarId: 'system-holidays',
+          recurrenceRule: null,
+          exdates: null,
+          isSystemEvent: true, // Custom property
+          isRedDay: h.isRedDay
+        } as any)
+      }
+    }
+
+    // Add holidays (filtered by view range if we want, or processedEvents will filter?)
+    // This derived calls is for *all* events to be processed/expanded.
+    // Later `getEventsForDay` filters them by day.
+    allEvents.push(...generatedHolidays)
 
     for (const event of events) {
       if (!event.startTime) continue
@@ -156,7 +207,6 @@
 
   let searchQuery = $state('')
   let searchResults = $state<CalendarEvent[]>([])
-  let isSearching = $state(false)
   let showSearchDropdown = $state(false)
   let lastSearchedQuery = $state('')
 

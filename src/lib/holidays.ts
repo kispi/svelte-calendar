@@ -74,6 +74,80 @@ export const getLunarHolidays = (year: number): Holiday[] => {
   return list
 }
 
+// Helper to check if a year is a leap year (though Date object handles it, useful if needed, but Date is better)
+
+export const getAllHolidays = (year: number): Holiday[] => {
+  const list: Holiday[] = []
+
+  // 1. Fixed Holidays
+  for (const h of holidays) {
+    const [m, d] = h.date.split('-').map(Number)
+    const date = new Date(year, m - 1, d)
+    // Validate if valid date (e.g. Feb 29 on non-leap year)
+    if (date.getMonth() !== m - 1) continue
+
+    list.push({
+      date: dateFormatter(date),
+      title: h.title,
+      isRedDay: h.isRedDay,
+      originalDate: date // Internal use for subs
+    } as Holiday & { originalDate?: Date })
+  }
+
+  // 2. Lunar Holidays
+  const lunar = getLunarHolidays(year)
+  list.push(...lunar)
+
+  // 3. Substitutes
+  // Logic from previous server implementation (with slight improvements if needed)
+  // Current rule: If Red Day overlaps Sat/Sun, substitute on next non-holiday?
+  // Previous logic found in server:
+  // - Skip '설날'/'추석' (Why? Maybe handled differently or just excluded in that snippet?)
+  // - For others: If Sat or Sun -> Mon or Tue.
+
+  // Updates for 2025/2026 Korean laws:
+  // - Seollal/Chuseok: Sub if Sunday (not Sat).
+  // - Children's Day: Sub if Sat or Sun.
+  // - Others (3.1, 8.15, 10.3, 10.9, 12.25, 1.1, 6.6, Buddha):
+  //   - Actually 1.1 and 6.6, 12.25 might NOT have substitutes yet depending on exact law, but 
+  //     recent changes expanded it. 
+  //     Let's stick to the "Generic Sat/Sun -> Sub" logic found in server for consistency,
+  //     BUT we must be careful not to duplicate if we want to be exact.
+  //     However, user asked to "Refactor", implying preserving behavior.
+  //     The server logic was:
+  //       if (dayOfWeek === 0 || dayOfWeek === 6) { add sub }
+  //       EXCEPT Seollal/Chuseok.
+
+  // Let's copy that logic for now to ensure no regression in behavior, 
+  // but we can clean it up.
+
+  const generatedSubstitutes: Holiday[] = []
+
+  for (const h of list) {
+    if (!h.isRedDay) continue
+    // Filter explicitly as per server logic
+    if (h.title === '설날' || h.title === '추석') continue
+
+    // The 'date' string is YYYY-MM-DD
+    const d = new Date(h.date)
+    const day = d.getDay() // 0=Sun, 6=Sat
+
+    if (day === 0 || day === 6) {
+      const subDays = day === 0 ? 1 : 2
+      const subDate = new Date(d)
+      subDate.setDate(d.getDate() + subDays)
+
+      generatedSubstitutes.push({
+        date: dateFormatter(subDate),
+        title: `대체공휴일 (${h.title})`,
+        isRedDay: true
+      })
+    }
+  }
+
+  return [...list, ...generatedSubstitutes].sort((a, b) => a.date.localeCompare(b.date))
+}
+
 const dateFormatter = (d: Date): string => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }

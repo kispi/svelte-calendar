@@ -298,21 +298,15 @@
 
 <svelte:head>
   <title>
-    {settings.lastActiveTab === 'calendar' ? 'Calender' : 'Notes'} | Gravex.app
+    {settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'} | Gravex.app
   </title>
-  <meta
-    name="description"
-    content="Gravex.app is a clean, minimal planner that combines a powerful calendar with smart note-taking. Sync your schedule and manage your tasks with ease."
-  />
+  <meta name="description" content="Enjoy lightning fast calendar and notes." />
 
   <!-- Open Graph / Social Media -->
-  <meta
-    property="og:title"
-    content="Gravex.app | Simple Calendar & Smart Notes"
-  />
+  <meta property="og:title" content="Calendar & Notes | Gravex.app" />
   <meta
     property="og:description"
-    content="A minimal, high-performance planner for managing your schedule and notes in one place."
+    content="Enjoy lightning fast calendar and notes."
   />
   <meta property="og:image" content="/logo.png" />
   <meta property="og:type" content="website" />
@@ -320,10 +314,10 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Gravex.app | Simple Planner" />
+  <meta name="twitter:title" content="Calendar & Notes | Gravex.app" />
   <meta
     name="twitter:description"
-    content="The minimal calendar and notes app you've been looking for."
+    content="Enjoy lightning fast calendar and notes."
   />
   <meta name="twitter:image" content="/logo.png" />
 </svelte:head>

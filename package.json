@@ -41,6 +41,7 @@
     "drizzle-orm": "^0.45.1",
     "flatpickr": "^4.6.13",
     "ics": "^3.8.1",
+    "korean-lunar-calendar": "^0.3.6",
     "mysql2": "^3.16.0",
     "node-ical": "^0.23.1"
   }

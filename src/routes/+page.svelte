@@ -482,7 +482,6 @@
                 class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-white/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
                 class:opacity-0={!query.isFetching}
                 class:opacity-100={query.isFetching}
-                class:pointer-events-auto={query.isFetching}
               >
                 <CalendarSkeleton />
               </div>

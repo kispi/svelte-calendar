@@ -2,7 +2,7 @@ import { db } from '$lib/server/db'
 import { calendar, calendarMember } from '$lib/server/db/schema'
 import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
-import { eq, and, or } from 'drizzle-orm'
+import { eq, and, or, isNotNull } from 'drizzle-orm'
 import type { RequestHandler } from './$types'
 
 export const GET: RequestHandler = async ({ locals }) => {
@@ -23,8 +23,6 @@ export const GET: RequestHandler = async ({ locals }) => {
       .from(calendar)
       .innerJoin(calendarMember, eq(calendar.id, calendarMember.calendarId))
       .where(eq(calendarMember.userId, session.user.id))
-
-    // TODO: Fetch System Calendars (e.g. Holidays) - For now just user calendars
 
     return json(calendars)
   } catch (e) {

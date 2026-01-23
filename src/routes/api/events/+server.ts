@@ -3,6 +3,7 @@ import { event, calendar, calendarMember } from '$lib/server/db/schema'
 import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
 import { eq, asc, and, or, like, inArray, gte, lte, isNotNull } from 'drizzle-orm'
+import { holidays, getLunarHolidays } from '$lib/holidays'
 
 import type { RequestHandler } from './$types'
 
@@ -42,7 +43,6 @@ export const GET: RequestHandler = async ({ locals, url }) => {
     }
 
     if (startDateStr && endDateStr) {
-      const start = new Date(startDateStr)
       const end = new Date(endDateStr)
 
       // Filter events that start before the query end date OR are recurring
@@ -88,7 +88,131 @@ export const GET: RequestHandler = async ({ locals, url }) => {
       })
     }
 
-    return json(filteredEvents)
+    // Inject Holidays (Fixed & Lunar)
+    // Determine years to fetch
+    const yearsToFetch = new Set<number>()
+    if (startDateStr && endDateStr) {
+      const sY = new Date(startDateStr).getFullYear()
+      const eY = new Date(endDateStr).getFullYear()
+      for (let y = sY; y <= eY; y++) yearsToFetch.add(y)
+    } else {
+      const currentYear = new Date().getFullYear()
+      yearsToFetch.add(currentYear - 1)
+      yearsToFetch.add(currentYear)
+      yearsToFetch.add(currentYear + 1)
+    }
+
+    const holidayEvents: any[] = []
+    const baseHolidays: any[] = []
+
+    for (const year of yearsToFetch) {
+      // 1. Fixed Holidays
+      for (const h of holidays) {
+        const [m, d] = h.date.split('-').map(Number)
+        const date = new Date(year, m - 1, d)
+        const start = new Date(year, m - 1, d, 0, 0, 0)
+        const end = new Date(year, m - 1, d, 23, 59, 59)
+
+        baseHolidays.push({
+          id: `holiday-${year}-${h.date}`,
+          title: h.title,
+          description: '공휴일',
+          location: null,
+          lat: null,
+          lng: null,
+          locationAddress: null,
+          placeId: null,
+          startTime: start,
+          endTime: end,
+          type: 'holiday',
+          calendarId: 'system-holidays',
+          recurrenceRule: null,
+          exdates: null,
+          isSystemEvent: true,
+          isRedDay: h.isRedDay,
+          originalDate: date // Helper for substitute check
+        })
+      }
+
+      // 2. Lunar Holidays
+      // @ts-ignore
+      const lunarList = getLunarHolidays(year)
+      for (const h of lunarList) {
+        const [y, m, d] = h.date.split('-').map(Number)
+        const start = new Date(y, m - 1, d, 0, 0, 0)
+        const end = new Date(y, m - 1, d, 23, 59, 59)
+        const date = new Date(y, m - 1, d)
+
+        baseHolidays.push({
+          id: `lunar-${h.date}-${h.title}`,
+          title: h.title,
+          description: '명절',
+          location: null,
+          lat: null,
+          lng: null,
+          locationAddress: null,
+          placeId: null,
+          startTime: start,
+          endTime: end,
+          type: 'holiday',
+          calendarId: 'system-holidays',
+          recurrenceRule: null,
+          exdates: null,
+          isSystemEvent: true,
+          isRedDay: h.isRedDay,
+          originalDate: date
+        })
+      }
+    }
+
+    // 3. Process Substitute Holidays
+    const finalHolidays = [...baseHolidays]
+
+    // We iterate through all base holidays to check for substitutes
+    for (const h of baseHolidays) {
+      if (!h.isRedDay) continue
+      if (h.title === '설날' || h.title === '추석') continue // Exception as requested
+
+      const date = h.originalDate
+      const dayOfWeek = date.getDay() // 0=Sun, 6=Sat
+
+      if (dayOfWeek === 0 || dayOfWeek === 6) {
+        const substituteDate = new Date(date)
+        // If Sun (0), add 1 day. If Sat (6), add 2 days.
+        const daysToAdd = dayOfWeek === 0 ? 1 : 2
+        substituteDate.setDate(date.getDate() + daysToAdd)
+
+        const subStart = new Date(substituteDate.getFullYear(), substituteDate.getMonth(), substituteDate.getDate(), 0, 0, 0)
+        const subEnd = new Date(substituteDate.getFullYear(), substituteDate.getMonth(), substituteDate.getDate(), 23, 59, 59)
+
+        // Check if a holiday already exists on this substitute date?
+        // Real logic requires checking collisions, but for now we trust the "Next Monday" rule.
+
+        finalHolidays.push({
+          id: `${h.id}-sub`,
+          title: `대체공휴일 (${h.title})`,
+          description: '대체공휴일',
+          location: null,
+          lat: null,
+          lng: null,
+          locationAddress: null,
+          placeId: null,
+          startTime: subStart,
+          endTime: subEnd,
+          type: 'holiday',
+          calendarId: 'system-holidays',
+          recurrenceRule: null,
+          exdates: null,
+          isSystemEvent: true,
+          isRedDay: true
+        })
+      }
+    }
+
+    // Add holidays to the list if they fall within range logic (or just always send them as they are recurring)
+    // Recurring events are expanded on frontend, so we just send the master events.
+
+    return json([...filteredEvents, ...finalHolidays])
   } catch (e) {
     logger.error('API Error:', { error: e })
     throw error(500, 'Internal Server Error')

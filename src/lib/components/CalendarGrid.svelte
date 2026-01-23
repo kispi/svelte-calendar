@@ -28,6 +28,7 @@
   interface ExtendedEvent extends CalendarEvent {
     isRecurring?: boolean
     originalId?: string
+    isRedDay?: boolean
   }
 
   let {
@@ -249,6 +250,11 @@
     currentDate = dayjs()
   }
 
+  function isSystemEvent(event: CalendarEvent) {
+    if (event.type === 'holiday') return true
+    return false
+  }
+
   function getEventsForDay(day: Dayjs) {
     return processedEvents.filter((event) => {
       // 1. Basic date check
@@ -261,7 +267,8 @@
       if (
         event.calendarId &&
         visibleCalendarIds.length > 0 &&
-        !visibleCalendarIds.includes(event.calendarId)
+        !visibleCalendarIds.includes(event.calendarId) &&
+        !isSystemEvent(event) // Always show system events (holidays)
       ) {
         return false
       }
@@ -468,6 +475,9 @@
   <!-- Days Grid -->
   <div class="grid grid-cols-7 auto-rows-fr h-full overflow-hidden">
     {#each days as day}
+      {@const dayEvents = getEventsForDay(day)}
+      {@const systemEvent = dayEvents.find((e) => isSystemEvent(e))}
+      {@const normalEvents = dayEvents.filter((e) => !isSystemEvent(e))}
       <div
         class="
                     min-h-[80px] border-b border-r border-slate-50 p-2 transition-colors
@@ -481,28 +491,46 @@
         onclick={() => onDateClick(day)}
         onkeydown={(e) => e.key === 'Enter' && onDateClick(day)}
       >
-        <div class="flex justify-between items-start mb-1">
-          <span
-            class="
-                        text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full
-                        {day.isSame(dayjs(), 'day')
-              ? 'bg-gravex-green-500 text-white shadow-md shadow-gravex-green-200'
-              : ''}
-                    "
-          >
-            {day.format('D')}
-          </span>
+        <div class="flex justify-between items-start mb-1 max-w-full">
+          <div class="flex items-center min-w-0 flex-1">
+            <span
+              class="
+                          text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full shrink-0
+                          {day.isSame(dayjs(), 'day')
+                ? 'bg-gravex-green-500 text-white shadow-md shadow-gravex-green-200'
+                : ''}
+                          {(systemEvent &&
+                systemEvent.isRedDay &&
+                !day.isSame(dayjs(), 'day')) ||
+              (day.day() === 0 && !day.isSame(dayjs(), 'day'))
+                ? 'text-red-500'
+                : ''}
+                      "
+            >
+              {day.format('D')}
+            </span>
+            {#if systemEvent}
+              <span
+                class="text-xs font-normal truncate ml-1 flex-1 {systemEvent.isRedDay
+                  ? 'text-red-500'
+                  : 'text-slate-500'}"
+                title={systemEvent.title}
+              >
+                {systemEvent.title}
+              </span>
+            {/if}
+          </div>
         </div>
 
         <div class="space-y-1 overflow-y-auto max-h-[80px] custom-scrollbar">
-          {#each getEventsForDay(day) as calEvent}
+          {#each normalEvents as calEvent}
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             {@const color = getEventColor(calEvent.calendarId)}
             <button
               type="button"
               class="w-full text-left px-2 py-1 text-xs font-semibold rounded-sm truncate transition-all shadow-sm cursor-pointer border
-                             bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200"
+                              bg-slate-50 text-slate-700 border-slate-100 hover:bg-slate-200"
               style={color
                 ? `background-color: ${color}20; color: ${color}; border-color: ${color}40;`
                 : ''}

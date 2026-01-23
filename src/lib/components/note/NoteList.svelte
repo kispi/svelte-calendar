@@ -11,7 +11,7 @@
 
   let { notes = [], activeNoteId = null, onSelect }: NoteListProps = $props()
 
-  function getPreview(content: string | null) {
+  const getPreview = (content: string | null) => {
     if (!content)
       return i18n.locale === 'kr' ? '내용 없음' : 'No additional text'
     const lines = content.split('\n')

@@ -18,7 +18,7 @@
   let lastSyncedNoteId = $state<string | null>(null)
   let lastSyncedUpdatedAt = $state<number>(0)
 
-  function getTime(date: any): number {
+  const getTime = (date: any): number => {
     return date ? new Date(date).getTime() : 0
   }
 

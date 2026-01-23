@@ -18,7 +18,7 @@ export const holidays: Holiday[] = [
   { date: '12-25', title: '크리스마스', isRedDay: true }
 ]
 
-export function getLunarHolidays(year: number): Holiday[] {
+export const getLunarHolidays = (year: number): Holiday[] => {
   const calendar = new KoreanLunarCalendar()
   const list: Holiday[] = []
 
@@ -74,6 +74,6 @@ export function getLunarHolidays(year: number): Holiday[] {
   return list
 }
 
-function dateFormatter(d: Date): string {
+const dateFormatter = (d: Date): string => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }

@@ -34,6 +34,7 @@
   - **Strings**: Use single quotes (`'`) whenever possible (e.g., imports, attribute values).
   - **Semicolons**: Do NOT use semicolons at the end of statements.
   - **Indentation**: Use 2-space indentation (Tab size 2).
+  - **Functions**: Always use Arrow Functions (`const foo = () => {}`) instead of `function` keyword, unless necessary for generators or specific scoping needs.
 
 ## 4. Feature constraints
 

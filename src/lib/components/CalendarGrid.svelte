@@ -126,21 +126,22 @@
   })
 
   // Navigation handlers
-  function nextMonth() {
+  // Navigation handlers
+  const nextMonth = () => {
     currentDate = currentDate.add(1, 'month')
   }
 
-  function prevMonth() {
+  const prevMonth = () => {
     currentDate = currentDate.subtract(1, 'month')
   }
 
-  function handleMonthChange(e: Event) {
+  const handleMonthChange = (e: Event) => {
     const target = e.target as HTMLSelectElement
     const newMonth = parseInt(target.value)
     currentDate = currentDate.month(newMonth)
   }
 
-  function handleYearChange(e: Event) {
+  const handleYearChange = (e: Event) => {
     const target = e.target as HTMLSelectElement
     const newYear = parseInt(target.value)
     currentDate = currentDate.year(newYear)
@@ -161,7 +162,7 @@
 
   let searchInput = $state<HTMLInputElement>()
 
-  async function performSearch(query: string) {
+  const performSearch = async (query: string) => {
     // If input is not focused, don't open dropdown
     // This prevents dropdown from opening when composition ends due to blur
     if (searchInput && document.activeElement !== searchInput) {
@@ -208,11 +209,11 @@
     300
   )
 
-  function handleSearchInput() {
+  const handleSearchInput = () => {
     debouncedSearch(searchQuery)
   }
 
-  function handleSelectSearchResult(event: CalendarEvent) {
+  const handleSelectSearchResult = (event: CalendarEvent) => {
     cleanupSearch()
 
     const previousMonth = currentDate.format('YYYY-MM')
@@ -239,23 +240,23 @@
     onEventClick(event)
   }
 
-  function handleSearchFocus() {
+  const handleSearchFocus = () => {
     // Re-trigger search when focusing if there's already a query
     if (searchQuery.trim().length > 0) {
       performSearch(searchQuery)
     }
   }
 
-  function goToday() {
+  const goToday = () => {
     currentDate = dayjs()
   }
 
-  function isSystemEvent(event: CalendarEvent) {
+  const isSystemEvent = (event: CalendarEvent) => {
     if (event.type === 'holiday') return true
     return false
   }
 
-  function getEventsForDay(day: Dayjs) {
+  const getEventsForDay = (day: Dayjs) => {
     return processedEvents.filter((event) => {
       // 1. Basic date check
       if (!event.startTime) return false
@@ -277,7 +278,7 @@
     })
   }
 
-  function getEventColor(calendarId: string | null) {
+  const getEventColor = (calendarId: string | null) => {
     if (!calendarId) return null
     const cal = calendars.find((c) => c.id === calendarId)
     return cal ? cal.color : null

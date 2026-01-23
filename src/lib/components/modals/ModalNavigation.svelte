@@ -40,7 +40,7 @@
     }
   ])
 
-  function openApp(app: (typeof apps)[0]) {
+  const openApp = (app: (typeof apps)[0]) => {
     // For now, simple window.open.
     // In a real PWA + Capacitor context, we might check platform.
     window.open(app.url, '_blank')

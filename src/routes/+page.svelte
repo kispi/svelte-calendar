@@ -36,7 +36,7 @@
     }, 0)
   })
 
-  function handleMoveToDate(dateStr: string) {
+  const handleMoveToDate = (dateStr: string) => {
     settings.lastActiveTab = 'calendar'
     currentDate = dayjs(dateStr)
   }
@@ -71,12 +71,12 @@
     }
   })
 
-  function toggleCalendar(id: string, visible: boolean) {
+  const toggleCalendar = (id: string, visible: boolean) => {
     if (visible) {
       settings.visibleCalendarIds = [...settings.visibleCalendarIds, id]
     } else {
       settings.visibleCalendarIds = settings.visibleCalendarIds.filter(
-        (cid) => cid !== id
+        (cid: string) => cid !== id
       )
     }
   }
@@ -103,7 +103,7 @@
     placeholderData: keepPreviousData
   }))
 
-  async function handleDateClick(date: any) {
+  const handleDateClick = async (date: any) => {
     if (!data.session) {
       openLoginPopup()
       return
@@ -120,7 +120,7 @@
     }
   }
 
-  async function handleEventClick(event: any) {
+  const handleEventClick = async (event: any) => {
     if (!data.session) return
 
     const result = await modal.show(
@@ -134,7 +134,7 @@
     }
   }
 
-  async function openLoginPopup() {
+  const openLoginPopup = async () => {
     // Calculate center position
     const width = 500
     const height = 600
@@ -189,7 +189,7 @@
     }
   }
 
-  async function handleExport() {
+  const handleExport = async () => {
     window.location.href = '/api/events/export'
     if (window.innerWidth < 1024) isSidebarOpen = false
     toast.success(
@@ -202,13 +202,13 @@
 
   let fileInput = $state<HTMLInputElement>()
 
-  async function handleImport() {
+  const handleImport = async () => {
     fileInput?.click()
   }
 
-  async function onFileSelected(
+  const onFileSelected = async (
     e: Event & { currentTarget: EventTarget & HTMLInputElement }
-  ) {
+  ) => {
     const target = e.currentTarget
     if (!target.files?.[0]) return
 
@@ -276,11 +276,7 @@
     }
   }
 
-  async function handleOpenLocale() {
-    await modal.show(ModalLocale)
-  }
-
-  async function confirmSignOut() {
+  const confirmSignOut = async () => {
     const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('nav.signOut'),
       message: i18n.t('nav.signOutConfirm'),

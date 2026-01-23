@@ -17,7 +17,7 @@
     { code: 'en', label: 'United States', sub: 'United States', icon: '🇺🇸' }
   ]
 
-  function handleSelect(code: 'en' | 'kr') {
+  const handleSelect = (code: 'en' | 'kr') => {
     i18n.setLocale(code)
     close(true)
   }

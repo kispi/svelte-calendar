@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { untrack } from 'svelte'
   import { createQuery, useQueryClient } from '@tanstack/svelte-query'
   import NoteList from './NoteList.svelte'
   import NoteEditor from './NoteEditor.svelte'
@@ -10,7 +11,7 @@
   let { initialNoteId = null }: { initialNoteId?: string | null } = $props()
 
   const queryClient = useQueryClient()
-  let activeNoteId = $state<string | null>(initialNoteId)
+  let activeNoteId = $state<string | null>(untrack(() => initialNoteId))
 
   $effect(() => {
     settings.lastNoteId = activeNoteId
@@ -29,7 +30,7 @@
     notesQuery.data?.find((n: any) => n.id === activeNoteId) || null
   )
 
-  async function handleCreateNote() {
+  const handleCreateNote = async () => {
     const res = await fetch('/api/notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -46,7 +47,7 @@
     }
   }
 
-  async function handleSaveNote(data: { title: string; content: string }) {
+  const handleSaveNote = async (data: { title: string; content: string }) => {
     if (!activeNoteId) return
 
     // Update the local cache immediately with client-side data
@@ -72,7 +73,7 @@
     })
   }
 
-  async function handleDeleteNote() {
+  const handleDeleteNote = async () => {
     if (!activeNoteId || !activeNote) return
 
     const isEmpty = !activeNote.title?.trim() && !activeNote.content?.trim()

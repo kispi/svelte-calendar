@@ -55,7 +55,7 @@
   let editName = $state('')
   let editColor = $state('')
 
-  function focusNode(node: HTMLElement) {
+  const focusNode = (node: HTMLElement) => {
     node.focus()
   }
 
@@ -74,7 +74,7 @@
     '#64748b' // Slate
   ]
 
-  async function handleCreate(e: Event) {
+  const handleCreate = async (e: Event) => {
     e.preventDefault()
     if (!newCalendarName.trim()) return
 
@@ -98,7 +98,7 @@
     }
   }
 
-  async function handleDelete(id: string, name: string) {
+  const handleDelete = async (id: string, name: string) => {
     const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('common.delete'),
       message: `${name} - ${i18n.locale === 'kr' ? '정말 삭제하시겠습니까? 이 캘린더의 모든 일정이 삭제됩니다.' : 'Are you sure? All events in this calendar will be deleted.'}`,
@@ -119,13 +119,13 @@
     }
   }
 
-  function startEdit(cal: any) {
+  const startEdit = (cal: any) => {
     editingId = cal.id
     editName = cal.name
     editColor = cal.color
   }
 
-  async function saveEdit() {
+  const saveEdit = async () => {
     if (!editingId || !editName.trim()) {
       editingId = null
       return
@@ -148,7 +148,7 @@
     }
   }
 
-  function handleKeydown(e: KeyboardEvent) {
+  const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter') {
       saveEdit()
     } else if (e.key === 'Escape') {

@@ -36,7 +36,8 @@
   let resizeStart = $state({ x: 0, y: 0, width: 0, height: 0 })
 
   // Window handlers
-  function handleWindowMouseMove(e: MouseEvent) {
+  // Window handlers
+  const handleWindowMouseMove = (e: MouseEvent) => {
     if (isDragging) {
       // Calculate new position (right/bottom based)
       // Since we use right/bottom in CSS, dragging "left" increases right value
@@ -66,19 +67,19 @@
     }
   }
 
-  function handleWindowMouseUp() {
+  const handleWindowMouseUp = () => {
     isDragging = false
     isResizing = false
   }
 
-  function startDrag(e: MouseEvent) {
+  const startDrag = (e: MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return // Don't drag if clicking buttons
     isDragging = true
     dragOffset.x = e.clientX - position.x
     dragOffset.y = e.clientY - position.y
   }
 
-  function startResize(e: MouseEvent) {
+  const startResize = (e: MouseEvent) => {
     e.stopPropagation() // Prevent drag
     isResizing = true
     resizeStart = {
@@ -92,7 +93,7 @@
   // Initialize position to bottom right on first mount if not set?
   // For now let's just default to a fixed spot or calculate it.
   // To avoid jumping, let's just start at a safe spot, e.g. window.innerWidth - 420.
-  function toggleChat() {
+  const toggleChat = () => {
     isOpen = !isOpen
     if (isOpen) {
       // Reset to default position (bottom-rightish) and size
@@ -116,7 +117,7 @@
 
   // ... (sendMessage and other functions remain)
 
-  async function sendMessage() {
+  const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return
 
     const userMsg = { role: 'user', parts: [{ text: inputMessage }] }
@@ -166,7 +167,7 @@
     }
   }
 
-  function scrollToBottom() {
+  const scrollToBottom = () => {
     setTimeout(() => {
       if (chatContainer) {
         chatContainer.scrollTop = chatContainer.scrollHeight
@@ -174,7 +175,7 @@
     }, 0)
   }
 
-  function handleKeydown(e: KeyboardEvent) {
+  const handleKeydown = (e: KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       sendMessage()
@@ -182,14 +183,14 @@
   }
 
   // Helper to get text from parts for UI rendering
-  function getMessageText(msg: any) {
+  const getMessageText = (msg: any) => {
     return msg.parts
       .filter((p: any) => p.text)
       .map((p: any) => p.text)
       .join('\n')
   }
 
-  function parseMarkdown(text: string) {
+  const parseMarkdown = (text: string) => {
     if (!text) return ''
 
     // 1. Code blocks

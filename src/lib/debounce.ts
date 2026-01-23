@@ -19,21 +19,27 @@
  * cleanup()
  * ```
  */
-export function createDebounce<T extends (...args: any[]) => any>(
-  callback: T,
+export const createDebounce = <T extends (...args: any[]) => void>(
+  fn: T,
   delay: number
-) {
-  let timeout: ReturnType<typeof setTimeout> | undefined
+) => {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null
 
-  const debounced = ((...args: Parameters<T>) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => {
-      callback(...args)
+  const debounced = (...args: Parameters<T>) => {
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
+
+    timeoutId = setTimeout(() => {
+      fn(...args)
+      timeoutId = null
     }, delay)
-  }) as T
+  }
 
   const cleanup = () => {
-    clearTimeout(timeout)
+    if (timeoutId) {
+      clearTimeout(timeoutId)
+    }
   }
 
   return { debounced, cleanup }

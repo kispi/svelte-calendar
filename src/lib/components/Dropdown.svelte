@@ -23,11 +23,11 @@
 
   let dropdownEl = $state<HTMLDivElement>()
 
-  function handleSelect(item: T) {
+  const handleSelect = (item: T) => {
     onSelect(item)
   }
 
-  function handleClickOutside(e: MouseEvent) {
+  const handleClickOutside = (e: MouseEvent) => {
     if (show && dropdownEl && !dropdownEl.contains(e.target as Node)) {
       onClose?.()
     }

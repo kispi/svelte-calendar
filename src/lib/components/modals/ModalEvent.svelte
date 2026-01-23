@@ -50,7 +50,7 @@
     }
   }))
 
-  async function performSearch(query: string) {
+  const performSearch = async (query: string) => {
     if (!query.trim()) {
       searchResults = []
       showDropdown = false
@@ -76,7 +76,7 @@
     300
   )
 
-  function handleLocationInput(e: Event) {
+  const handleLocationInput = (e: Event) => {
     const target = e.target as HTMLInputElement
     const query = target.value
     // location is bound
@@ -88,13 +88,13 @@
     debouncedSearch(query)
   }
 
-  function handleFocus() {
+  const handleFocus = () => {
     if (location && location.trim()) {
       performSearch(location)
     }
   }
 
-  function handleSelectLocation(place: any) {
+  const handleSelectLocation = (place: any) => {
     location = place.place_name
     locationAddress = place.road_address_name || place.address_name
     placeId = place.id
@@ -175,7 +175,7 @@
   let deleteForm = $state<HTMLFormElement>()
   let deleteBtn = $state<HTMLButtonElement>()
 
-  async function handleDelete(e: MouseEvent) {
+  const handleDelete = async (e: MouseEvent) => {
     e.preventDefault()
     const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('common.delete'),

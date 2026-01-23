@@ -17,7 +17,7 @@
     selectedIds = new Set(events.map((e) => e.id))
   })
 
-  function toggle(id: string) {
+  const toggle = (id: string) => {
     if (selectedIds.has(id)) {
       selectedIds.delete(id)
     } else {
@@ -29,7 +29,7 @@
     selectedIds = new Set(selectedIds)
   }
 
-  function toggleAll() {
+  const toggleAll = () => {
     if (selectedIds.size === events.length) {
       selectedIds = new Set()
     } else {
@@ -37,7 +37,7 @@
     }
   }
 
-  async function handleImport() {
+  const handleImport = async () => {
     const selectedEvents = events.filter((e) => selectedIds.has(e.id))
     close({ success: true, selectedEvents })
   }

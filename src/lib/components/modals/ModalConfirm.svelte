@@ -25,17 +25,13 @@
   <p class="text-slate-500 mb-6">{message}</p>
 
   <div class="flex justify-end gap-3">
-    <button
-      type="button"
-      onclick={() => close(false)}
-      class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded border border-slate-200 transition-colors"
-    >
+    <button type="button" onclick={() => close(false)} class="btn-default">
       {cancelText}
     </button>
     <button
       type="button"
       onclick={() => close(true)}
-      class="px-4 py-2 text-sm font-bold rounded shadow-sm transition-all transform active:scale-95 {confirmClass}"
+      class="btn-base shadow-lg transition-all transform active:scale-95 {confirmClass}"
     >
       {confirmText}
     </button>

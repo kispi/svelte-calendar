@@ -3,6 +3,22 @@
 
 @tailwind base;
 @tailwind components;
+
+@layer components {
+  .btn-base {
+    @apply px-5 py-2.5 text-xs font-bold rounded-lg transition-all uppercase tracking-widest;
+  }
+  .btn-default {
+    @apply btn-base text-slate-500 hover:bg-slate-100;
+  }
+  .btn-primary {
+    @apply btn-base text-white bg-slate-900 hover:bg-black shadow-lg shadow-slate-200 hover:shadow-xl transform active:scale-95;
+  }
+  .btn-danger {
+    @apply btn-base text-slate-400 hover:text-red-500 hover:bg-red-50;
+  }
+}
+
 @tailwind utilities;
 
 :root {

@@ -103,16 +103,13 @@
   </div>
 
   <div class="flex justify-end gap-3 pt-6 mt-2 border-t border-slate-50">
-    <button
-      onclick={() => close()}
-      class="px-5 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition-all uppercase tracking-widest"
-    >
+    <button onclick={() => close()} class="btn-default">
       {i18n.t('common.cancel')}
     </button>
     <button
       onclick={handleImport}
       disabled={selectedIds.size === 0}
-      class="px-8 py-2.5 text-xs font-black text-white rounded-lg shadow-lg hover:shadow-xl transform active:scale-95 transition-all uppercase tracking-widest bg-slate-900 hover:bg-black shadow-slate-200 disabled:opacity-50 disabled:cursor-not-allowed"
+      class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {i18n.locale === 'kr'
         ? `${selectedIds.size}개 가져오기`

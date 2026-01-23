@@ -69,10 +69,7 @@
     {/each}
   </div>
 
-  <button
-    onclick={() => close()}
-    class="mt-6 text-slate-400 hover:text-slate-600 font-medium text-sm"
-  >
+  <button onclick={() => close()} class="btn-default mt-6">
     {i18n.t('common.cancel')}
   </button>
 </div>

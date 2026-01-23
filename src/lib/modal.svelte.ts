@@ -6,6 +6,7 @@ type ModalInstance = {
   props: Record<string, any>
   options: {
     preventCloseOnClickBackdrop: boolean
+    wrapperClass?: string
   }
   resolve: (value: any) => void
 }
@@ -16,7 +17,10 @@ class ModalState {
   show<T = any>(
     component: Component<any>,
     props: Record<string, any> = {},
-    options: { preventCloseOnClickBackdrop?: boolean } = {}
+    options: {
+      preventCloseOnClickBackdrop?: boolean
+      wrapperClass?: string
+    } = {}
   ): Promise<T> {
     return new Promise((resolve) => {
       const id = Math.random().toString(36).substring(2, 9)

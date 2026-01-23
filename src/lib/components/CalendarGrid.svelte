@@ -41,6 +41,32 @@
     currentDate = $bindable(dayjs())
   }: CalendarProps = $props()
 
+  import { modal } from '$lib/modal.svelte.js'
+  import ModalMonthYearPicker from './modals/ModalMonthYearPicker.svelte'
+
+  const openMonthPicker = async () => {
+    const newDate = await modal.show<Dayjs | undefined>(
+      ModalMonthYearPicker,
+      {
+        date: currentDate
+      },
+      {
+        wrapperClass: 'w-auto'
+      }
+    )
+    if (newDate) {
+      currentDate = newDate
+    }
+  }
+
+  // Format header date
+  let headerDateDisplay = $derived.by(() => {
+    // Force reactivity on locale change
+    const locale = i18n.locale
+    const d = currentDate.locale(locale === 'kr' ? 'ko' : 'en')
+    return d.format(locale === 'kr' ? 'YYYY년 M월' : 'MMMM YYYY')
+  })
+
   // Derived state for calendar grid using dayjs
   let monthStart = $derived(currentDate.startOf('month'))
   let monthEnd = $derived(currentDate.endOf('month'))
@@ -233,7 +259,6 @@
       return
     }
 
-    isSearching = true
     try {
       const res = await fetch(
         `/api/events?query=${encodeURIComponent(trimmedQuery)}`
@@ -249,8 +274,6 @@
       }
     } catch (e) {
       logger.error('Search failed:', { error: e })
-    } finally {
-      isSearching = false
     }
   }
 
@@ -367,25 +390,26 @@
   <div
     class="p-4 md:p-6 flex flex-col md:flex-row items-center justify-between bg-gradient-to-r from-gravex-green-50 to-white border-b border-gravex-green-100 gap-4"
   >
-    <div class="flex items-center gap-2">
-      <select
-        class="bg-transparent text-xl md:text-2xl font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
-        value={currentDate.month()}
-        onchange={handleMonthChange}
+    <div class="relative z-20">
+      <button
+        onclick={openMonthPicker}
+        class="flex items-center gap-2 text-2xl md:text-3xl font-bold text-slate-800 hover:text-gravex-green-700 transition-colors cursor-pointer group select-none"
       >
-        {#each months as month, i}
-          <option value={i}>{month}</option>
-        {/each}
-      </select>
-      <select
-        class="bg-transparent text-xl md:text-2xl font-light text-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-100 rounded px-1 cursor-pointer"
-        value={currentDate.year()}
-        onchange={handleYearChange}
-      >
-        {#each years as year}
-          <option value={year}>{year}</option>
-        {/each}
-      </select>
+        <span>{headerDateDisplay}</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="text-slate-300 group-hover:text-gravex-green-500 transition-colors"
+          ><path d="m6 9 6 6 6-6" /></svg
+        >
+      </button>
     </div>
 
     <!-- Search Bar -->

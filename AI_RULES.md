@@ -40,6 +40,9 @@
 
 - **Responsiveness**: Mobile-first or fully reactive layout.
 - **Interactions**: Modals should close via 'X' button or explicit action (not backdrop click by default if it contains a form).
+  - **Modal Implementation**: Modals MUST be implemented as standalone components in `src/lib/components/modals/`.
+  - **Triggering**: Modals MUST be triggered via `modal.show(Component, props)`.
+  - **Props**: Modals MUST accept a `close` prop (function) to resolve the promise.
 - **Navigation**: Provide Year/Month jumps.
 
 ## 5. Cleanup & Reliability

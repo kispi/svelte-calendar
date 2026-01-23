@@ -1,0 +1,166 @@
+<script lang="ts">
+  import dayjs, { type Dayjs } from 'dayjs'
+  import { onMount, tick } from 'svelte'
+  import { i18n } from '$lib/i18n.svelte.js'
+
+  interface Props {
+    date: Dayjs
+    close: (value?: Dayjs | false) => void
+  }
+
+  let { date, close }: Props = $props()
+
+  let selectedYear = $state(date.year())
+  let selectedMonth = $state(date.month()) // 0-11
+
+  let view = $state<'month' | 'year'>('month') // 'month' or 'year' selection view
+
+  // Year range: current - 100 to current + 100
+  const currentYear = dayjs().year()
+  const years = Array.from({ length: 200 }, (_, i) => currentYear - 100 + i)
+
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ]
+
+  // Removed unused scrolling logic
+
+  const handleApply = () => {
+    const newDate = date.year(selectedYear).month(selectedMonth)
+    close(newDate)
+  }
+
+  const getMonthName = (idx: number) => {
+    if (i18n.locale === 'kr') {
+      return `${idx + 1}월`
+    }
+    return months[idx]
+  }
+</script>
+
+<div class="bg-white rounded-2xl overflow-hidden flex flex-col w-[320px]">
+  <!-- Header with Toggles -->
+  <div
+    class="bg-white p-5 flex items-center justify-between border-b border-slate-100"
+  >
+    <div class="flex gap-2">
+      {#if view === 'year'}
+        <div class="flex items-center gap-2">
+          <input
+            type="number"
+            bind:value={selectedYear}
+            class="w-20 px-2 py-1.5 text-lg font-bold border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 bg-slate-50 text-center"
+            min="1900"
+            max="2100"
+            onkeydown={(e) => {
+              if (e.key === 'Enter') {
+                handleApply()
+              }
+            }}
+          />
+        </div>
+      {:else}
+        <button
+          class="px-3 py-1.5 rounded-lg text-lg font-bold transition-all text-slate-800 hover:bg-slate-50"
+          onclick={() => (view = 'year')}
+        >
+          {selectedYear}
+        </button>
+      {/if}
+
+      <button
+        class="px-3 py-1.5 rounded-lg text-lg font-bold transition-all {view ===
+        'month'
+          ? 'bg-slate-100 text-slate-900'
+          : 'text-slate-500 hover:text-slate-800'}"
+        onclick={() => (view = 'month')}
+      >
+        {getMonthName(selectedMonth)}
+      </button>
+    </div>
+
+    <button onclick={handleApply} class="btn-primary">
+      {i18n.t('common.confirm') || 'Confirm'}
+    </button>
+  </div>
+
+  <!-- Content Area -->
+  <div class="relative h-80 bg-white">
+    {#if view === 'year'}
+      <div
+        class="h-full overflow-y-auto grid grid-cols-4 gap-2 p-4 content-start"
+      >
+        <!-- Show +/- 10 years from current selected year -->
+        {#each Array.from({ length: 21 }, (_, i) => selectedYear - 10 + i) as y}
+          <button
+            class="px-2 py-3 rounded-lg text-sm font-medium transition-all
+                {selectedYear === y
+              ? 'bg-slate-900 text-white shadow-md'
+              : 'bg-white text-slate-600 hover:bg-slate-100 hover:scale-105 border border-slate-100'}"
+            onclick={() => {
+              selectedYear = y
+              // view = 'month' // Keep in year view if manually selecting? Or switch? User habit.
+              // Usually selecting a year means "I'm done with year", so switch or just stay.
+              // Let's stay so they can confirm or switch themselves, or just update style.
+              // Actually user requested "Limit list to +/-10".
+            }}
+          >
+            {y}
+          </button>
+        {/each}
+      </div>
+    {:else}
+      <div class="h-full grid grid-cols-3 gap-3 p-4">
+        {#each months as _, i}
+          <button
+            class="rounded-xl text-sm font-bold transition-all flex flex-col items-center justify-center gap-1
+                {selectedMonth === i
+              ? 'bg-slate-900 text-white shadow-lg ring-4 ring-slate-100'
+              : 'bg-white text-slate-600 hover:bg-slate-50 hover:scale-105 border border-slate-100'}"
+            onclick={() => {
+              selectedMonth = i
+            }}
+            ondblclick={handleApply}
+          >
+            <span class="text-base">{i + 1}</span>
+            <span
+              class="text-[10px] uppercase tracking-wider {selectedMonth === i
+                ? 'text-slate-300'
+                : 'text-slate-400'}"
+            >
+              {months[i].slice(0, 3)}
+            </span>
+          </button>
+        {/each}
+      </div>
+    {/if}
+  </div>
+</div>
+
+<style>
+  /* Custom scrollbar for year list */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+</style>

@@ -12,6 +12,7 @@
   import { i18n } from '$lib/i18n.svelte.js'
   import { createQuery } from '@tanstack/svelte-query'
   import { logger } from '$lib/logger'
+  import ModalTimePicker from './ModalTimePicker.svelte'
 
   interface ModalProps {
     event?: any
@@ -21,6 +22,7 @@
 
   let { event = null, selectedDate, close = () => {} }: ModalProps = $props()
 
+  // State
   let title = $state('')
   let description = $state('')
   let location = $state('')
@@ -38,6 +40,23 @@
   let showCalendarDropdown = $state(false)
   let recurrenceRule = $state('')
   let showRecurrenceDropdown = $state(false)
+
+  const openTimePicker = async (pickType: 'start' | 'end') => {
+    const currentVal = pickType === 'start' ? startTime : endTime
+    const newVal = await modal.show<string | undefined>(
+      ModalTimePicker,
+      {
+        value: currentVal
+      },
+      {
+        wrapperClass: 'w-auto'
+      }
+    )
+    if (newVal) {
+      if (pickType === 'start') startTime = newVal
+      else endTime = newVal
+    }
+  }
 
   // Fetch Calendars
   const calendarsQuery = createQuery(() => ({
@@ -416,35 +435,25 @@
         <div class="h-10 flex items-center">
           {#if type !== 'diary'}
             <div class="flex items-center gap-2">
-              <input
-                name="startTime"
-                id="startTime"
-                use:flatpicker={{
-                  defaultDate: startTime,
-                  noCalendar: true,
-                  enableTime: true,
-                  dateFormat: 'H:i',
-                  allowInput: true
-                }}
-                bind:value={startTime}
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
-                aria-label={i18n.t('event.startTime')}
-              />
+              <button
+                type="button"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium text-slate-600 bg-slate-50/50 text-center"
+                onclick={() => openTimePicker('start')}
+              >
+                {startTime || '00:00'}
+              </button>
+              <input type="hidden" name="startTime" value={startTime} />
+
               <span class="text-slate-300">−</span>
-              <input
-                name="endTime"
-                id="endTime"
-                use:flatpicker={{
-                  defaultDate: endTime,
-                  noCalendar: true,
-                  enableTime: true,
-                  dateFormat: 'H:i',
-                  allowInput: true
-                }}
-                bind:value={endTime}
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 focus:border-gravex-green-400 focus:ring-1 focus:ring-gravex-green-100 outline-none transition-all text-sm font-medium text-slate-600 bg-slate-50/50"
-                aria-label={i18n.t('event.endTime')}
-              />
+
+              <button
+                type="button"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium text-slate-600 bg-slate-50/50 text-center"
+                onclick={() => openTimePicker('end')}
+              >
+                {endTime || '00:00'}
+              </button>
+              <input type="hidden" name="endTime" value={endTime} />
             </div>
           {:else}
             <div
@@ -846,23 +855,16 @@
           bind:this={deleteBtn}
           type="submit"
           formaction="?/delete"
-          class="px-4 py-2 text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all mr-auto uppercase tracking-widest"
+          class="btn-danger mr-auto"
           onclick={handleDelete}
         >
           {i18n.t('common.delete')}
         </button>
       {/if}
-      <button
-        onclick={close}
-        type="button"
-        class="px-5 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-lg transition-all uppercase tracking-widest"
-      >
+      <button onclick={close} type="button" class="btn-default">
         {i18n.t('common.cancel')}
       </button>
-      <button
-        type="submit"
-        class="px-8 py-2.5 text-xs font-black text-white rounded-lg shadow-lg hover:shadow-xl transform active:scale-95 transition-all uppercase tracking-widest bg-slate-900 hover:bg-black shadow-slate-200"
-      >
+      <button type="submit" class="btn-primary">
         {i18n.t('common.save')}
       </button>
     </div>

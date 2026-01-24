@@ -345,72 +345,85 @@
   {#if query.isLoading}
     <div class="space-y-2 px-3">
       {#each { length: 3 } as _}
-        <Skeleton class="h-6 w-full bg-slate-800" />
+        <Skeleton class="h-6 w-full bg-slate-200 dark:bg-slate-800" />
       {/each}
     </div>
   {:else if query.data}
     <div class="space-y-0.5 overflow-y-auto flex-1 px-2 custom-scrollbar">
       {#each query.data as cal (cal.id)}
-        {#if editingId === cal.id}
-          <!-- Edit Mode -->
-          <div
-            class="bg-white dark:bg-slate-800 p-2.5 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700/50 mb-1"
-          >
-            <form
-              onsubmit={(e) => {
-                e.preventDefault()
-                saveEdit()
-              }}
+        <div class="relative">
+          {#if editingId === cal.id}
+            <!-- Backdrop for closing -->
+            <div
+              class="fixed inset-0 z-40 bg-transparent"
+              onclick={() => (editingId = null)}
+              aria-hidden="true"
+            ></div>
+
+            <!-- Floating Edit Form -->
+            <div
+              class="absolute left-0 top-full z-50 w-full mt-1 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700/50 animate-in fade-in slide-in-from-top-1 duration-200"
             >
-              <input
-                type="text"
-                bind:value={editName}
-                class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-2 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
-                use:focusNode
-                onkeydown={handleKeydown}
-              />
-              <div class="flex flex-wrap gap-1.5 mb-3">
-                {#each PRESET_COLORS as color}
+              <form
+                onsubmit={(e) => {
+                  e.preventDefault()
+                  saveEdit()
+                }}
+                onclick={(e) => e.stopPropagation()}
+              >
+                <input
+                  type="text"
+                  bind:value={editName}
+                  class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
+                  use:focusNode
+                  onkeydown={handleKeydown}
+                />
+
+                <div class="flex flex-wrap gap-1.5 mb-3">
+                  {#each PRESET_COLORS as color}
+                    <button
+                      type="button"
+                      class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-slate-800 ring-slate-400 dark:ring-slate-700"
+                      style="background-color: {color}; transform: {editColor ===
+                      color
+                        ? 'scale(1.2)'
+                        : 'scale(1)'}"
+                      onclick={() => (editColor = color)}
+                      aria-label="Select color"
+                    ></button>
+                  {/each}
+                </div>
+
+                <div class="flex justify-end gap-2">
                   <button
                     type="button"
-                    class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-slate-800 ring-slate-400 dark:ring-slate-700"
-                    style="background-color: {color}; transform: {editColor ===
-                    color
-                      ? 'scale(1.2)'
-                      : 'scale(1)'}"
-                    onclick={() => (editColor = color)}
-                    aria-label="Select color"
-                  ></button>
-                {/each}
-              </div>
-              <div class="flex justify-end gap-2">
-                <button
-                  type="button"
-                  class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
-                  onclick={() => (editingId = null)}
-                  title="Cancel"
-                >
-                  {i18n.t('common.cancel')}
-                </button>
-                <button
-                  type="submit"
-                  class="text-[10px] uppercase font-bold text-gravex-primary-600 dark:text-gravex-primary-400 hover:text-gravex-primary-700 dark:hover:text-gravex-primary-300 transition-colors"
-                  title="Save"
-                >
-                  {i18n.t('common.save')}
-                </button>
-              </div>
-            </form>
-          </div>
-        {:else}
-          <!-- View Mode -->
+                    class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    onclick={() => (editingId = null)}
+                  >
+                    {i18n.t('common.cancel')}
+                  </button>
+                  <button
+                    type="submit"
+                    class="text-[10px] uppercase font-bold text-gravex-primary-600 dark:text-gravex-primary-400 hover:text-gravex-primary-700 dark:hover:text-gravex-primary-300 transition-colors"
+                  >
+                    {i18n.t('common.save')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          {/if}
+
+          <!-- View Item -->
           <div
-            class="group flex items-center justify-between py-2 px-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800/40 transition-all"
+            class="group flex items-center justify-between py-2 px-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800/40 transition-all {editingId ===
+            cal.id
+              ? 'bg-slate-100 dark:bg-slate-800/60'
+              : ''}"
           >
             <label
               class="flex items-center gap-3 cursor-pointer select-none flex-1 min-w-0"
             >
-              <div class="relative flex items-center justify-center">
+              <div class="relative flex items-center justify-center shrink-0">
                 <input
                   type="checkbox"
                   class="peer appearance-none w-3.5 h-3.5 rounded border border-slate-600 checked:border-transparent transition-all"
@@ -438,14 +451,14 @@
               </div>
 
               <span
-                class="text-sm font-medium text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200 truncate h-5 leading-tight block transition-colors"
-                >{cal.name}</span
+                class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-200 truncate h-5 leading-tight block transition-colors w-full"
+                title={cal.name}>{cal.name}</span
               >
             </label>
 
             <!-- Actions -->
             <div
-              class="flex items-center transition-all opacity-0 group-hover:opacity-100"
+              class="flex items-center transition-all opacity-0 group-hover:opacity-100 shrink-0 ml-2"
             >
               {#if cal.role === 'owner'}
                 <button
@@ -506,7 +519,7 @@
               {/if}
             </div>
           </div>
-        {/if}
+        </div>
       {/each}
     </div>
   {/if}
@@ -518,13 +531,6 @@
     <div
       class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-1"
     >
-      <div class="px-3 mb-2">
-        <span
-          class="text-[10px] font-bold text-slate-400 dark:text-slate-600 uppercase tracking-widest"
-          >{i18n.t('common.settings')}</span
-        >
-      </div>
-
       {#if activeTab === 'calendar'}
         <button
           onclick={onImport}
@@ -571,68 +577,76 @@
         </button>
       {/if}
 
-      <div class="grid grid-cols-2 gap-2 mt-1">
-        <button
-          onclick={onLocaleChange}
-          class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
-          title="Switch Language"
+      <button
+        onclick={onLocaleChange}
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+      >
+        <div
+          class="w-4 h-4 flex items-center justify-center grayscale opacity-70"
         >
-          <span class="text-base grayscale opacity-70"
-            >{i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}</span
-          >
-        </button>
+          {i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}
+        </div>
+        <span class="text-sm font-medium"
+          >{i18n.locale === 'kr'
+            ? i18n.t('locale.en')
+            : i18n.t('locale.ko')}</span
+        >
+      </button>
 
-        <button
-          onclick={() => {
-            const newTheme = settings.theme === 'dark' ? 'light' : 'dark'
-            settings.theme = newTheme
-            if (newTheme === 'dark') {
-              document.documentElement.classList.add('dark')
-            } else {
-              document.documentElement.classList.remove('dark')
-            }
-          }}
-          class="flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
-          title="Toggle Theme"
+      <button
+        onclick={() => {
+          const newTheme = settings.theme === 'dark' ? 'light' : 'dark'
+          settings.theme = newTheme
+          if (newTheme === 'dark') {
+            document.documentElement.classList.add('dark')
+          } else {
+            document.documentElement.classList.remove('dark')
+          }
+        }}
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="hidden dark:block opacity-70"
+          ><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path
+            d="M12 20v2"
+          /><path d="m4.93 4.93 1.41 1.41" /><path
+            d="m17.66 17.66 1.41 1.41"
+          /><path d="M2 12h2" /><path d="M20 12h2" /><path
+            d="m6.34 17.66-1.41 1.41"
+          /><path d="m19.07 4.93-1.41 1.41" /></svg
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="hidden dark:block"
-            ><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path
-              d="M12 20v2"
-            /><path d="m4.93 4.93 1.41 1.41" /><path
-              d="m17.66 17.66 1.41 1.41"
-            /><path d="M2 12h2" /><path d="M20 12h2" /><path
-              d="m6.34 17.66-1.41 1.41"
-            /><path d="m19.07 4.93-1.41 1.41" /></svg
-          >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="block dark:hidden"
-            ><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg
-          >
-        </button>
-      </div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="block dark:hidden opacity-70"
+          ><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg
+        >
+        <span class="text-sm font-medium"
+          >{settings.theme === 'dark'
+            ? i18n.t('theme.light')
+            : i18n.t('theme.dark')}</span
+        >
+      </button>
 
       <button
         onclick={onSignOut}
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-400/70 hover:text-red-400 hover:bg-red-50 dark:text-red-400/70 dark:hover:text-red-400 dark:hover:bg-red-900/20 transition-colors mt-2"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors mt-2"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -680,7 +694,7 @@
       </button>
 
       <div class="mt-4 px-2 text-center text-xs text-slate-700 font-medium">
-        &copy; 2026 Gravex
+        &copy; 2026 Gravex.app
       </div>
     </div>
   {/if}

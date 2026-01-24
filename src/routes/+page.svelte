@@ -398,7 +398,7 @@
             aria-hidden="true"
           ></div>
           <div
-            class="absolute inset-y-0 left-0 w-72 bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-300"
+            class="absolute inset-y-0 left-0 w-56 bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-300"
           >
             <Sidebar
               visibleCalendarIds={settings.visibleCalendarIds}
@@ -431,7 +431,7 @@
               const next = i18n.locale === 'kr' ? 'en' : 'kr'
               i18n.setLocale(next)
             }}
-            class="bg-transparent border-none text-slate-400 w-72"
+            class="bg-transparent border-none text-slate-400 w-56"
           />
         </div>
       {/if}

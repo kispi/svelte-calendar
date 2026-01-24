@@ -103,6 +103,11 @@ const translations = {
       weekly: 'Weekly',
       monthly: 'Monthly',
       yearly: 'Yearly'
+    },
+    theme: {
+      light: 'Light Mode',
+      dark: 'Dark Mode',
+      toggle: 'Toggle Theme'
     }
   },
   kr: {
@@ -192,6 +197,11 @@ const translations = {
       weekly: '매주',
       monthly: '매월',
       yearly: '매년'
+    },
+    theme: {
+      light: '라이트 모드',
+      dark: '다크 모드',
+      toggle: '테마 전환'
     },
     chatbot: {
       placeholder: '무엇이든 물어보세요!',

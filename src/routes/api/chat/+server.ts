@@ -7,10 +7,9 @@ import {
   type Content
 } from '@google/generative-ai'
 import { db } from '$lib/server/db'
-import { eq, and, gte, lte, asc, or, like } from 'drizzle-orm'
+import { eq, and, gte, lte, asc } from 'drizzle-orm'
 import {
   event as eventTable,
-  note as noteTable,
   calendar as calendarTable,
   chatLog
 } from '$lib/server/db/schema'
@@ -78,20 +77,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                 }
               },
               required: ['date']
-            }
-          },
-          {
-            name: 'get_notes',
-            description:
-              'Search notes. Returns a CSV string (id|title|date|content).',
-            parameters: {
-              type: SchemaType.OBJECT,
-              properties: {
-                search: {
-                  type: SchemaType.STRING,
-                  description: 'Optional search keyword to filter notes.'
-                }
-              }
             }
           },
           {
@@ -171,15 +156,25 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         role: 'system',
         parts: [
           {
-            text: `You are Gravex.app Assistant, a helpful AI built into the Gravex Calendar & Notes. 
+            text: `You are Gravex.app Assistant, a dedicated schedule management assistant. 
         Today is ${dayjs(clientDate || undefined).format('YYYY-MM-DD dddd')}.
         
+        # Role & Identity
+        - You are strictly a tool for managing schedules.
+        - You are NOT a general-purpose replacement for ChatGPT.
+        
         # Capabilities
-        - Use 'get_events' to search for events. Returns CSV format (id|title|startTime|endTime|description).
-        - Use 'get_notes' to search notes. Returns CSV format (id|title|updatedAt|content).
-        - Use 'move_to_date' when the user clearly wants to navigate the calendar view to a specific time.
-        - Use 'create_event' when the user wants to add a schedule.
-        - Use 'get_app_info' when the user asks about this app's features, capabilities, or tech stack to avoid hallucinations.
+        - Use 'get_events' to search for events/schedules. Returns CSV format.
+        - Use 'move_to_date' to navigate the calendar.
+        - Use 'create_event' to add new schedules.
+        - Use 'get_app_info' for app-specific questions.
+        
+        # Handling Questions (CRITICAL)
+        1. **Schedule**: ALWAYS handle requests related to creating, finding, or managing schedules using the provided tools.
+        2. **Date/Time/Holidays**: ALWAYS answer questions about dates, times, days of the week, or holidays (e.g., "What day is next Friday?", "When is Chuseok?"). This is essential for scheduling.
+        3. **General Knowledge**: REJECT all other questions unrelated to scheduling (e.g., history, math, science, daily news, "capital of UK").
+           - **Refusal Message**: "죄송합니다. 일정 관련 질문에만 답변할 수 있습니다. 😊"
+           - **Do NOT** provide the answer even if you know it. Just refuse to save tokens.
   
         # Data Interpretation
         - The 'Event' model has Title, Location, Description, StartTime, EndTime, and Type.
@@ -192,17 +187,10 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         - **Recurrence**: If the user mentions repetition (e.g., "Every Monday", "Monthly on the 1st"), generate a standard **RRULE string** (e.g., 'FREQ=WEEKLY;BYDAY=MO') and pass it to the 'recurrenceRule' parameter.
         - **Intent**: You should infer the intent to create an event even if the user doesn't say "create" explicitly (e.g., "Dinner with Mom next Friday at 7pm", "Register gym schedule every Mon/Wed").
         - **One-off vs Recurring**: If no recurrence is implied, leave 'recurrenceRule' empty.
-
-        # Scope & Rejection Policy
-        - **General Conversation Allowed**: You can answer general questions and engage in casual conversation (e.g., "Hello", "How are you?", "Tell me a joke").
-        - **Prioritize Context**: Your primary role is still a Calendar Assistant. Always look for schedule/note-related intent first.
-        - **Minimize Function Calls**: For general queries unrelated to the calendar or notes (e.g., "What is the capital of France?", "Tell me a joke"), **DO NOT CALL ANY FUNCTIONS**. Just provide a text response. This is critical to save resources.
-        - **Helpfulness**: Be friendly and helpful. If a request is completely outside your capabilities (e.g. generating images, accessing real-time news), politely explain your limitations.
   
         # Safety Rules
         - **Security & Privacy**: NEVER answer questions about the **deployment environment** (EC2, PM2, GitHub Actions, AWS) or **environment variables** (.env files, API keys, secrets). If asked, respectfully decline by saying this is private system information.
         - ALWAYS restrict data access to the current user.
-        - Be concise and professional (except when being humorous about refusals).
         - **Never modify or delete EXISTING data.** However, you are explicitly **ALLOWED to CREATE** new events.`
           }
         ]
@@ -280,30 +268,6 @@ export const POST: RequestHandler = async ({ request, locals }) => {
               functionResponse: {
                 name: 'move_to_date',
                 response: { success: true, movedTo: date }
-              }
-            })
-          } else if (name === 'get_notes') {
-            const { search } = args as { search?: string }
-            const filters = [eq(noteTable.userId, userId)]
-            if (search) {
-              filters.push(
-                or(
-                  like(noteTable.title, `%${search}%`),
-                  like(noteTable.content, `%${search}%`)
-                ) as any
-              )
-            }
-
-            const notes = await db
-              .select()
-              .from(noteTable)
-              .where(and(...filters))
-              .orderBy(asc(noteTable.updatedAt))
-
-            toolResponses.push({
-              functionResponse: {
-                name: 'get_notes',
-                response: { notes }
               }
             })
           } else if (name === 'get_app_info') {

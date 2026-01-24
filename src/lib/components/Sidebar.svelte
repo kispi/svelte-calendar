@@ -62,18 +62,25 @@
   }
 
   const PRESET_COLORS = [
+    '#000000', // Black
+    '#ffffff', // White
     '#ef4444', // Red
     '#f97316', // Orange
     '#f59e0b', // Amber
     '#84cc16', // Lime
     '#10b981', // Emerald
+    '#14b8a6', // Teal
     '#06b6d4', // Cyan
+    '#0ea5e9', // Sky
     '#3b82f6', // Blue
     '#6366f1', // Indigo
     '#8b5cf6', // Violet
+    '#a855f7', // Purple
     '#d946ef', // Fuchsia
+    '#ec4899', // Pink
     '#f43f5e', // Rose
-    '#64748b' // Slate
+    '#64748b', // Slate
+    '#71717a' // Zinc
   ]
 
   const handleCreate = async (e: Event) => {
@@ -325,7 +332,7 @@
             {#each PRESET_COLORS as color}
               <button
                 type="button"
-                class="w-4 h-4 rounded-full hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-surface ring-content-muted"
+                class="w-4 h-4 rounded-full border border-border-base hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-surface ring-content-muted"
                 style="background-color: {color}; transform: {newCalendarColor ===
                 color
                   ? 'scale(1.2)'
@@ -397,7 +404,7 @@
                   {#each PRESET_COLORS as color}
                     <button
                       type="button"
-                      class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-surface ring-content-muted"
+                      class="w-3.5 h-3.5 rounded-full border border-border-base transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-surface ring-content-muted"
                       style="background-color: {color}; transform: {editColor ===
                       color
                         ? 'scale(1.2)'

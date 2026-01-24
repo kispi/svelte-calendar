@@ -43,7 +43,8 @@
 
   const resetToDefault = () => {
     const startX = window.innerWidth - DEFAULT_WIDTH - MARGIN
-    const startY = window.innerHeight - DEFAULT_HEIGHT - MARGIN
+    // Position above the toggle button (bottom-4 = 16px, button height = 48px, gap = 16px) -> ~80px from bottom
+    const startY = window.innerHeight - DEFAULT_HEIGHT - 80
 
     // Reset size first
     size = { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT }
@@ -396,13 +397,13 @@
   <div class="relative">
     <button
       onclick={toggleChat}
-      class="pointer-events-auto bg-gravex-primary-600 hover:bg-gravex-primary-700 text-white p-4 rounded-full shadow-2xl transform hover:scale-110 active:rotate-12 group relative"
+      class="pointer-events-auto bg-gravex-primary-600 hover:bg-gravex-primary-700 text-white w-12 h-12 flex items-center justify-center p-0 rounded-full shadow-2xl transform hover:scale-110 active:rotate-12 group relative"
     >
       {#if isOpen}
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -414,8 +415,8 @@
       {:else}
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="28"
-          height="28"
+          width="24"
+          height="24"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"

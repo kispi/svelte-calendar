@@ -640,7 +640,7 @@
             </button>
 
             <span class="text-sm text-slate-400 font-medium tracking-wide">
-              Scheduly | Gravex.app
+              &copy; 2026 Gravex.app
             </span>
           </div>
         </div>

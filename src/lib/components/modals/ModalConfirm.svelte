@@ -20,8 +20,10 @@
 </script>
 
 <div class="p-6">
-  <h3 class="text-lg font-bold text-slate-900 mb-2">{title}</h3>
-  <p class="text-slate-500 whitespace-pre-line mb-6">{message}</p>
+  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
+  <p class="text-slate-500 dark:text-slate-400 whitespace-pre-line mb-6">
+    {message}
+  </p>
 
   <div class="flex justify-end gap-3">
     <button type="button" onclick={() => close(false)} class="btn-default">

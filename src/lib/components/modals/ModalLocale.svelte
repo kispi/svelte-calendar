@@ -44,7 +44,9 @@
   </button>
 
   <div class="mb-8">
-    <h2 class="text-2xl font-black text-slate-900 tracking-tight">
+    <h2
+      class="text-2xl font-black text-slate-900 dark:text-white tracking-tight"
+    >
       {i18n.t('locale.title')}
     </h2>
     <p class="text-sm text-slate-400 mt-1 font-medium">
@@ -59,13 +61,13 @@
         class="w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all group
           {i18n.isCurrent(opt.code)
           ? 'border-gravex-primary-500 bg-gravex-primary-50/30'
-          : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'}"
+          : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50 dark:border-slate-800 dark:hover:border-slate-700 dark:hover:bg-slate-800'}"
       >
         <div class="flex items-center gap-4">
           <span class="text-3xl filter saturate-[0.8]">{opt.icon}</span>
           <div class="text-left">
             <div
-              class="font-bold text-slate-800 transition-colors group-hover:text-black"
+              class="font-bold text-slate-800 dark:text-slate-200 transition-colors group-hover:text-black dark:group-hover:text-white"
             >
               {i18n.t(`locale.${opt.code}`)}
             </div>

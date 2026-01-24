@@ -11,15 +11,15 @@
   }
 
   .btn-default {
-    @apply btn-base text-slate-500 hover:bg-slate-100;
+    @apply btn-base text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800;
   }
 
   .btn-primary {
-    @apply btn-base text-white bg-slate-900 hover:bg-black shadow-lg shadow-slate-200 hover:shadow-xl transform active:scale-95;
+    @apply btn-base text-white bg-slate-900 hover:bg-black shadow-lg shadow-slate-200 hover:shadow-xl transform active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:shadow-none;
   }
 
   .btn-danger {
-    @apply btn-base text-slate-400 hover:text-red-500 hover:bg-red-50;
+    @apply btn-base text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20;
   }
 }
 

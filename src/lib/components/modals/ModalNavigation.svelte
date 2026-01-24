@@ -34,7 +34,8 @@
       id: 'google',
       name: 'Google Maps',
       icon: 'G',
-      color: 'bg-white border border-slate-200 text-slate-700',
+      color:
+        'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200',
       // Google: Search by name near the coordinates
       url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=`
     }
@@ -49,7 +50,7 @@
 </script>
 
 <div class="p-6 text-center">
-  <h3 class="text-lg font-bold text-slate-900 mb-6">
+  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">
     {i18n.t('navigation.title')}
   </h3>
 

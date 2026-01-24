@@ -226,7 +226,7 @@
   <!-- Close Button 'X' -->
   <button
     onclick={close}
-    class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all z-10"
+    class="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:text-slate-200 dark:hover:bg-slate-800 rounded-full transition-all z-10"
     aria-label="Close modal"
   >
     <svg
@@ -396,7 +396,7 @@
         id="title"
         bind:value={title}
         required
-        class="w-full text-2xl font-black text-slate-900 border-b-2 border-transparent focus:border-gravex-primary-500 outline-none transition-all placeholder:text-slate-200 pb-2"
+        class="w-full text-2xl font-black text-slate-900 dark:text-white dark:bg-slate-900 border-b-2 border-transparent focus:border-gravex-primary-500 outline-none transition-all placeholder:text-slate-200 dark:placeholder:text-slate-700 pb-2"
         placeholder={i18n.t('event.title')}
         aria-label={i18n.t('event.title')}
       />
@@ -422,7 +422,9 @@
         >
       </div>
       <div class="flex-1">
-        <div class="text-sm font-semibold text-slate-700 h-6 flex items-center">
+        <div
+          class="text-sm font-semibold text-slate-700 dark:text-slate-300 h-6 flex items-center"
+        >
           {baseDate
             ? dayjs(baseDate).format(i18n.t('formats.longDateWithDay'))
             : ''}
@@ -433,7 +435,7 @@
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium text-slate-600 bg-slate-50/50 text-center"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/50 text-center"
                 onclick={() => openTimePicker('start')}
               >
                 {startTime || '00:00'}
@@ -444,7 +446,7 @@
 
               <button
                 type="button"
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 hover:bg-slate-50 transition-all text-sm font-medium text-slate-600 bg-slate-50/50 text-center"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/50 text-center"
                 onclick={() => openTimePicker('end')}
               >
                 {endTime || '00:00'}
@@ -496,7 +498,7 @@
           oninput={handleLocationInput}
           onfocus={handleFocus}
           autocomplete="off"
-          class="w-full px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm placeholder:text-slate-300 pr-8"
+          class="w-full px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm placeholder:text-slate-300 dark:bg-slate-900 dark:text-white pr-8"
           placeholder={i18n.t('event.location')}
           aria-label={i18n.t('event.location')}
         />
@@ -545,7 +547,9 @@
               class="px-3 py-2 text-sm border-b border-slate-50 last:border-0"
               onmousedown={(e) => e.preventDefault()}
             >
-              <div class="font-bold text-slate-800">{place.place_name}</div>
+              <div class="font-bold text-slate-800 dark:text-slate-200">
+                {place.place_name}
+              </div>
               <div class="text-xs text-slate-400 truncate">
                 {place.road_address_name || place.address_name}
               </div>
@@ -590,7 +594,7 @@
         <input type="hidden" name="calendarId" value={calendarId} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm font-medium text-slate-700 flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showCalendarDropdown = !showCalendarDropdown
@@ -636,10 +640,12 @@
                 class="w-2 h-2 rounded-full"
                 style="background-color: {cal.color}"
               ></div>
-              <div class="font-medium text-slate-700">{cal.name}</div>
+              <div class="font-medium text-slate-700 dark:text-slate-300">
+                {cal.name}
+              </div>
               {#if cal.isPrimary}
                 <span
-                  class="text-[10px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded"
+                  class="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded"
                   >Primary</span
                 >
               {/if}
@@ -672,7 +678,7 @@
         <input type="hidden" name="recurrenceRule" value={recurrenceRule} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm font-medium text-slate-600 flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm font-medium text-slate-600 dark:text-slate-400 flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showRecurrenceDropdown = !showRecurrenceDropdown
@@ -728,10 +734,12 @@
           {#snippet children(item: any)}
             <div
               role="presentation"
-              class="px-3 py-2 text-sm border-b border-slate-50 last:border-0 hover:bg-slate-50 flex items-center gap-2"
+              class="px-3 py-2 text-sm border-b border-slate-50 dark:border-slate-800 last:border-0 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"
               onmousedown={(e) => e.preventDefault()}
             >
-              <div class="font-medium text-slate-700">{i18n.t(item.label)}</div>
+              <div class="font-medium text-slate-700 dark:text-slate-300">
+                {i18n.t(item.label)}
+              </div>
             </div>
           {/snippet}
         </Dropdown>
@@ -779,8 +787,8 @@
           <span
             class="text-xs font-semibold uppercase tracking-wider transition-colors
             {type === 'schedule'
-              ? 'text-slate-700'
-              : 'text-slate-400 group-hover:text-slate-600'}"
+              ? 'text-slate-700 dark:text-slate-300'
+              : 'text-slate-400 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400'}"
             >{i18n.t('event.schedule')}</span
           >
         </label>
@@ -806,8 +814,8 @@
           <span
             class="text-xs font-semibold uppercase tracking-wider transition-colors
             {type === 'diary'
-              ? 'text-slate-700'
-              : 'text-slate-400 group-hover:text-slate-600'}"
+              ? 'text-slate-700 dark:text-slate-300'
+              : 'text-slate-400 dark:text-slate-600 group-hover:text-slate-600 dark:group-hover:text-slate-400'}"
             >{i18n.t('event.diary')}</span
           >
         </label>
@@ -838,14 +846,16 @@
         id="description"
         bind:value={description}
         use:autoResize
-        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-slate-300"
+        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-slate-300 dark:placeholder:text-slate-600 dark:text-white"
         placeholder={i18n.t('event.description')}
         aria-label={i18n.t('event.description')}
       ></textarea>
     </div>
 
     <!-- Actions Section -->
-    <div class="flex justify-end gap-3 pt-6 border-t border-slate-50 mt-8">
+    <div
+      class="flex justify-end gap-3 pt-6 border-t border-slate-50 dark:border-slate-800 mt-8"
+    >
       {#if event}
         <button
           bind:this={deleteBtn}

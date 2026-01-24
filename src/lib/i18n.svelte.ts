@@ -84,7 +84,9 @@ const translations = {
         portability: 'No platform lock-in!',
         portabilityDesc: 'Easy .ics import/export. (ex: Google, Kakao, Apple...) Switch platforms anytime without lock-in.',
         ai: 'AI Assistant',
-        aiDesc: 'Create, query, and manage your schedule with AI chat.'
+        aiDesc: 'Create, query, and manage your schedule with AI chat.',
+        place: 'Place Search & Maps',
+        placeDesc: 'Search places easily and check them on Naver, Kakao, or Google Maps'
       }
     },
     chatbot: {
@@ -179,7 +181,7 @@ const translations = {
       us: '미국'
     },
     common_ui: {
-      onboarding: '일정과 메모를 한 곳에서. 심플한 하루 관리.',
+      onboarding: '일정과 메모를 한 곳에서. 심플한 일정 관리.',
       kakaoStart: '카카오로 시작하기',
       features: {
         privacy: '떠나실때도 안전하게',
@@ -187,7 +189,9 @@ const translations = {
         portability: '플랫폼 종속 걱정이 없어요!',
         portabilityDesc: '쓰던 플랫폼(ex: 구글, 카카오, 애플...)의 .ics 캘린더 파일을 그대로 가져오고, 언제든 다시 내보낼 수 있습니다.',
         ai: '스마트한 AI 비서',
-        aiDesc: '채팅으로 일정을 등록하고 물어보세요!'
+        aiDesc: '채팅으로 일정을 등록하고 물어보세요!',
+        place: '장소 검색 & 지도 연동',
+        placeDesc: '손쉽게 장소를 검색하고, 네이버/카카오/구글 지도로 바로 확인하세요'
       }
     },
     recurrence: {

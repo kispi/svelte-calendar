@@ -169,7 +169,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         role: 'system',
         parts: [
           {
-            text: `You are Gravex.app Assistant, a helpful AI built into the Gravex Planner. 
+            text: `You are Gravex.app Assistant, a helpful AI built into the Gravex Calendar & Notes. 
         Today is ${dayjs(clientDate || undefined).format('YYYY-MM-DD dddd')}.
         
         # Capabilities

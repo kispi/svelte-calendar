@@ -1,5 +1,6 @@
 import { db } from '$lib/server/db'
 import { event, calendar, calendarMember } from '$lib/server/db/schema'
+import { createEvent } from '$lib/server/events'
 import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
 import { eq, asc, and, or, like, inArray, gte, lte, isNotNull } from 'drizzle-orm'
@@ -112,58 +113,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       type,
       startTime,
       endTime,
-      calendarId: requestedCalendarId,
+      calendarId,
       recurrenceRule
     } = body
 
     if (!title) throw error(400, 'Title is required')
 
-    let targetCalendarId = requestedCalendarId
-
-    // If no calendar specified, find primary
-    if (!targetCalendarId) {
-      const primary = await db.query.calendar.findFirst({
-        where: and(
-          eq(calendar.userId, session.user.id),
-          eq(calendar.isPrimary, 1)
-        )
-      })
-      if (primary) {
-        targetCalendarId = primary.id
-      } else {
-        // Fallback: any calendar they own
-        const member = await db.query.calendarMember.findFirst({
-          where: and(
-            eq(calendarMember.userId, session.user.id),
-            eq(calendarMember.role, 'owner')
-          )
-        })
-        if (member) targetCalendarId = member.calendarId
-      }
-    }
-
-    if (!targetCalendarId) {
-      throw error(400, 'No calendar found for this user')
-    }
-
-    // Verify permission
-    const membership = await db.query.calendarMember.findFirst({
-      where: and(
-        eq(calendarMember.calendarId, targetCalendarId),
-        eq(calendarMember.userId, session.user.id)
-      )
-    })
-
-    if (!membership || membership.role === 'reader') {
-      throw error(
-        403,
-        'You do not have permission to add events to this calendar'
-      )
-    }
-
-    const id = crypto.randomUUID()
-    await db.insert(event).values({
-      id,
+    const newEvent = await createEvent(session.user.id, {
       title,
       description,
       location,
@@ -171,15 +127,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
       placeId,
       lat,
       lng,
-      type: type || 'schedule',
+      type,
       startTime: startTime ? new Date(startTime) : null,
       endTime: endTime ? new Date(endTime) : null,
-      recurrenceRule: recurrenceRule || null,
-      calendarId: targetCalendarId
-      // userId is NOT set (deprecated)
+      recurrenceRule,
+      calendarId
     })
-
-    const [newEvent] = await db.select().from(event).where(eq(event.id, id))
 
     return json(newEvent)
   } catch (e) {

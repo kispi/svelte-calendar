@@ -51,7 +51,8 @@
       if (!res.ok) throw new Error('Failed to fetch calendars')
       return res.json()
     },
-    enabled: !!data.session
+    enabled: !!data.session,
+    refetchOnWindowFocus: false
   }))
 
   // Auto-select all calendars if empty state (first load)
@@ -124,7 +125,8 @@
       return res.json()
     },
     enabled: !!data.session && settings.lastActiveTab === 'calendar' && isReady,
-    placeholderData: keepPreviousData
+    placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false
   }))
 
   const handleDateClick = async (date: any) => {
@@ -156,6 +158,20 @@
       // Refresh events to ensure all instances (recurring, moved calendars) are up to date
       queryClient.invalidateQueries({ queryKey: ['events'] })
     }
+  }
+
+  const handleChatEventCreated = async (event: any) => {
+    // 1. Refresh Data (Force a refetch for the current view)
+    // We do this immediately so the background data is fresh
+    await queryClient.invalidateQueries({ queryKey: ['events'] })
+
+    // 2. Move to Date (This might trigger another fetch if the month changes, which is fine)
+    if (event.startTime) {
+      handleMoveToDate(event.startTime)
+    }
+
+    // 3. Open Modal
+    handleEventClick(event)
   }
 
   const openLoginPopup = async () => {
@@ -313,12 +329,6 @@
     }
   }
 </script>
-
-<svelte:window
-  onfocus={() => {
-    queryClient.invalidateQueries({ queryKey: ['events'] })
-  }}
-/>
 
 <svelte:head>
   <title>
@@ -536,6 +546,9 @@
       bind:this={fileInput}
       onchange={onFileSelected}
     />
-    <ChatBot onMoveToDate={handleMoveToDate} />
+    <ChatBot
+      onMoveToDate={handleMoveToDate}
+      onEventCreated={handleChatEventCreated}
+    />
   {/if}
 </main>

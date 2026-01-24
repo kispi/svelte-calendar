@@ -14,6 +14,7 @@ import {
   calendar as calendarTable,
   chatLog
 } from '$lib/server/db/schema'
+import { createEvent } from '$lib/server/events'
 import { logger } from '$lib/logger'
 import dayjs from 'dayjs'
 
@@ -37,6 +38,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   let functionCallsLog: any[] = []
   let isSuccess = true
   let errorLog: any = null
+  let createdEvent: any = null
 
   try {
     // Define tools for Gemini
@@ -90,6 +92,40 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                 }
               }
             }
+          },
+          {
+            name: 'create_event',
+            description: 'Create a new event/schedule in the calendar.',
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {
+                title: {
+                  type: SchemaType.STRING,
+                  description: 'Title of the event'
+                },
+                startTime: {
+                  type: SchemaType.STRING,
+                  description: 'Start time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                },
+                endTime: {
+                  type: SchemaType.STRING,
+                  description: 'End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                },
+                location: {
+                  type: SchemaType.STRING,
+                  description: 'Location of the event (optional)'
+                },
+                description: {
+                  type: SchemaType.STRING,
+                  description: 'Description of the event (optional)'
+                },
+                recurrenceRule: {
+                  type: SchemaType.STRING,
+                  description: 'RRULE string for recurring events (e.g., "FREQ=WEEKLY;BYDAY=MO")'
+                }
+              },
+              required: ['title', 'startTime', 'endTime']
+            }
           }
         ]
       } as any
@@ -126,6 +162,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         - Use 'get_events' to search for events. Returns CSV format (id|title|startTime|endTime|description).
         - Use 'get_notes' to search notes. Returns CSV format (id|title|updatedAt|content).
         - Use 'move_to_date' when the user clearly wants to navigate the calendar view to a specific time.
+        - Use 'create_event' when the user wants to add a schedule.
   
         # Data Interpretation
         - The 'Event' model has Title, Location, Description, StartTime, EndTime, and Type.
@@ -133,16 +170,21 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         - **Aggregation**: You can calculate totals (e.g. "Total congratulatory money this year") by fetching relevant events first, then extracting and summing up numbers from their descriptions.
         - **Filtering**: To find "most expensive" or "cheapest", retrieve the events, parse the costs from descriptions, and sort them yourself.
 
+        # Event Creation Rules
+        - **Recurrence**: If the user mentions repetition (e.g., "Every Monday", "Monthly on the 1st"), generate a standard **RRULE string** (e.g., 'FREQ=WEEKLY;BYDAY=MO') and pass it to the 'recurrenceRule' parameter.
+        - **Intent**: You should infer the intent to create an event even if the user doesn't say "create" explicitly (e.g., "Dinner with Mom next Friday at 7pm", "Register gym schedule every Mon/Wed").
+        - **One-off vs Recurring**: If no recurrence is implied, leave 'recurrenceRule' empty.
+
         # Scope & Rejection Policy
         - **STRICTLY LIMITED SCOPE**: You generally ONLY answer questions related to the User's Calendar (Schedule) or Notes.
         - **Handling Irrelevant Questions**: If the user asks a general question unrelated to their schedule or notes (e.g., "What is the capital of France?", "Tell me a joke", "How to cook pasta", or coding questions), you MUST refuse to answer.
         - **Humorous Refusal**: When refusing, give a humorous response implying you are "just a schedule assistant" and "don't get paid to think about other things" or "my brain is only big enough for calendars".
         - **NO FUNCTION CALLS**: If you are refusing an irrelevant question, DO NOT call any functions. Just reply with the text refusal.
   
-        # Rules
+        # Safety Rules
         - ALWAYS restrict data access to the current user.
         - Be concise and professional (except when being humorous about refusals).
-        - Never modify data (READ-ONLY).`
+        - **Never modify or delete EXISTING data.** However, you are explicitly **ALLOWED to CREATE** new events.`
           }
         ]
       }
@@ -245,6 +287,35 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                 response: { notes }
               }
             })
+          } else if (name === 'create_event') {
+            try {
+              const { title, startTime, endTime, location, description, recurrenceRule } = args as any
+              // Call the service
+              const newEvent = await createEvent(userId, {
+                title,
+                startTime: startTime ? new Date(startTime) : null,
+                endTime: endTime ? new Date(endTime) : null,
+                location,
+                description,
+                recurrenceRule
+              })
+
+              createdEvent = newEvent
+
+              toolResponses.push({
+                functionResponse: {
+                  name: 'create_event',
+                  response: { success: true, createdEvent: newEvent }
+                }
+              })
+            } catch (e: any) {
+              toolResponses.push({
+                functionResponse: {
+                  name: 'create_event',
+                  response: { success: false, error: e.message }
+                }
+              })
+            }
           }
         }
       }
@@ -273,7 +344,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
     return json({
       content: responseText,
       history: fullHistory,
-      moveToDate: (moveCall?.functionCall?.args as any)?.date
+      moveToDate: (moveCall?.functionCall?.args as any)?.date,
+      createdEvent
     })
   } catch (err: any) {
     isSuccess = false

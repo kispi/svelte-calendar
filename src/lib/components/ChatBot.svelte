@@ -6,9 +6,10 @@
 
   interface ChatProps {
     onMoveToDate: (date: string) => void
+    onEventCreated: (event: any) => void
   }
 
-  let { onMoveToDate }: ChatProps = $props()
+  let { onMoveToDate, onEventCreated }: ChatProps = $props()
 
   // State for Chat
   let isOpen = $state(false)
@@ -147,9 +148,24 @@
       // Replace history with the full turn-by-turn history from the server
       if (data.history) {
         messages = data.history
+        // Ensure greeting is preserved if server returns history (server usually strips initial system message)
+        const greetingMsg = {
+          role: 'model',
+          parts: [{ text: i18n.t('chatbot.greeting') }]
+        }
+        // If the first message is not the greeting, prepend it
+        if (
+          messages.length === 0 ||
+          messages[0].role !== 'model' ||
+          messages[0].parts[0].text !== greetingMsg.parts[0].text
+        ) {
+          messages = [greetingMsg, ...messages]
+        }
       }
 
-      if (data.moveToDate) {
+      if (data.createdEvent) {
+        onEventCreated(data.createdEvent)
+      } else if (data.moveToDate) {
         onMoveToDate(data.moveToDate)
       }
     } catch (err) {
@@ -293,9 +309,15 @@
           <div
             class="bg-white/80 px-4 py-2.5 rounded-lg border border-slate-100 flex gap-1 items-center shadow-sm"
           >
-            <div class="w-1.5 h-1.5 bg-slate-300 rounded-full"></div>
-            <div class="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
-            <div class="w-1.5 h-1.5 bg-slate-300 rounded-full"></div>
+            <div
+              class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"
+            ></div>
+            <div
+              class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-75"
+            ></div>
+            <div
+              class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-150"
+            ></div>
           </div>
         </div>
       {/if}
@@ -307,7 +329,9 @@
         <textarea
           bind:value={inputMessage}
           onkeydown={handleKeydown}
-          placeholder={i18n.t('chatbot.placeholder')}
+          placeholder={isLoading
+            ? i18n.t('chatbot.placeholder_loading')
+            : i18n.t('chatbot.placeholder')}
           rows="1"
           disabled={isLoading}
           class="w-full bg-slate-50/50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 transition-all resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"

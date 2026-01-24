@@ -45,12 +45,10 @@
 
 <div class="p-6 relative max-h-[80vh] flex flex-col">
   <h3 class="text-xl font-bold text-slate-900 mb-2">
-    {i18n.locale === 'kr' ? '일정 가져오기' : 'Import Events'}
+    {i18n.t('import.title')}
   </h3>
   <p class="text-sm text-slate-500 mb-6">
-    {i18n.locale === 'kr'
-      ? `${events.length}개의 일정을 찾았습니다. 가져올 일정을 선택해주세요.`
-      : `Found ${events.length} events. Select the events you want to import.`}
+    {i18n.t('import.parsedCount', { count: events.length })}
   </p>
 
   <div class="flex items-center justify-between mb-4 px-1">
@@ -59,12 +57,8 @@
       class="text-sm font-bold text-gravex-primary-600 hover:text-gravex-primary-700"
     >
       {selectedIds.size === events.length
-        ? i18n.locale === 'kr'
-          ? '전체 해제'
-          : 'Deselect All'
-        : i18n.locale === 'kr'
-          ? '전체 선택'
-          : 'Select All'}
+        ? i18n.t('common.deselectAll')
+        : i18n.t('common.selectAll')}
     </button>
     <span class="text-sm text-slate-400">
       {selectedIds.size} / {events.length}
@@ -111,9 +105,7 @@
       disabled={selectedIds.size === 0}
       class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {i18n.locale === 'kr'
-        ? `${selectedIds.size}개 가져오기`
-        : `Import ${selectedIds.size}`}
+      {i18n.t('import.confirmButton', { count: selectedIds.size })}
     </button>
   </div>
 </div>

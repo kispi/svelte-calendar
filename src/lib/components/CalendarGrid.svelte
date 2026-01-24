@@ -63,8 +63,8 @@
   let headerDateDisplay = $derived.by(() => {
     // Force reactivity on locale change
     const locale = i18n.locale
-    const d = currentDate.locale(locale === 'kr' ? 'ko' : 'en')
-    return d.format(locale === 'kr' ? 'YYYY년 M월' : 'MMMM YYYY')
+    const d = currentDate.locale(i18n.dayjsLocale)
+    return d.format(i18n.t('formats.monthYear'))
   })
 
   // Derived state for calendar grid using dayjs
@@ -297,15 +297,10 @@
       const newMonth = currentDate.format('YYYY-MM')
       if (previousMonth !== newMonth) {
         // Show toast notification when navigating to a different month
-        const dateStr = currentDate.format(
-          i18n.locale === 'kr' ? 'YYYY년M월D일' : 'MMMM D, YYYY'
-        )
-        toast.info(
-          i18n.locale === 'kr'
-            ? `${dateStr}로 이동했습니다.`
-            : `Navigated to ${dateStr}`,
-          { position: 'top' }
-        )
+        const dateStr = currentDate.format(i18n.t('formats.longDate'))
+        toast.info(i18n.t('toast.navigatedToDate', { date: dateStr }), {
+          position: 'top'
+        })
       }
     }
     showSearchDropdown = false
@@ -616,11 +611,7 @@
                     (e) => e.id === calEvent.originalId
                   )
                   if (master) {
-                    toast.info(
-                      i18n.locale === 'kr'
-                        ? '반복 일정의 원본을 엽니다'
-                        : 'Opening recurring event series'
-                    )
+                    toast.info(i18n.t('toast.openingRecurringMaster'))
                     onEventClick(master)
                     return
                   }

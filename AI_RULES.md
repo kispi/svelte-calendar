@@ -67,14 +67,16 @@ This is a calendar scheduler & note-taking web application built with SvelteKit,
 
 ## Internationalization (i18n) Rules
 
-- **Never use inline ternary operators for locale checks in templates**
-  - Bad: {i18n.locale === 'kr' ? 'Korean' : 'English'}
-  - Good: {i18n.t('key.name')}
+- **Never use inline ternary operators or if blocks for locale checks (`locale === '...'`) in templates or logic**
+  - Bad: `{i18n.locale === 'kr' ? '안녕' : 'Hello'}`
+  - Bad: `if (locale === 'kr') return 'KR'`
+  - Good: `{i18n.t('greeting')}`
 
-- **Always define translation keys in src/lib/i18n.svelte.ts**
-  - Add keys to both en and kr translation objects
-  - Use nested structure for organization (e.g., notes.noContent, common.save)
+- **Always define translation keys in `src/lib/i18n.svelte.ts`**
+  - Add keys to both `en` and `kr` translation objects.
+  - Use nested structure for organization (e.g., `notes.noContent`, `common.save`).
 
-- **Use i18n.t() for all user-facing text**
-  - Extract logic from templates into helper functions if needed
-  - Keep templates clean and readable
+- **Use `i18n.t()` for all user-facing text**
+  - If dynamic values are needed, use parameters: `i18n.t('key', { name: user.name })`.
+  - Extract logic from templates into helper functions if needed.
+  - Keep templates clean and readable.

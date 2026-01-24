@@ -19,22 +19,7 @@
   const currentYear = dayjs().year()
   const years = Array.from({ length: 200 }, (_, i) => currentYear - 100 + i)
 
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December'
-  ]
-
-  // Removed unused scrolling logic
+  // No manual months array needed if we use dayjs with locale
 
   const handleApply = () => {
     const newDate = date.year(selectedYear).month(selectedMonth)
@@ -42,10 +27,9 @@
   }
 
   const getMonthName = (idx: number) => {
-    if (i18n.locale === 'kr') {
-      return `${idx + 1}월`
-    }
-    return months[idx]
+    // Force reactivity when locale changes
+    const _ = i18n.locale
+    return dayjs().month(idx).locale(i18n.dayjsLocale).format('MMMM')
   }
 </script>
 
@@ -122,7 +106,7 @@
       </div>
     {:else}
       <div class="h-full grid grid-cols-3 gap-3 p-4">
-        {#each months as _, i}
+        {#each Array.from({ length: 12 }) as _, i}
           <button
             class="rounded-xl text-sm font-bold transition-all flex flex-col items-center justify-center gap-1
                 {selectedMonth === i
@@ -139,7 +123,7 @@
                 ? 'text-slate-300'
                 : 'text-slate-400'}"
             >
-              {months[i].slice(0, 3)}
+              {getMonthName(i).slice(0, 3)}
             </span>
           </button>
         {/each}

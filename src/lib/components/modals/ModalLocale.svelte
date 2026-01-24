@@ -57,7 +57,7 @@
       <button
         onclick={() => handleSelect(opt.code)}
         class="w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all group
-          {i18n.locale === opt.code
+          {i18n.isCurrent(opt.code)
           ? 'border-gravex-primary-500 bg-gravex-primary-50/30'
           : 'border-slate-100 hover:border-slate-200 hover:bg-slate-50'}"
       >
@@ -77,7 +77,7 @@
           </div>
         </div>
 
-        {#if i18n.locale === opt.code}
+        {#if i18n.isCurrent(opt.code)}
           <div
             class="w-6 h-6 rounded-full bg-gravex-primary-500 flex items-center justify-center shadow-lg shadow-gravex-primary-200"
           >

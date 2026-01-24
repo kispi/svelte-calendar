@@ -103,7 +103,7 @@
   const handleDelete = async (id: string, name: string) => {
     const confirmed = await modal.show(ModalConfirm, {
       title: i18n.t('common.delete'),
-      message: `${name} - ${i18n.locale === 'kr' ? '정말 삭제하시겠습니까? 이 캘린더의 모든 일정이 삭제됩니다.' : 'Are you sure? All events in this calendar will be deleted.'}`,
+      message: `${name} - ${i18n.t('sidebar.deleteCalendarConfirmation')}`,
       confirmText: i18n.t('common.delete'),
       confirmClass: 'bg-red-600 hover:bg-red-700 text-white'
     })
@@ -303,7 +303,7 @@
       <input
         type="text"
         bind:value={newCalendarName}
-        placeholder={i18n.locale === 'kr' ? '캘린더 이름' : 'Calendar Name'}
+        placeholder={i18n.t('sidebar.calendarNamePlaceholder')}
         class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
         use:focusNode
       />
@@ -584,13 +584,9 @@
         <div
           class="w-4 h-4 flex items-center justify-center grayscale opacity-70"
         >
-          {i18n.locale === 'kr' ? '🇰🇷' : '🇺🇸'}
+          {i18n.t('locale.flag')}
         </div>
-        <span class="text-sm font-medium"
-          >{i18n.locale === 'kr'
-            ? i18n.t('locale.en')
-            : i18n.t('locale.ko')}</span
-        >
+        <span class="text-sm font-medium">{i18n.t('locale.nextLang')}</span>
       </button>
 
       <button

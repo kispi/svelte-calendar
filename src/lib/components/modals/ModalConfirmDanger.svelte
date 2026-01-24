@@ -42,9 +42,7 @@
       for="confirm-input"
       class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"
     >
-      {i18n.locale === 'kr'
-        ? `아래 입력창에 "${confirmText}"를 입력하세요`
-        : `Type "${confirmText}" to confirm`}
+      {i18n.t('confirmDanger.typeToConfirm', { word: confirmText })}
     </label>
     <input
       id="confirm-input"

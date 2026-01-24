@@ -50,7 +50,7 @@
 
 <div class="p-6 text-center">
   <h3 class="text-lg font-bold text-slate-900 mb-6">
-    {i18n.locale === 'kr' ? '길안내 앱 선택' : 'Navigate with...'}
+    {i18n.t('navigation.title')}
   </h3>
 
   <div class="grid gap-3">

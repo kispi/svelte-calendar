@@ -134,12 +134,10 @@
       settings.visibleCalendarIds = nextIds
 
       if (nextIds.length === 0) {
-        toast.info(
-          i18n.locale === 'kr'
-            ? '모든 캘린더를 해제하면 아무 일정도 보이지 않습니다 😢'
-            : 'No events will be visible if all calendars are unchecked 😢',
-          { position: 'bottom', duration: 3000 }
-        )
+        toast.info(i18n.t('toast.allCalendarsHidden'), {
+          position: 'bottom',
+          duration: 3000
+        })
       }
     }
   }
@@ -270,12 +268,9 @@
   const handleExport = async () => {
     window.location.href = '/api/events/export'
     if (window.innerWidth < 1024) isSidebarOpen = false
-    toast.success(
-      i18n.locale === 'kr' ? '일정을 내보냅니다' : 'Exporting events...',
-      {
-        position: 'top'
-      }
-    )
+    toast.success(i18n.t('toast.exportingEvents'), {
+      position: 'top'
+    })
   }
 
   let fileInput = $state<HTMLInputElement>()
@@ -336,12 +331,7 @@
             }
           }
         } else {
-          toast.info(
-            i18n.locale === 'kr'
-              ? '가져올 일정이 없습니다.'
-              : 'No events found.',
-            { position: 'top' }
-          )
+          toast.info(i18n.t('toast.noEventsFound'), { position: 'top' })
         }
       } else {
         toast.error(i18n.t('toast.importError'), { position: 'top' })
@@ -414,10 +404,7 @@
               onSignOut={confirmSignOut}
               onImport={handleImport}
               onExport={handleExport}
-              onLocaleChange={() => {
-                const next = i18n.locale === 'kr' ? 'en' : 'kr'
-                i18n.setLocale(next)
-              }}
+              onLocaleChange={() => i18n.toggleLocale()}
               class="h-full border-none"
             />
           </div>
@@ -434,10 +421,7 @@
             onSignOut={confirmSignOut}
             onImport={handleImport}
             onExport={handleExport}
-            onLocaleChange={() => {
-              const next = i18n.locale === 'kr' ? 'en' : 'kr'
-              i18n.setLocale(next)
-            }}
+            onLocaleChange={() => i18n.toggleLocale()}
             class="bg-transparent border-none text-slate-400 w-56"
           />
         </div>

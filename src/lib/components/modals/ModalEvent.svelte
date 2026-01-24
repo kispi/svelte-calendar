@@ -424,11 +424,7 @@
       <div class="flex-1">
         <div class="text-sm font-semibold text-slate-700 h-6 flex items-center">
           {baseDate
-            ? dayjs(baseDate).format(
-                i18n.locale === 'kr'
-                  ? 'YYYY년 M월 D일 (ddd)'
-                  : 'MMMM D, YYYY (ddd)'
-              )
+            ? dayjs(baseDate).format(i18n.t('formats.longDateWithDay'))
             : ''}
         </div>
 

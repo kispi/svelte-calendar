@@ -16,7 +16,9 @@ const translations = {
       search: 'Search',
       searchPlaceholder: 'Search events...',
       today: 'Today',
-      settings: 'Settings'
+      settings: 'Settings',
+      selectAll: 'Select All',
+      deselectAll: 'Deselect All'
     },
     nav: {
       calendar: 'CALENDAR',
@@ -44,7 +46,8 @@ const translations = {
       allDayDiary: 'ALL-DAY DIARY',
       startTime: 'Start Time',
       endTime: 'End Time',
-      deleteConfirm: 'Are you sure you want to delete this event?'
+      deleteConfirm: 'Are you sure you want to delete this event?',
+      selectCalendar: 'Select Calendar'
     },
     notes: {
       list: 'List',
@@ -61,6 +64,14 @@ const translations = {
       noNotesYet: 'No notes yet'
     },
     toast: {
+      allCalendarsHidden:
+        'No events will be visible if all calendars are unchecked 😢',
+      noEventsFound: 'No events found.',
+      navigatedToDate: 'Navigated to {date}',
+      openingRecurringMaster: 'Opening recurring event series',
+      eventsImportedSimple: 'Events imported',
+      exportingEvents: 'Exporting events...',
+      exportFailed: 'Failed to export: {error}',
       exportSuccess: 'Successfully exported {count} events!',
       exportError: 'Failed to export events',
       loginRequired: 'Login required',
@@ -73,7 +84,9 @@ const translations = {
       ko: 'Korean',
       en: 'English',
       kr: 'South Korea',
-      us: 'United States'
+      us: 'United States',
+      flag: '🇺🇸',
+      nextLang: 'Korean'
     },
     common_ui: {
       kakaoStart: 'Start with Kakao',
@@ -111,6 +124,28 @@ const translations = {
       light: 'Light Mode',
       dark: 'Dark Mode',
       toggle: 'Toggle Theme'
+    },
+    sidebar: {
+      deleteCalendarConfirmation: 'Are you sure? All events in this calendar will be deleted.',
+      calendarNamePlaceholder: 'Calendar Name'
+    },
+    import: {
+      title: 'Import Events',
+      description: 'Select .ics file to import events.',
+      parsedCount: 'Parsed {count} events',
+      parseError: 'Failed to parse file',
+      confirmButton: 'Import {count} events'
+    },
+    navigation: {
+      title: 'Navigate with...'
+    },
+    confirmDanger: {
+      typeToConfirm: "Type '{word}' to confirm"
+    },
+    formats: {
+      monthYear: 'MMMM YYYY',
+      longDate: 'MMMM D, YYYY',
+      longDateWithDay: 'MMMM D, YYYY (ddd)'
     }
   },
   kr: {
@@ -122,7 +157,9 @@ const translations = {
       search: '검색',
       searchPlaceholder: '일정 검색...',
       today: '이번 달',
-      settings: '설정'
+      settings: '설정',
+      selectAll: '전체 선택',
+      deselectAll: '전체 해제'
     },
     nav: {
       calendar: '달력',
@@ -149,8 +186,15 @@ const translations = {
       diary: '일기',
       allDayDiary: '하루 종일 일기',
       startTime: '시작 시간',
+      start: 'start', // Placeholder, likely unused or typo in my context check? No, strictly following file content.
+      // Wait, looking at file content in step 29:
+      // startTime: '시작 시간',
+      // endTime: '종료 시간',
+      // deleteConfirm: '이 일정을 삭제하시겠습니까?'
+      // I will target the actual block.
       endTime: '종료 시간',
-      deleteConfirm: '이 일정을 삭제하시겠습니까?'
+      deleteConfirm: '이 일정을 삭제하시겠습니까?',
+      selectCalendar: '캘린더 선택'
     },
     notes: {
       list: '목록',
@@ -167,6 +211,14 @@ const translations = {
       noNotesYet: '노트가 없습니다'
     },
     toast: {
+      allCalendarsHidden:
+        '모든 캘린더를 해제하면 아무 일정도 보이지 않습니다 😢',
+      noEventsFound: '가져올 일정이 없습니다.',
+      navigatedToDate: '{date}로 이동했습니다.',
+      openingRecurringMaster: '반복 일정의 원본을 엽니다',
+      eventsImportedSimple: '일정을 가져왔습니다',
+      exportingEvents: '일정을 내보냅니다',
+      exportFailed: '내보내기 실패: {error}',
       exportSuccess: '{count}개의 일정을 성공적으로 내보냈습니다!',
       exportError: '일정 내보내기에 실패했습니다',
       loginRequired: '로그인이 필요합니다',
@@ -179,7 +231,9 @@ const translations = {
       ko: '한국어',
       en: '영어',
       kr: '대한민국',
-      us: '미국'
+      us: '미국',
+      flag: '🇰🇷',
+      nextLang: '영어'
     },
     common_ui: {
       kakaoStart: '카카오로 시작하기',
@@ -209,18 +263,41 @@ const translations = {
       dark: '다크 모드',
       toggle: '테마 전환'
     },
-    chatbot: {
-      placeholder: '무엇이든 물어보세요!',
-      placeholder_loading: '생각중입니다... 잠시만요!',
-      thinking: '답변을 작성중입니다...',
-      error:
-        '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
-      greeting:
-        '안녕하세요! 무엇을 도와드릴까요?\n\n📅 **일정 관리**\n"내일 오후 2시 미팅 잡아줘"\n"매주 월요일 아침 9시 팀 회의 등록해줘"\n"다음 주 일정 브리핑해줘"\n\n📝 **메모 검색**\n"지난달 프로젝트 회의록 찾아줘"\n"여행 계획 메모 보여줘"\n\n이 외에도 궁금한 점이 있다면 편하게 물어보세요! 🤖',
-      title: 'Assistant'
+    sidebar: {
+      deleteCalendarConfirmation: '정말 삭제하시겠습니까? 이 캘린더의 모든 일정이 삭제됩니다.',
+      calendarNamePlaceholder: '캘린더 이름'
+    },
+    import: {
+      title: '일정 가져오기',
+      description: '.ics 파일을 선택하여 일정을 가져옵니다.',
+      parsedCount: '{count}개의 일정을 확인했습니다',
+      parseError: '파일을 분석할 수 없습니다',
+      confirmButton: '{count}개 일정 가져오기'
+    },
+    navigation: {
+      title: '길안내 앱 선택'
+    },
+    confirmDanger: {
+      typeToConfirm: "'{word}'를 입력하여 확인"
+    },
+    formats: {
+      monthYear: 'YYYY년 M월',
+      longDate: 'YYYY년 M월 D일',
+      longDateWithDay: 'YYYY년 M월 D일 (ddd)'
     }
+  },
+  chatbot: {
+    placeholder: '무엇이든 물어보세요!',
+    placeholder_loading: '생각중입니다... 잠시만요!',
+    thinking: '답변을 작성중입니다...',
+    error:
+      '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+    greeting:
+      '안녕하세요! 무엇을 도와드릴까요?\n\n📅 **일정 관리**\n"내일 오후 2시 미팅 잡아줘"\n"매주 월요일 아침 9시 팀 회의 등록해줘"\n"다음 주 일정 브리핑해줘"\n\n📝 **메모 검색**\n"지난달 프로젝트 회의록 찾아줘"\n"여행 계획 메모 보여줘"\n\n이 외에도 궁금한 점이 있다면 편하게 물어보세요! 🤖',
+    title: 'Assistant'
   }
 }
+
 
 class I18nState {
   constructor() {
@@ -233,9 +310,25 @@ class I18nState {
     return settings.locale
   }
 
+  get dayjsLocale() {
+    return this.locale === 'kr' ? 'ko' : 'en'
+  }
+
+  get isYearFirst() {
+    return this.locale === 'kr'
+  }
+
+  isCurrent(locale: string) {
+    return this.locale === locale
+  }
+
   setLocale(locale: Locale) {
     settings.locale = locale
     this.updateDayjs()
+  }
+
+  toggleLocale() {
+    this.setLocale(this.locale === 'kr' ? 'en' : 'kr')
   }
 
   updateDayjs() {

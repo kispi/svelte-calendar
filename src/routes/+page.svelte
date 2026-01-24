@@ -21,6 +21,7 @@
   import { signIn, signOut } from '@auth/sveltekit/client'
   import type { PageData } from './$types'
   import { logger } from '$lib/logger'
+  import { metadata } from '$lib/metadata'
 
   let { data }: { data: PageData } = $props()
 
@@ -28,6 +29,13 @@
   let isReady = $state(false)
   let isSidebarOpen = $state(false)
   let features = $derived([
+    {
+      title: i18n.t('common_ui.features.speed'),
+      desc: i18n.t('common_ui.features.speedDesc'),
+      iconColor: 'text-yellow-600 dark:text-yellow-400',
+      bgColor: 'bg-yellow-100 dark:bg-yellow-900/50',
+      path: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z'
+    },
     {
       title: i18n.t('common_ui.features.ai'),
       desc: i18n.t('common_ui.features.aiDesc'),
@@ -362,28 +370,24 @@
 
 <svelte:head>
   <title>
-    {settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'} | Gravex.app
+    {metadata.getPageTitle(
+      settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'
+    )}
   </title>
-  <meta name="description" content="Enjoy lightning fast calendar and notes." />
+  <meta name="description" content={metadata.description} />
 
   <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="Calendar & Notes | Gravex.app" />
-  <meta
-    property="og:description"
-    content="Enjoy lightning fast calendar and notes."
-  />
-  <meta property="og:image" content="/logo.png" />
+  <meta property="og:title" content={metadata.title} />
+  <meta property="og:description" content={metadata.description} />
+  <meta property="og:image" content={metadata.image} />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://gravex.app" />
+  <meta property="og:url" content={metadata.url} />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Calendar & Notes | Gravex.app" />
-  <meta
-    name="twitter:description"
-    content="Enjoy lightning fast calendar and notes."
-  />
-  <meta name="twitter:image" content="/logo.png" />
+  <meta name="twitter:title" content={metadata.title} />
+  <meta name="twitter:description" content={metadata.description} />
+  <meta name="twitter:image" content={metadata.image} />
 </svelte:head>
 
 <main
@@ -477,7 +481,7 @@
                 </svg>
               </button>
               <h1
-                class="text-2xl font-black tracking-tight flex items-center gap-3 text-slate-900 dark:text-white transition-colors"
+                class="text-2xl font-black tracking-tight flex items-center gap-3 text-gradient-brand transition-colors"
               >
                 {settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'}
               </h1>
@@ -553,17 +557,19 @@
           class="max-w-4xl w-full z-10 flex flex-col items-center text-center gap-10"
         >
           <!-- Hero Text -->
-          <div class="space-y-4">
-            <h1
-              class="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-slate-900 dark:from-indigo-400 dark:via-purple-400 dark:to-white pb-2"
-            >
-              Calendar & Notes
-            </h1>
-            <p
-              class="text-xl md:text-2xl text-slate-600 dark:text-slate-300 font-medium"
-            >
-              {i18n.t('common_ui.onboarding')}
-            </p>
+          <div class="space-y-6">
+            <div class="space-y-2">
+              <h1
+                class="text-5xl md:text-7xl font-extrabold tracking-tight text-gradient-brand pb-2"
+              >
+                Swiftly
+              </h1>
+              <p
+                class="text-lg md:text-xl text-indigo-600 dark:text-indigo-400 font-bold tracking-wide"
+              >
+                ⚡ Lightning-fast smart calendar & notes.
+              </p>
+            </div>
           </div>
 
           <!-- Selling Points Grid -->
@@ -627,7 +633,7 @@
             </button>
 
             <span class="text-sm text-slate-400 font-medium tracking-wide">
-              Gravex.app
+              Swiftly by Gravex.app
             </span>
           </div>
         </div>

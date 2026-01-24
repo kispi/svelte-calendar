@@ -54,4 +54,8 @@ h4,
   .text-balance {
     text-wrap: balance;
   }
+  
+  .text-gradient-brand {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-slate-900 dark:from-indigo-400 dark:via-purple-400 dark:to-white;
+  }
 }

@@ -76,9 +76,10 @@ const translations = {
       us: 'United States'
     },
     common_ui: {
-      onboarding: 'Your Schedule & Notes. Simplified.',
       kakaoStart: 'Start with Kakao',
       features: {
+        speed: 'Blazing Fast',
+        speedDesc: 'Tired of slow, bloated calendar apps? Experience instant loading and smooth interactions.',
         privacy: 'Safe to leave',
         privacyDesc: 'Complete account deletion supported.',
         portability: 'No platform lock-in!',
@@ -86,7 +87,7 @@ const translations = {
         ai: 'AI Assistant',
         aiDesc: 'Create, query, and manage your schedule with AI chat.',
         place: 'Place Search & Maps',
-        placeDesc: 'Search places easily and check them on Naver, Kakao, or Google Maps'
+        placeDesc: 'Search places easily and check them on Naver, Kakao, or Google Maps!'
       }
     },
     chatbot: {
@@ -181,9 +182,10 @@ const translations = {
       us: '미국'
     },
     common_ui: {
-      onboarding: '일정과 메모를 한 곳에서. 심플한 일정 관리.',
       kakaoStart: '카카오로 시작하기',
       features: {
+        speed: '압도적인 속도',
+        speedDesc: '느리고 무거운 캘린더 앱에 지치셨나요? 즉각적인 로딩과 부드러운 인터랙션을 경험하세요.',
         privacy: '떠나실때도 안전하게',
         privacyDesc: '계정 삭제 시 모든 데이터가 즉시 파기됩니다.',
         portability: '플랫폼 종속 걱정이 없어요!',
@@ -191,7 +193,7 @@ const translations = {
         ai: '스마트한 AI 비서',
         aiDesc: '채팅으로 일정을 등록하고 물어보세요!',
         place: '장소 검색 & 지도 연동',
-        placeDesc: '손쉽게 장소를 검색하고, 네이버/카카오/구글 지도로 바로 확인하세요'
+        placeDesc: '손쉽게 장소를 검색하고, 네이버/카카오/구글 지도로 바로 확인하세요!'
       }
     },
     recurrence: {

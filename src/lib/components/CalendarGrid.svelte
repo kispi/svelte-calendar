@@ -458,23 +458,25 @@
         >
           {#snippet children(result: CalendarEvent)}
             <div
-              class="px-4 py-3 border-b border-slate-50 last:border-b-0 group/item hover:bg-slate-50"
+              class="px-4 py-3 border-b border-border-base last:border-b-0 group/item hover:bg-surface-hover transition-colors"
             >
               <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0">
                   <div
-                    class="font-bold text-slate-800 truncate group-hover/item:text-gravex-primary-700 transition-colors"
+                    class="font-bold text-content-primary truncate group-hover/item:text-gravex-primary-600 dark:group-hover/item:text-gravex-primary-400 transition-colors"
                   >
                     {result.title}
                   </div>
                   {#if result.description}
-                    <div class="text-xs text-slate-500 truncate mt-0.5">
+                    <div class="text-xs text-content-muted truncate mt-0.5">
                       {result.description}
                     </div>
                   {/if}
                 </div>
                 {#if result.startTime}
-                  <div class="text-xs text-slate-400 ml-2 shrink-0 font-medium">
+                  <div
+                    class="text-xs text-content-muted ml-2 shrink-0 font-medium"
+                  >
                     {dayjs(result.startTime).format('MMM D')}
                   </div>
                 {/if}

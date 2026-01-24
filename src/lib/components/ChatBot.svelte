@@ -28,16 +28,44 @@
   let isLoading = $state(false)
   let chatContainer = $state<HTMLDivElement>()
 
+  // Constants
+  const DEFAULT_WIDTH = 350
+  const DEFAULT_HEIGHT = 500
+  const MARGIN = 20
+
   // State for Drag & Resize
   let position = $state({ x: 20, y: 20 }) // Default bottom-right offset
-  let size = $state({ width: 400, height: 500 })
+  let size = $state({ width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT })
   let isDragging = $state(false)
   let isResizing = $state(false)
   let dragOffset = $state({ x: 0, y: 0 })
   let resizeStart = $state({ x: 0, y: 0, width: 0, height: 0 })
 
+  const resetToDefault = () => {
+    const startX = window.innerWidth - DEFAULT_WIDTH - MARGIN
+    const startY = window.innerHeight - DEFAULT_HEIGHT - MARGIN
+
+    // Reset size first
+    size = { width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT }
+
+    // Then set position based on that size
+    position = {
+      x: Math.max(MARGIN, startX),
+      y: Math.max(MARGIN, startY)
+    }
+  }
+
   // Window handlers
-  // Window handlers
+  const handleWindowResize = () => {
+    // Only reset if chat is open to avoid weird state jumps,
+    // or if the user requirement "unconditionally" implies even if closed?
+    // If closed, position doesn't matter much until opened.
+    // But toggleChat resets it anyway.
+    if (isOpen) {
+      resetToDefault()
+    }
+  }
+
   const handleWindowMouseMove = (e: MouseEvent) => {
     if (isDragging) {
       // Calculate new position (right/bottom based)
@@ -97,21 +125,7 @@
   const toggleChat = () => {
     isOpen = !isOpen
     if (isOpen) {
-      // Reset to default position (bottom-rightish) and size
-      const defaultWidth = 400
-      const defaultHeight = 500
-      const margin = 20
-
-      let startX = window.innerWidth - defaultWidth - margin
-      let startY = window.innerHeight - defaultHeight - margin
-
-      // Ensure it's not off-screen if window is small
-      if (startX < 0) startX = margin
-      if (startY < 0) startY = margin
-
-      position = { x: startX, y: startY }
-      size = { width: defaultWidth, height: defaultHeight }
-
+      resetToDefault()
       scrollToBottom()
     }
   }
@@ -240,6 +254,7 @@
 <svelte:window
   onmousemove={handleWindowMouseMove}
   onmouseup={handleWindowMouseUp}
+  onresize={handleWindowResize}
 />
 
 {#if isOpen}

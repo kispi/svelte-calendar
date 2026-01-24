@@ -307,17 +307,9 @@
       {#if isLoading}
         <div class="flex justify-start">
           <div
-            class="bg-white/80 px-4 py-2.5 rounded-lg border border-slate-100 flex gap-1 items-center shadow-sm"
+            class="break-words bg-white/80 text-slate-500 border border-slate-100 px-4 py-2.5 rounded-lg rounded-bl-none text-sm shadow-sm animate-pulse italic"
           >
-            <div
-              class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce"
-            ></div>
-            <div
-              class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-75"
-            ></div>
-            <div
-              class="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce delay-150"
-            ></div>
+            {i18n.t('chatbot.thinking')}
           </div>
         </div>
       {/if}

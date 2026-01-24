@@ -28,7 +28,7 @@ const translations = {
       export: 'Export',
       deleteAccount: 'Delete Account',
       deleteAccountConfirm:
-        'Are you sure you want to delete your account?\nYou can rejoin with the same account, but events and notes cannot be restored.\nWe recommend making a backup of your data by "Exporting" before deleting your account.',
+        'All events and notes will be deleted.\nYou can rejoin with the same account, but events and notes cannot be restored.\nWe recommend making a backup of your data by "Exporting" before deleting your account.',
       deleteAccountTitle: 'Delete Account',
       deleteAccountPhrase: 'DELETE ACCOUNT',
       deleteAccountInputLabel: 'Type "{text}" to confirm'
@@ -77,11 +77,20 @@ const translations = {
     },
     common_ui: {
       onboarding: 'Your Schedule & Notes. Simplified.',
-      kakaoStart: 'Start with Kakao'
+      kakaoStart: 'Start with Kakao',
+      features: {
+        privacy: 'Safe to leave',
+        privacyDesc: 'Complete account deletion supported.',
+        portability: 'No platform lock-in!',
+        portabilityDesc: 'Easy .ics import/export. (ex: Google, Kakao, Apple...) Switch platforms anytime without lock-in.',
+        ai: 'AI Assistant',
+        aiDesc: 'Create, query, and manage your schedule with AI chat.'
+      }
     },
     chatbot: {
       placeholder: 'Ask me anything!',
       placeholder_loading: 'Thinking... hold on!',
+      thinking: 'Thinking...',
       error: 'The model is currently busy. Please try again in a moment.',
       greeting:
         'Hello! How can I help you today?\n\n📅 **Schedule Management**\n"Schedule a meeting tomorrow at 2 PM"\n"Set up a team sync every Monday at 9 AM"\n"Brief me on next week\'s schedule"\n\n📝 **Note Search**\n"Find meeting minutes from last month"\n"Show me my travel plans"\n\nFeel free to ask me anything else! 🤖',
@@ -117,7 +126,7 @@ const translations = {
       export: '내보내기',
       deleteAccount: '계정 삭제',
       deleteAccountConfirm:
-        '정말 계정을 삭제하시겠습니까?\n동일한 계정으로 재가입은 가능하지만, 일정과 노트 등은 복구할 수 없습니다.\n계정 삭제 전 "내보내기"를 하여 일정을 백업해두시기를 권장합니다.',
+        '등록한 모든 일정과 노트가 삭제됩니다.\n동일한 계정으로 재가입은 가능하지만, 삭제된 데이터는 복구할 수 없습니다.\n계정 삭제 전 "내보내기"를 하여 일정을 백업해두시기를 권장합니다.',
       deleteAccountTitle: '계정 삭제',
       deleteAccountPhrase: '계정 삭제',
       deleteAccountInputLabel: '아래 입력창에 "{text}"를 입력하세요'
@@ -166,7 +175,15 @@ const translations = {
     },
     common_ui: {
       onboarding: '일정과 메모를 한 곳에서. 심플한 하루 관리.',
-      kakaoStart: '카카오로 시작하기'
+      kakaoStart: '카카오로 시작하기',
+      features: {
+        privacy: '떠나실때도 안전하게',
+        privacyDesc: '계정 삭제 시 모든 데이터가 즉시 파기됩니다.',
+        portability: '플랫폼 종속 걱정이 없어요!',
+        portabilityDesc: '쓰던 플랫폼(ex: 구글, 카카오, 애플...)의 .ics 캘린더 파일을 그대로 가져오고, 언제든 다시 내보낼 수 있습니다.',
+        ai: '스마트한 AI 비서',
+        aiDesc: '채팅으로 일정을 등록하고 물어보세요!'
+      }
     },
     recurrence: {
       label: '반복',
@@ -179,6 +196,7 @@ const translations = {
     chatbot: {
       placeholder: '무엇이든 물어보세요!',
       placeholder_loading: '생각중입니다... 잠시만요!',
+      thinking: '답변을 작성중입니다...',
       error:
         '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
       greeting:

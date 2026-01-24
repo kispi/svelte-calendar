@@ -27,6 +27,29 @@
   let currentDate = $state(dayjs())
   let isReady = $state(false)
   let isSidebarOpen = $state(false)
+  let features = $derived([
+    {
+      title: i18n.t('common_ui.features.ai'),
+      desc: i18n.t('common_ui.features.aiDesc'),
+      iconColor: 'text-purple-600 dark:text-purple-400',
+      bgColor: 'bg-purple-100 dark:bg-purple-900/50',
+      path: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z'
+    },
+    {
+      title: i18n.t('common_ui.features.portability'),
+      desc: i18n.t('common_ui.features.portabilityDesc'),
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      bgColor: 'bg-emerald-100 dark:bg-emerald-900/50',
+      path: 'M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5'
+    },
+    {
+      title: i18n.t('common_ui.features.privacy'),
+      desc: i18n.t('common_ui.features.privacyDesc'),
+      iconColor: 'text-indigo-600 dark:text-indigo-400',
+      bgColor: 'bg-indigo-100 dark:bg-indigo-900/50',
+      path: 'M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z'
+    }
+  ])
 
   $effect(() => {
     isSidebarOpen = window.innerWidth >= 1024
@@ -501,39 +524,104 @@
       </div>
     </div>
   {:else}
-    <div class="relative h-screen">
+    <div
+      class="h-screen w-full overflow-y-auto overflow-x-hidden bg-gradient-to-br from-indigo-50 to-white dark:from-slate-950 dark:to-slate-900 block"
+    >
       <div
-        class="absolute inset-0 bg-white/60 dark:bg-slate-950/60 backdrop-blur-[2px] z-10 flex flex-col items-center justify-center rounded border border-slate-100 dark:border-slate-800"
+        class="min-h-full flex flex-col items-center justify-start md:justify-center px-6 py-24 md:p-6 relative"
       >
-        <p class="text-xl font-bold text-slate-900 dark:text-white mb-6">
-          {i18n.t('common_ui.onboarding')}
-        </p>
-        <button
-          onclick={openLoginPopup}
-          class="flex items-center gap-2 bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] px-8 py-4 rounded font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 border border-[#FDD835]/50 group"
+        <!-- Background decorations -->
+        <div
+          class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-30 dark:opacity-20"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            class="transition-transform group-hover:scale-110"
-            ><path
-              d="M12 3c5.523 0 10 3.582 10 8 0 4.42-4.48 8-10 8-1.077 0-2.11-.135-3.077-.387-.232-.06-.476-.048-.7.034l-3.328 2.22c-.52.347-1.18-.178-.962-.764l.608-2.37c.07-.27-.008-.553-.207-.753C2.863 15.395 2 13.784 2 11c0-4.418 4.477-8 10-8z"
-            /></svg
-          >
-          <span class="text-lg">{i18n.t('common_ui.kakaoStart')}</span>
-        </button>
-      </div>
-      <!-- Blurred preview -->
-      <div class="filter blur-sm pointer-events-none opacity-50 select-none">
-        <CalendarGrid
-          bind:currentDate
-          events={[]}
-          onDateClick={() => {}}
-          onEventClick={() => {}}
-        />
+          <div
+            class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/50 dark:bg-indigo-900/30 rounded-full blur-3xl"
+          ></div>
+          <div
+            class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/50 dark:bg-purple-900/30 rounded-full blur-3xl"
+          ></div>
+        </div>
+
+        <div
+          class="max-w-4xl w-full z-10 flex flex-col items-center text-center gap-10"
+        >
+          <!-- Hero Text -->
+          <div class="space-y-4">
+            <h1
+              class="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-slate-900 dark:from-indigo-400 dark:via-purple-400 dark:to-white pb-2"
+            >
+              AI Planner
+            </h1>
+            <p
+              class="text-xl md:text-2xl text-slate-600 dark:text-slate-300 font-medium"
+            >
+              {i18n.t('common_ui.onboarding')}
+            </p>
+          </div>
+
+          <!-- Selling Points Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full text-left">
+            {#each features as feature}
+              <div
+                class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow"
+              >
+                <div
+                  class="w-12 h-12 {feature.bgColor} rounded-xl flex items-center justify-center mb-4 {feature.iconColor}"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d={feature.path}
+                    />
+                  </svg>
+                </div>
+                <h3
+                  class="font-bold text-lg text-slate-900 dark:text-white mb-2"
+                >
+                  {feature.title}
+                </h3>
+                <p
+                  class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"
+                >
+                  {feature.desc}
+                </p>
+              </div>
+            {/each}
+          </div>
+
+          <!-- CTA Button -->
+          <div class="flex flex-col items-center gap-8 w-full">
+            <button
+              onclick={openLoginPopup}
+              class="flex items-center gap-3 bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] px-10 py-4 rounded-xl font-bold transition-all shadow-lg hover:shadow-xl active:scale-95 border border-[#FDD835]/50 group text-lg"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="transition-transform group-hover:scale-110"
+                ><path
+                  d="M12 3c5.523 0 10 3.582 10 8 0 4.42-4.48 8-10 8-1.077 0-2.11-.135-3.077-.387-.232-.06-.476-.048-.7.034l-3.328 2.22c-.52.347-1.18-.178-.962-.764l.608-2.37c.07-.27-.008-.553-.207-.753C2.863 15.395 2 13.784 2 11c0-4.418 4.477-8 10-8z"
+                /></svg
+              >
+              <span>{i18n.t('common_ui.kakaoStart')}</span>
+            </button>
+
+            <span class="text-sm text-slate-400 font-medium tracking-wide">
+              Gravex.app
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   {/if}

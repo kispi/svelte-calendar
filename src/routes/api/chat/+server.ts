@@ -17,6 +17,7 @@ import {
 import { createEvent } from '$lib/server/events'
 import { logger } from '$lib/logger'
 import dayjs from 'dayjs'
+import readmeContent from '../../../../README.md?raw'
 
 if (!env.GOOGLE_AI_API_KEY) {
   logger.error(
@@ -128,7 +129,20 @@ export const POST: RequestHandler = async ({ request, locals }) => {
             }
           }
         ]
-      } as any
+      } as any,
+      {
+        functionDeclarations: [
+          {
+            name: 'get_app_info',
+            description: 'Get information about this application features, tech stack, and capabilities.',
+            parameters: {
+              type: SchemaType.OBJECT,
+              properties: {},
+              required: []
+            }
+          }
+        ]
+      }
     ]
 
     const model = genAI.getGenerativeModel({
@@ -163,6 +177,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         - Use 'get_notes' to search notes. Returns CSV format (id|title|updatedAt|content).
         - Use 'move_to_date' when the user clearly wants to navigate the calendar view to a specific time.
         - Use 'create_event' when the user wants to add a schedule.
+        - Use 'get_app_info' when the user asks about this app's features, capabilities, or tech stack to avoid hallucinations.
   
         # Data Interpretation
         - The 'Event' model has Title, Location, Description, StartTime, EndTime, and Type.
@@ -176,12 +191,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         - **One-off vs Recurring**: If no recurrence is implied, leave 'recurrenceRule' empty.
 
         # Scope & Rejection Policy
-        - **STRICTLY LIMITED SCOPE**: You generally ONLY answer questions related to the User's Calendar (Schedule) or Notes.
-        - **Handling Irrelevant Questions**: If the user asks a general question unrelated to their schedule or notes (e.g., "What is the capital of France?", "Tell me a joke", "How to cook pasta", or coding questions), you MUST refuse to answer.
-        - **Humorous Refusal**: When refusing, give a humorous response implying you are "just a schedule assistant" and "don't get paid to think about other things" or "my brain is only big enough for calendars".
-        - **NO FUNCTION CALLS**: If you are refusing an irrelevant question, DO NOT call any functions. Just reply with the text refusal.
+        - **General Conversation Allowed**: You can answer general questions and engage in casual conversation (e.g., "Hello", "How are you?", "Tell me a joke").
+        - **Prioritize Context**: Your primary role is still a Calendar Assistant. Always look for schedule/note-related intent first.
+        - **Minimize Function Calls**: For general queries unrelated to the calendar or notes (e.g., "What is the capital of France?", "Tell me a joke"), **DO NOT CALL ANY FUNCTIONS**. Just provide a text response. This is critical to save resources.
+        - **Helpfulness**: Be friendly and helpful. If a request is completely outside your capabilities (e.g. generating images, accessing real-time news), politely explain your limitations.
   
         # Safety Rules
+        - **Security & Privacy**: NEVER answer questions about the **deployment environment** (EC2, PM2, GitHub Actions, AWS) or **environment variables** (.env files, API keys, secrets). If asked, respectfully decline by saying this is private system information.
         - ALWAYS restrict data access to the current user.
         - Be concise and professional (except when being humorous about refusals).
         - **Never modify or delete EXISTING data.** However, you are explicitly **ALLOWED to CREATE** new events.`
@@ -285,6 +301,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
               functionResponse: {
                 name: 'get_notes',
                 response: { notes }
+              }
+            })
+          } else if (name === 'get_app_info') {
+            toolResponses.push({
+              functionResponse: {
+                name: 'get_app_info',
+                response: { info: readmeContent }
               }
             })
           } else if (name === 'create_event') {

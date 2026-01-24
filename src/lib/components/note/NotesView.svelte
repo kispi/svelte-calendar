@@ -129,7 +129,7 @@
       >
       <button
         onclick={handleCreateNote}
-        class="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 transition-colors active:scale-95"
+        class="p-1.5 text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-300 active:scale-95"
         aria-label={i18n.t('notes.create')}
       >
         <svg

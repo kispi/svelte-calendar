@@ -377,7 +377,7 @@
 </svelte:head>
 
 <main
-  class="h-screen flex flex-col relative overflow-hidden bg-page transition-colors duration-300 selection:bg-gravex-primary-500/30"
+  class="h-screen flex flex-col relative overflow-hidden bg-page selection:bg-gravex-primary-500/30"
 >
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
@@ -390,12 +390,12 @@
           aria-modal="true"
         >
           <div
-            class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+            class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
             onclick={() => (isSidebarOpen = false)}
             aria-hidden="true"
           ></div>
           <div
-            class="absolute inset-y-0 left-0 w-56 bg-page-sidebar shadow-2xl transition-transform duration-300"
+            class="absolute inset-y-0 left-0 w-56 bg-page-sidebar shadow-2xl"
           >
             <Sidebar
               visibleCalendarIds={settings.visibleCalendarIds}
@@ -405,15 +405,14 @@
               onImport={handleImport}
               onExport={handleExport}
               onLocaleChange={() => i18n.toggleLocale()}
+              onTabChange={() => (isSidebarOpen = false)}
               class="h-full border-none"
             />
           </div>
         </div>
 
         <!-- Desktop Sidebar -->
-        <div
-          class="hidden lg:block h-full transition-all duration-300 ease-in-out"
-        >
+        <div class="hidden lg:block h-full w-56 shrink-0">
           <Sidebar
             visibleCalendarIds={settings.visibleCalendarIds}
             onToggle={toggleCalendar}
@@ -422,26 +421,25 @@
             onImport={handleImport}
             onExport={handleExport}
             onLocaleChange={() => i18n.toggleLocale()}
+            onTabChange={() => (isSidebarOpen = false)}
             class="bg-transparent border-none text-slate-400 w-56"
           />
         </div>
       {/if}
 
       <!-- Main Content Card -->
-      <div
-        class="flex-1 flex flex-col h-full overflow-hidden p-0 lg:p-4 transition-all duration-300"
-      >
+      <div class="flex-1 flex flex-col h-full overflow-hidden p-0 lg:p-4">
         <div
-          class="flex-1 bg-surface rounded-none lg:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-0 lg:border border-border-base transition-colors duration-300"
+          class="flex-1 bg-surface rounded-none lg:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-0 lg:border border-border-base"
         >
           <!-- Header -->
           <div
-            class="px-4 md:px-6 lg:px-8 py-5 flex items-center justify-between bg-surface/80 backdrop-blur-sm sticky top-0 z-20 transition-colors duration-300"
+            class="px-4 md:px-6 lg:px-8 py-5 flex items-center justify-between bg-surface/80 backdrop-blur-sm sticky top-0 z-20"
           >
             <div class="flex items-center gap-4">
               <!-- Sidebar Toggle -->
               <button
-                class="text-content-muted hover:text-content-primary hover:bg-surface-hover p-2 rounded-xl transition-all"
+                class="text-content-muted hover:text-content-primary hover:bg-surface-hover p-2 rounded-xl"
                 onclick={() => (isSidebarOpen = !isSidebarOpen)}
                 aria-label="Toggle Sidebar"
               >
@@ -461,7 +459,7 @@
                 </svg>
               </button>
               <h1
-                class="text-2xl font-black tracking-tight flex items-center gap-3 text-gradient-brand transition-colors"
+                class="text-2xl font-black tracking-tight flex items-center gap-3 text-gradient-brand"
               >
                 {settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'}
               </h1>
@@ -470,9 +468,9 @@
 
           <!-- Content -->
           <div
-            class="flex-1 overflow-hidden relative flex flex-col items-center bg-surface transition-colors duration-300"
+            class="flex-1 overflow-hidden relative flex flex-col items-center bg-surface"
           >
-            <div class="w-full h-full flex flex-col p-0 md:p-2 lg:p-4 relative">
+            <div class="w-full h-full flex flex-col p-4 relative">
               {#if query.isError}
                 <div
                   class="h-full flex flex-col items-center justify-center bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-100 dark:border-red-900/50 shadow-sm m-4"
@@ -498,7 +496,7 @@
 
                 <!-- Loading Overlay -->
                 <div
-                  class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-surface/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
+                  class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-surface/50 z-10 flex flex-col pointer-events-none"
                   class:opacity-0={!query.isFetching}
                   class:opacity-100={query.isFetching}
                 >

@@ -70,7 +70,7 @@
   >
     {#each events as event}
       <label
-        class="flex items-start gap-3 p-3 hover:bg-surface-hover cursor-pointer transition-colors"
+        class="flex items-start gap-3 p-3 hover:bg-surface-hover cursor-pointer"
       >
         <div class="pt-0.5">
           <input

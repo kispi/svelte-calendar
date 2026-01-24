@@ -262,7 +262,7 @@
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div
     style="left: {position.x}px; top: {position.y}px; width: {size.width}px; height: {size.height}px;"
-    class="fixed z-50 flex flex-col bg-white/95 backdrop-blur-sm rounded-lg shadow-2xl border border-slate-200 overflow-hidden"
+    class="fixed z-50 flex flex-col bg-[var(--c-surface-1)] rounded-lg shadow-2xl border border-[var(--c-border-highlight)] overflow-hidden"
   >
     <!-- Header (Draggable) -->
     <div
@@ -278,7 +278,7 @@
       <button
         onclick={() => (isOpen = false)}
         aria-label="Close Chat"
-        class="text-white/80 hover:text-white p-1 rounded-md transition-colors cursor-pointer"
+        class="text-white/80 hover:text-white p-1 rounded-md cursor-pointer"
         onmousedown={(e) => e.stopPropagation()}
       >
         <svg
@@ -299,7 +299,7 @@
     <!-- Messages -->
     <div
       bind:this={chatContainer}
-      class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50 scroll-smooth custom-scrollbar"
+      class="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--c-bg-page)]/50 scroll-smooth custom-scrollbar"
     >
       {#each messages as msg}
         {@const text = getMessageText(msg)}
@@ -311,7 +311,7 @@
               class="max-w-[85%] px-4 py-2.5 rounded-lg text-sm shadow-sm break-words
                        {msg.role === 'user'
                 ? 'bg-gravex-primary-600 text-white rounded-br-none'
-                : 'bg-white/80 text-slate-700 border border-slate-100 rounded-bl-none'}"
+                : 'bg-[var(--c-surface-2)] text-content-primary border border-border-base rounded-bl-none'}"
             >
               <!-- eslint-disable-next-line svelte/no-at-html-tags -->
               {@html parseMarkdown(text)}
@@ -322,7 +322,7 @@
       {#if isLoading}
         <div class="flex justify-start">
           <div
-            class="break-words bg-white/80 text-slate-500 border border-slate-100 px-4 py-2.5 rounded-lg rounded-bl-none text-sm shadow-sm animate-pulse italic"
+            class="break-words bg-[var(--c-surface-2)] text-content-muted border border-border-base px-4 py-2.5 rounded-lg rounded-bl-none text-sm shadow-sm animate-pulse italic"
           >
             {i18n.t('chatbot.thinking')}
           </div>
@@ -331,7 +331,7 @@
     </div>
 
     <!-- Input -->
-    <div class="p-4 bg-white/80 border-t border-slate-100">
+    <div class="p-4 bg-[var(--c-surface-1)] border-t border-border-base">
       <div class="relative flex items-center gap-2">
         <textarea
           bind:value={inputMessage}
@@ -341,13 +341,13 @@
             : i18n.t('chatbot.placeholder')}
           rows="1"
           disabled={isLoading}
-          class="w-full bg-slate-50/50 border border-slate-200 rounded-md px-4 py-2.5 text-sm outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 transition-all resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"
+          class="w-full bg-[var(--c-bg-page)] border border-border-base rounded-md px-4 py-2.5 text-sm text-content-primary outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"
         ></textarea>
         <button
           onclick={sendMessage}
           disabled={!inputMessage.trim() || isLoading}
           aria-label="Send Message"
-          class="bg-gravex-primary-600 hover:bg-gravex-primary-700 disabled:bg-slate-300 text-white p-2.5 rounded-md transition-all shadow-sm active:scale-95 shrink-0"
+          class="bg-gravex-primary-600 hover:bg-gravex-primary-700 disabled:bg-slate-300 text-white p-2.5 rounded-md shadow-sm active:scale-95 shrink-0"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -396,7 +396,7 @@
   <div class="relative">
     <button
       onclick={toggleChat}
-      class="pointer-events-auto bg-gravex-primary-600 hover:bg-gravex-primary-700 text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 active:rotate-12 group relative"
+      class="pointer-events-auto bg-gravex-primary-600 hover:bg-gravex-primary-700 text-white p-4 rounded-full shadow-2xl transform hover:scale-110 active:rotate-12 group relative"
     >
       {#if isOpen}
         <svg

@@ -226,7 +226,7 @@
   <!-- Close Button 'X' -->
   <button
     onclick={close}
-    class="absolute top-4 right-4 p-2 text-content-muted hover:text-content-secondary hover:bg-surface-hover rounded-full transition-all z-10"
+    class="absolute top-4 right-4 p-2 text-content-muted hover:text-content-secondary hover:bg-surface-hover rounded-full z-10"
     aria-label="Close modal"
   >
     <svg
@@ -396,7 +396,7 @@
         id="title"
         bind:value={title}
         required
-        class="w-full text-2xl font-black text-content-primary bg-transparent border-b-2 border-transparent focus:border-gravex-primary-500 outline-none transition-all placeholder:text-content-muted pb-2"
+        class="w-full text-2xl font-black text-content-primary bg-transparent border-b-2 border-transparent focus:border-gravex-primary-500 outline-none placeholder:text-content-muted pb-2"
         placeholder={i18n.t('event.title')}
         aria-label={i18n.t('event.title')}
       />
@@ -435,7 +435,7 @@
             <div class="flex items-center gap-2">
               <button
                 type="button"
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/50 text-center"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-[var(--c-border-highlight)] hover:bg-[var(--c-bg-surface-hover)] text-sm font-medium text-content-secondary bg-[var(--c-surface-2)]/50 text-center"
                 onclick={() => openTimePicker('start')}
               >
                 {startTime || '00:00'}
@@ -446,7 +446,7 @@
 
               <button
                 type="button"
-                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm font-medium text-slate-600 dark:text-slate-300 bg-slate-50/50 dark:bg-slate-800/50 text-center"
+                class="w-24 px-2 py-1.5 rounded border border-transparent hover:border-[var(--c-border-highlight)] hover:bg-[var(--c-bg-surface-hover)] text-sm font-medium text-content-secondary bg-[var(--c-surface-2)]/50 text-center"
                 onclick={() => openTimePicker('end')}
               >
                 {endTime || '00:00'}
@@ -498,7 +498,7 @@
           oninput={handleLocationInput}
           onfocus={handleFocus}
           autocomplete="off"
-          class="w-full px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm placeholder:text-content-muted bg-transparent text-content-primary pr-8"
+          class="w-full px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none text-sm placeholder:text-content-muted bg-transparent text-content-primary pr-8"
           placeholder={i18n.t('event.location')}
           aria-label={i18n.t('event.location')}
         />
@@ -515,7 +515,7 @@
                 })
               }
             }}
-            class="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-content-muted hover:text-gravex-primary-500 transition-colors"
+            class="absolute right-0 top-1/2 -translate-y-1/2 p-1 text-content-muted hover:text-gravex-primary-500"
             aria-label="Navigate"
           >
             <svg
@@ -594,7 +594,7 @@
         <input type="hidden" name="calendarId" value={calendarId} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm font-medium text-content-secondary flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none text-sm font-medium text-content-secondary flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showCalendarDropdown = !showCalendarDropdown
@@ -615,7 +615,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="lucide lucide-chevron-down text-slate-400 group-hover:text-slate-600 transition-colors"
+            class="lucide lucide-chevron-down text-slate-400 group-hover:text-slate-600"
             ><path d="m6 9 6 6 6-6" /></svg
           >
         </button>
@@ -676,7 +676,7 @@
         <input type="hidden" name="recurrenceRule" value={recurrenceRule} />
         <button
           type="button"
-          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all text-sm font-medium text-content-secondary flex items-center justify-between group"
+          class="w-full text-left px-0 py-1 border-b border-transparent focus:border-gravex-primary-400 outline-none text-sm font-medium text-content-secondary flex items-center justify-between group"
           onclick={(e) => {
             e.stopPropagation()
             showRecurrenceDropdown = !showRecurrenceDropdown
@@ -708,7 +708,7 @@
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="lucide lucide-chevron-down text-slate-400 group-hover:text-slate-600 transition-colors"
+            class="lucide lucide-chevron-down text-slate-400 group-hover:text-slate-600"
             ><path d="m6 9 6 6 6-6" /></svg
           >
         </button>
@@ -773,7 +773,7 @@
             class="hidden"
           />
           <div
-            class="w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all
+            class="w-4 h-4 rounded-full border-2 flex items-center justify-center
             {type === 'schedule'
               ? 'border-gravex-primary-500'
               : 'border-slate-300 group-hover:border-slate-400'}"
@@ -783,7 +783,7 @@
             {/if}
           </div>
           <span
-            class="text-xs font-semibold uppercase tracking-wider transition-colors
+            class="text-xs font-semibold uppercase tracking-wider
             {type === 'schedule'
               ? 'text-content-secondary'
               : 'text-content-muted group-hover:text-content-secondary'}"
@@ -800,7 +800,7 @@
             class="hidden"
           />
           <div
-            class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center transition-all
+            class="w-3.5 h-3.5 rounded-full border-2 flex items-center justify-center
             {type === 'diary'
               ? 'border-gravex-primary-500'
               : 'border-slate-300 group-hover:border-slate-400'}"
@@ -810,7 +810,7 @@
             {/if}
           </div>
           <span
-            class="text-xs font-semibold uppercase tracking-wider transition-colors
+            class="text-xs font-semibold uppercase tracking-wider
             {type === 'diary'
               ? 'text-content-secondary'
               : 'text-content-muted group-hover:text-content-secondary'}"
@@ -844,7 +844,7 @@
         id="description"
         bind:value={description}
         use:autoResize
-        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-gravex-primary-400 outline-none transition-all resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-content-muted text-content-primary"
+        class="flex-1 px-0 py-1 bg-transparent border-b border-transparent focus:border-gravex-primary-400 outline-none resize-none min-h-[40px] overflow-hidden text-sm leading-relaxed placeholder:text-content-muted text-content-primary"
         placeholder={i18n.t('event.description')}
         aria-label={i18n.t('event.description')}
       ></textarea>

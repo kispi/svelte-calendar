@@ -22,7 +22,7 @@
       >
         <!-- Backdrop Backdrop (Visual) -->
         <div
-          class="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] pointer-events-none"
+          class="fixed inset-0 bg-[var(--c-scrim)] backdrop-blur-[2px] pointer-events-none"
           transition:fade|global={{ duration: 200 }}
           style="z-index: {i * 10}"
         ></div>
@@ -35,7 +35,7 @@
           <div
             class={item.options.wrapperClass
               ? `relative pointer-events-auto ${item.options.wrapperClass}`
-              : 'relative w-full max-w-lg rounded bg-surface shadow-modal border border-border-base pointer-events-auto'}
+              : 'relative w-full max-w-lg rounded bg-[var(--c-surface-1)] shadow-modal border border-[var(--c-border-highlight)] pointer-events-auto'}
             transition:scale|global={{ duration: 200, start: 0.95 }}
           >
             <svelte:component

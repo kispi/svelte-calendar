@@ -32,7 +32,7 @@
     <button
       type="button"
       onclick={() => close(true)}
-      class="btn-primary shadow-lg transition-all transform active:scale-95"
+      class="btn-primary shadow-lg transform active:scale-95"
     >
       {confirmText}
     </button>

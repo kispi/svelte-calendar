@@ -91,7 +91,7 @@
         <button
           type="button"
           data-value={h}
-          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium transition-colors
+          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium
               {hour === h
             ? 'text-content-primary font-bold scale-110'
             : 'text-content-muted hover:text-content-secondary'}"
@@ -119,7 +119,7 @@
         <button
           type="button"
           data-value={m}
-          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium transition-colors
+          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium
               {minute === m
             ? 'text-content-primary font-bold scale-110'
             : 'text-content-muted hover:text-content-secondary'}"

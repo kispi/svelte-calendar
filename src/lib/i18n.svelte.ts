@@ -110,7 +110,7 @@ const translations = {
       error: 'The model is currently busy. Please try again in a moment.',
       greeting:
         'Hello! How can I help you today?\n\n📅 **Schedule Management**\n"Schedule a meeting tomorrow at 2 PM"\n"Set up a team sync every Monday at 9 AM"\n"Brief me on next week\'s schedule"\n\n📝 **Note Search**\n"Find meeting minutes from last month"\n"Show me my travel plans"\n\nFeel free to ask me anything else! 🤖',
-      title: 'Assistant'
+      title: 'Scheduly'
     },
     recurrence: {
       label: 'Repeat',
@@ -258,7 +258,7 @@ const translations = {
         '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
       greeting:
         '안녕하세요! 무엇을 도와드릴까요?\n\n📅 **일정 관리**\n"내일 오후 2시 미팅 잡아줘"\n"매주 월요일 아침 9시 팀 회의 등록해줘"\n"다음 주 일정 브리핑해줘"\n\n📝 **메모 검색**\n"지난달 프로젝트 회의록 찾아줘"\n"여행 계획 메모 보여줘"\n\n이 외에도 궁금한 점이 있다면 편하게 물어보세요! 🤖',
-      title: 'Assistant'
+      title: 'Scheduly'
     },
     recurrence: {
       label: '반복',

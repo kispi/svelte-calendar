@@ -385,7 +385,7 @@
     <div class="relative z-20">
       <button
         onclick={openMonthPicker}
-        class="flex items-center gap-2 text-2xl font-black text-content-primary hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors cursor-pointer group select-none tracking-tight"
+        class="flex items-center gap-2 text-2xl font-black text-content-primary hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 cursor-pointer group select-none tracking-tight"
       >
         <span>{headerDateDisplay}</span>
         <svg
@@ -398,7 +398,7 @@
           stroke-width="3"
           stroke-linecap="round"
           stroke-linejoin="round"
-          class="text-slate-300 group-hover:text-gravex-primary-500 transition-colors"
+          class="text-slate-300 group-hover:text-gravex-primary-500"
           ><path d="m6 9 6 6 6-6" /></svg
         >
       </button>
@@ -414,11 +414,11 @@
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
-          class="w-full bg-surface-hover border-transparent focus:bg-surface focus:border-gravex-primary-200 focus:ring-4 focus:ring-gravex-primary-500/10 dark:focus:ring-gravex-primary-500/20 rounded-xl px-10 py-2.5 text-sm font-medium transition-all outline-none placeholder:text-content-muted text-content-primary"
+          class="w-full bg-surface-hover border-transparent focus:bg-surface focus:border-gravex-primary-200 focus:ring-4 focus:ring-gravex-primary-500/10 dark:focus:ring-gravex-primary-500/20 rounded-xl px-10 py-2.5 text-sm font-medium outline-none placeholder:text-content-muted text-content-primary"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-primary-500 transition-colors"
+          class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-gravex-primary-500"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -432,7 +432,7 @@
         {#if searchQuery}
           <button
             onclick={() => (searchQuery = '')}
-            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 transition-colors"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500"
             aria-label="Clear search"
           >
             <svg
@@ -458,13 +458,11 @@
         >
           {#snippet children(result: CalendarEvent)}
             <div
-              class="px-4 py-3 border-b border-border-base last:border-b-0 group/item hover:bg-surface-hover transition-colors"
+              class="px-4 py-3 border-b border-border-base last:border-b-0 group/item hover:bg-surface-hover"
             >
               <div class="flex items-center justify-between">
                 <div class="flex-1 min-w-0">
-                  <div
-                    class="font-bold text-content-primary truncate group-hover/item:text-gravex-primary-600 dark:group-hover/item:text-gravex-primary-400 transition-colors"
-                  >
+                  <div class="font-bold text-content-primary truncate">
                     {result.title}
                   </div>
                   {#if result.description}
@@ -499,6 +497,7 @@
       <button
         onclick={prevMonth}
         class="p-1.5 hover:bg-surface rounded-md transition-all text-content-secondary hover:text-content-primary hover:shadow-sm"
+        aria-label={i18n.t('common.prevMonth')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -516,6 +515,7 @@
       <button
         onclick={nextMonth}
         class="p-1.5 hover:bg-surface rounded-md transition-all text-content-secondary hover:text-content-primary hover:shadow-sm"
+        aria-label={i18n.t('common.nextMonth')}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -545,14 +545,16 @@
   </div>
 
   <!-- Days Grid -->
-  <div class="grid grid-cols-7 auto-rows-fr h-full overflow-hidden">
+  <div
+    class="grid grid-cols-7 auto-rows-fr h-full overflow-hidden border-l border-border-base"
+  >
     {#each days as day}
       {@const dayEvents = getEventsForDay(day)}
       {@const systemEvent = dayEvents.find((e) => isSystemEvent(e))}
       {@const normalEvents = dayEvents.filter((e) => !isSystemEvent(e))}
       <div
         class="
-                    min-h-[80px] border-b border-r border-border-base p-2 transition-colors
+                    min-h-[80px] border-b border-r border-border-base p-2
                     {day.isSame(monthStart, 'month')
           ? 'bg-surface hover:bg-surface-hover'
           : 'bg-surface-hover/30 text-content-muted'}
@@ -601,7 +603,7 @@
             {@const color = getEventColor(calEvent.calendarId)}
             <button
               type="button"
-              class="w-full text-left px-1 py-0.5 text-xs font-semibold rounded-[2px] truncate transition-colors cursor-pointer hover:bg-surface-hover"
+              class="w-full text-left px-1 py-0.5 text-xs font-semibold rounded-[2px] truncate cursor-pointer hover:bg-surface-hover"
               style={color ? `color: ${color};` : 'color: #64748b;'}
               onclick={(e) => {
                 e.stopPropagation()

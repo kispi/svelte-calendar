@@ -11,7 +11,7 @@
   }
 
   .btn-default {
-    @apply btn-base text-content-secondary hover:bg-surface-hover;
+    @apply btn-base text-content-secondary hover:bg-surface-hover border border-border-base;
   }
 
   .btn-primary {
@@ -21,6 +21,11 @@
   .btn-danger {
     @apply btn-base text-content-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20;
   }
+
+  .shadow-modal {
+    box-shadow: var(--c-shadow-modal);
+  }
+
 }
 
 @tailwind utilities;
@@ -59,8 +64,20 @@
   --c-text-muted: #94a3b8;
   /* slate-400 */
 
+  /* Elevation Surfaces (Light) */
+  --c-surface-1: #ffffff;
+  /* white - Modal/Card */
+  --c-surface-2: #ffffff;
+  /* white - Popover/Dropdown (Same as surface in light, shadow does the work) */
+
   --c-border-base: #e2e8f0;
   /* slate-200 */
+  --c-border-highlight: #e2e8f0;
+  /* slate-200 - Same as base in light */
+
+  --c-scrim: rgb(0 0 0 / 0.25);
+  /* Light mode scrim */
+
 
   /* Primary Action */
   --c-primary-bg: #0f172a;
@@ -75,13 +92,13 @@
 }
 
 .dark {
-  /* Semantic Colors - Dark */
+  /* Elevation Surfaces (Dark) */
   --c-bg-page: #020617;
   /* slate-950 */
   --c-bg-surface: #0f172a;
   /* slate-900 */
-  --c-bg-surface-hover: #1e293b;
-  /* slate-800 */
+  --c-bg-surface-hover: #475569;
+  /* slate-600 - Lighter than surface-2 (slate-700) for visibility */
 
   --c-text-primary: #ffffff;
   /* white */
@@ -90,8 +107,20 @@
   --c-text-muted: #94a3b8;
   /* slate-400 */
 
+  /* Elevation Surfaces (Dark) */
+  --c-surface-1: #1e293b;
+  /* slate-800 - Elevated (Modal, Card) */
+  --c-surface-2: #334155;
+  /* slate-700 - Highly Elevated (Dropdown, Popover) */
+
   --c-border-base: #1e293b;
   /* slate-800 */
+  --c-border-highlight: #334155;
+  /* slate-700 - Lighter border for contrast */
+
+  --c-scrim: rgb(0 0 0 / 0.6);
+  /* Darker scrim for dark mode */
+
 
   /* Primary Action */
   --c-primary-bg: #f1f5f9;

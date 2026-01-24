@@ -56,7 +56,7 @@
 
         <button
           onclick={() => toast.dismiss(item.id)}
-          class="flex-shrink-0 text-slate-400 hover:text-white transition-colors p-1"
+          class="flex-shrink-0 text-slate-400 hover:text-white p-1"
           aria-label="Dismiss notification"
         >
           <svg

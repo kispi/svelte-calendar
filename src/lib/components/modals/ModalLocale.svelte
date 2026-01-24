@@ -65,7 +65,7 @@
           <span class="text-3xl filter saturate-[0.8]">{opt.icon}</span>
           <div class="text-left">
             <div
-              class="font-bold text-content-secondary transition-colors group-hover:text-content-primary"
+              class="font-bold text-content-secondary group-hover:text-content-primary"
             >
               {i18n.t(`locale.${opt.code}`)}
             </div>

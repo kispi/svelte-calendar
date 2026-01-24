@@ -15,6 +15,10 @@ This is a calendar scheduler & note-taking web application built with SvelteKit,
   - ??USE `$state`, `$derived`, `$effect`, `$props`.
 - **Styling**: Tailwind CSS (v3).
   - Custom colors defined in `tailwind.config.js` (`gravex-primary`).
+  - **Dark Mode Strategy**:
+    - ? **Semantic Styling**: Use CSS variables (e.g., `bg-[var(--c-bg-surface)]`) or Tailwind extensions that map to them. Avoid hardcoding colors like `bg-slate-800` for surfaces.
+    - **Elevation**: Use brighter backgrounds for higher elevations in dark mode.
+    - **Borders**: Use 1px borders to separate layers in dark mode where shadows fail.
 - **Database**: Drizzle ORM + MySQL.
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
   - **Date Types**: Use `Date` objects for `datetime`/`timestamp` columns in Drizzle (Drizzle handles conversion to/from MySQL format automatically).

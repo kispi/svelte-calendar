@@ -35,7 +35,7 @@
           <div
             class={item.options.wrapperClass
               ? `relative pointer-events-auto ${item.options.wrapperClass}`
-              : 'relative w-full max-w-lg rounded bg-white dark:bg-slate-900 shadow-2xl dark:shadow-[0_0_15px_rgba(255,255,255,0.1)] ring-1 ring-slate-200 dark:ring-slate-800 pointer-events-auto'}
+              : 'relative w-full max-w-lg rounded bg-surface shadow-modal ring-1 ring-slate-200 dark:ring-slate-800 pointer-events-auto'}
             transition:scale|global={{ duration: 200, start: 0.95 }}
           >
             <svelte:component

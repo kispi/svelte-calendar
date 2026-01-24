@@ -377,7 +377,7 @@
   })
 </script>
 
-<div class="h-full flex flex-col bg-white dark:bg-slate-900">
+<div class="h-full flex flex-col bg-surface">
   <!-- Header -->
   <div
     class="px-4 py-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-4"
@@ -385,7 +385,7 @@
     <div class="relative z-20">
       <button
         onclick={openMonthPicker}
-        class="flex items-center gap-2 text-2xl font-black text-slate-900 dark:text-white hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors cursor-pointer group select-none tracking-tight"
+        class="flex items-center gap-2 text-2xl font-black text-content-primary hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors cursor-pointer group select-none tracking-tight"
       >
         <span>{headerDateDisplay}</span>
         <svg
@@ -414,7 +414,7 @@
           oninput={handleSearchInput}
           onfocus={handleSearchFocus}
           placeholder={i18n.t('common.searchPlaceholder')}
-          class="w-full bg-slate-50 dark:bg-slate-800 border-transparent focus:bg-white dark:focus:bg-slate-950 focus:border-gravex-primary-200 focus:ring-4 focus:ring-gravex-primary-500/10 dark:focus:ring-gravex-primary-500/20 rounded-xl px-10 py-2.5 text-sm font-medium transition-all outline-none placeholder:text-slate-400 dark:placeholder:text-slate-600 dark:text-white"
+          class="w-full bg-surface-hover border-transparent focus:bg-surface focus:border-gravex-primary-200 focus:ring-4 focus:ring-gravex-primary-500/10 dark:focus:ring-gravex-primary-500/20 rounded-xl px-10 py-2.5 text-sm font-medium transition-all outline-none placeholder:text-content-muted text-content-primary"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -485,18 +485,18 @@
       </div>
     </div>
 
-    <div class="flex gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+    <div class="flex gap-1 bg-surface-hover p-1 rounded-lg">
       <button
         onclick={goToday}
         aria-label={i18n.t('common.today')}
-        class="px-3 py-1.5 text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all uppercase tracking-wider shadow-sm hover:shadow"
+        class="px-3 py-1.5 text-xs font-bold text-content-secondary hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 hover:bg-surface rounded-md transition-all uppercase tracking-wider shadow-sm hover:shadow"
       >
         {i18n.t('common.today')}
       </button>
-      <div class="w-px bg-slate-300 dark:bg-slate-600 my-1 mx-1"></div>
+      <div class="w-px bg-content-muted my-1 mx-1"></div>
       <button
         onclick={prevMonth}
-        class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:shadow-sm"
+        class="p-1.5 hover:bg-surface rounded-md transition-all text-content-secondary hover:text-content-primary hover:shadow-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -513,7 +513,7 @@
       </button>
       <button
         onclick={nextMonth}
-        class="p-1.5 hover:bg-white dark:hover:bg-slate-700 rounded-md transition-all text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:shadow-sm"
+        class="p-1.5 hover:bg-surface rounded-md transition-all text-content-secondary hover:text-content-primary hover:shadow-sm"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -532,12 +532,10 @@
   </div>
 
   <!-- Weekdays -->
-  <div
-    class="grid grid-cols-7 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"
-  >
+  <div class="grid grid-cols-7 border-b border-border-base bg-surface-hover/50">
     {#each weekdays as day}
       <div
-        class="py-4 text-center text-xs font-black text-slate-400 uppercase tracking-widest"
+        class="py-4 text-center text-xs font-black text-content-muted uppercase tracking-widest"
       >
         {day}
       </div>
@@ -552,10 +550,10 @@
       {@const normalEvents = dayEvents.filter((e) => !isSystemEvent(e))}
       <div
         class="
-                    min-h-[80px] border-b border-r border-slate-50 dark:border-slate-700 p-2 transition-colors
+                    min-h-[80px] border-b border-r border-border-base p-2 transition-colors
                     {day.isSame(monthStart, 'month')
-          ? 'bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-gravex-primary-900/10'
-          : 'bg-slate-50/30 dark:bg-slate-800/30 text-slate-300 dark:text-slate-700'}
+          ? 'bg-surface hover:bg-surface-hover'
+          : 'bg-surface-hover/30 text-content-muted'}
                     cursor-pointer relative
                 "
         role="button"
@@ -570,7 +568,7 @@
                           text-sm font-medium w-7 h-7 flex items-center justify-center rounded-full shrink-0
                           {day.isSame(dayjs(), 'day')
                 ? 'bg-gravex-primary-500 text-white'
-                : 'text-slate-700 dark:text-slate-300'}
+                : 'text-content-secondary'}
                           {(systemEvent &&
                 systemEvent.isRedDay &&
                 !day.isSame(dayjs(), 'day')) ||
@@ -585,7 +583,7 @@
               <span
                 class="text-xs font-normal truncate ml-1 flex-1 {systemEvent.isRedDay
                   ? 'text-red-500'
-                  : 'text-slate-500 dark:text-slate-400'}"
+                  : 'text-content-muted'}"
                 title={systemEvent.title}
               >
                 {systemEvent.title}
@@ -601,7 +599,7 @@
             {@const color = getEventColor(calEvent.calendarId)}
             <button
               type="button"
-              class="w-full text-left px-1 py-0.5 text-xs font-semibold rounded-[2px] truncate transition-colors cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800"
+              class="w-full text-left px-1 py-0.5 text-xs font-semibold rounded-[2px] truncate transition-colors cursor-pointer hover:bg-surface-hover"
               style={color ? `color: ${color};` : 'color: #64748b;'}
               onclick={(e) => {
                 e.stopPropagation()

@@ -33,12 +33,10 @@
   }
 </script>
 
-<div
-  class="bg-white dark:bg-slate-900 rounded-2xl overflow-hidden flex flex-col w-[320px]"
->
+<div class="bg-surface rounded-2xl overflow-hidden flex flex-col w-[320px]">
   <!-- Header with Toggles -->
   <div
-    class="bg-white dark:bg-slate-900 p-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800"
+    class="bg-surface p-5 flex items-center justify-between border-b border-border-base"
   >
     <div class="flex gap-2">
       {#if view === 'year'}
@@ -46,7 +44,7 @@
           <input
             type="number"
             bind:value={selectedYear}
-            class="w-20 px-2 py-1.5 text-lg font-bold border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-slate-500 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white text-center"
+            class="w-20 px-2 py-1.5 text-lg font-bold border border-border-base rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-box bg-surface-hover text-content-primary text-center"
             min="1900"
             max="2100"
             onkeydown={(e) => {
@@ -58,7 +56,7 @@
         </div>
       {:else}
         <button
-          class="px-3 py-1.5 rounded-lg text-lg font-bold transition-all text-slate-800 hover:bg-slate-50"
+          class="px-3 py-1.5 rounded-lg text-lg font-bold transition-all text-content-secondary hover:bg-surface-hover"
           onclick={() => (view = 'year')}
         >
           {selectedYear}
@@ -68,8 +66,8 @@
       <button
         class="px-3 py-1.5 rounded-lg text-lg font-bold transition-all {view ===
         'month'
-          ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white'
-          : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'}"
+          ? 'bg-surface-hover text-content-primary'
+          : 'text-content-muted hover:text-content-primary'}"
         onclick={() => (view = 'month')}
       >
         {getMonthName(selectedMonth)}
@@ -82,7 +80,7 @@
   </div>
 
   <!-- Content Area -->
-  <div class="relative h-80 bg-white dark:bg-slate-900">
+  <div class="relative h-80 bg-surface">
     {#if view === 'year'}
       <div
         class="h-full overflow-y-auto grid grid-cols-4 gap-2 p-4 content-start"
@@ -92,8 +90,8 @@
           <button
             class="px-2 py-3 rounded-lg text-sm font-medium transition-all
                 {selectedYear === y
-              ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-md'
-              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:scale-105 border border-slate-100 dark:border-slate-700'}"
+              ? 'bg-brand-box text-brand-text shadow-md'
+              : 'bg-surface text-content-secondary hover:bg-surface-hover hover:scale-105 border border-border-base'}"
             onclick={() => {
               selectedYear = y
               // view = 'month' // Keep in year view if manually selecting? Or switch? User habit.
@@ -112,8 +110,8 @@
           <button
             class="rounded-xl text-sm font-bold transition-all flex flex-col items-center justify-center gap-1
                 {selectedMonth === i
-              ? 'bg-slate-900 dark:bg-slate-700 text-white shadow-lg ring-4 ring-slate-100 dark:ring-slate-800'
-              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:scale-105 border border-slate-100 dark:border-slate-700'}"
+              ? 'bg-brand-box text-brand-text shadow-lg ring-4 ring-border-base'
+              : 'bg-surface text-content-secondary hover:bg-surface-hover hover:scale-105 border border-border-base'}"
             onclick={() => {
               selectedMonth = i
             }}
@@ -121,8 +119,8 @@
             <span class="text-base">{i + 1}</span>
             <span
               class="text-[10px] uppercase tracking-wider {selectedMonth === i
-                ? 'text-slate-300'
-                : 'text-slate-400'}"
+                ? 'text-content-muted'
+                : 'text-content-muted'}"
             >
               {getMonthName(i).slice(0, 3)}
             </span>

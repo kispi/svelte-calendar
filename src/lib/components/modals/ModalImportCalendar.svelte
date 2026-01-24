@@ -44,10 +44,10 @@
 </script>
 
 <div class="p-6 relative max-h-[80vh] flex flex-col">
-  <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">
+  <h3 class="text-xl font-bold text-content-primary mb-2">
     {i18n.t('import.title')}
   </h3>
-  <p class="text-sm text-slate-500 dark:text-slate-400 mb-6">
+  <p class="text-sm text-content-muted mb-6">
     {i18n.t('import.parsedCount', { count: events.length })}
   </p>
 
@@ -66,11 +66,11 @@
   </div>
 
   <div
-    class="flex-1 overflow-y-auto custom-scrollbar border rounded-lg border-slate-100 dark:border-slate-800 divide-y divide-slate-50 dark:divide-slate-800"
+    class="flex-1 overflow-y-auto custom-scrollbar border rounded-lg border-border-base divide-y divide-border-base"
   >
     {#each events as event}
       <label
-        class="flex items-start gap-3 p-3 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer transition-colors"
+        class="flex items-start gap-3 p-3 hover:bg-surface-hover cursor-pointer transition-colors"
       >
         <div class="pt-0.5">
           <input
@@ -81,7 +81,7 @@
           />
         </div>
         <div class="flex-1 min-w-0">
-          <div class="font-bold text-slate-800 dark:text-slate-200 truncate">
+          <div class="font-bold text-content-primary truncate">
             {event.title}
           </div>
           <div class="text-xs text-slate-400 mt-0.5">
@@ -96,9 +96,7 @@
     {/each}
   </div>
 
-  <div
-    class="flex justify-end gap-3 pt-6 mt-2 border-t border-slate-50 dark:border-slate-800"
-  >
+  <div class="flex justify-end gap-3 pt-6 mt-2 border-t border-border-base">
     <button onclick={() => close()} class="btn-default">
       {i18n.t('common.cancel')}
     </button>

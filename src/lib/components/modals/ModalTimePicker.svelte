@@ -66,15 +66,11 @@
 </script>
 
 <div
-  class="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-xs overflow-hidden transform transition-all scale-100"
+  class="bg-surface rounded-2xl shadow-modal w-full max-w-xs overflow-hidden transform transition-all scale-100"
 >
   <!-- Header -->
-  <div
-    class="bg-slate-50 dark:bg-slate-800 p-6 text-center border-b border-slate-100 dark:border-slate-700"
-  >
-    <div
-      class="text-3xl font-bold text-slate-900 dark:text-white tracking-wider"
-    >
+  <div class="bg-surface p-6 text-center border-b border-border-base">
+    <div class="text-3xl font-bold text-content-primary tracking-wider">
       {formatTime(hour, minute)}
     </div>
   </div>
@@ -83,7 +79,7 @@
   <div class="flex h-56 relative">
     <!-- Selection Highlight Bar -->
     <div
-      class="absolute top-1/2 left-0 right-0 h-10 -translate-y-1/2 bg-slate-100 dark:bg-slate-800 pointer-events-none border-y border-slate-200 dark:border-slate-700"
+      class="absolute top-1/2 left-0 right-0 h-10 -translate-y-1/2 bg-surface-hover pointer-events-none border-y border-border-base"
     ></div>
 
     <!-- Hours -->
@@ -97,8 +93,8 @@
           data-value={h}
           class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium transition-colors
               {hour === h
-            ? 'text-slate-900 dark:text-white font-bold scale-110'
-            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}"
+            ? 'text-content-primary font-bold scale-110'
+            : 'text-content-muted hover:text-content-secondary'}"
           onclick={() => {
             hour = h
             scrollToCurrent()
@@ -110,9 +106,7 @@
     </div>
 
     <!-- Divider -->
-    <div
-      class="flex items-center justify-center text-slate-300 dark:text-slate-600 font-bold"
-    >
+    <div class="flex items-center justify-center text-content-muted font-bold">
       :
     </div>
 
@@ -127,8 +121,8 @@
           data-value={m}
           class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium transition-colors
               {minute === m
-            ? 'text-slate-900 dark:text-white font-bold scale-110'
-            : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}"
+            ? 'text-content-primary font-bold scale-110'
+            : 'text-content-muted hover:text-content-secondary'}"
           onclick={() => {
             minute = m
             scrollToCurrent()
@@ -142,9 +136,7 @@
 
   <!-- Footer -->
   <!-- Footer -->
-  <div
-    class="p-4 border-t border-slate-50 dark:border-slate-800 flex justify-end gap-3"
-  >
+  <div class="p-4 border-t border-border-base flex justify-end gap-3">
     <button onclick={() => close()} class="btn-default">
       {i18n.t('common.cancel')}
     </button>

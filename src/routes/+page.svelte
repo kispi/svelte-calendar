@@ -377,7 +377,7 @@
 </svelte:head>
 
 <main
-  class="h-screen flex flex-col relative overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors duration-300 selection:bg-gravex-primary-500/30"
+  class="h-screen flex flex-col relative overflow-hidden bg-page transition-colors duration-300 selection:bg-gravex-primary-500/30"
 >
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
@@ -395,7 +395,7 @@
             aria-hidden="true"
           ></div>
           <div
-            class="absolute inset-y-0 left-0 w-56 bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-300"
+            class="absolute inset-y-0 left-0 w-56 bg-page-sidebar shadow-2xl transition-transform duration-300"
           >
             <Sidebar
               visibleCalendarIds={settings.visibleCalendarIds}
@@ -432,16 +432,16 @@
         class="flex-1 flex flex-col h-full overflow-hidden p-0 lg:p-4 transition-all duration-300"
       >
         <div
-          class="flex-1 bg-white dark:bg-slate-900 rounded-none lg:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-0 lg:border border-slate-200/50 dark:border-slate-800 transition-colors duration-300"
+          class="flex-1 bg-surface rounded-none lg:rounded-3xl shadow-2xl flex flex-col overflow-hidden relative border-0 lg:border border-border-base transition-colors duration-300"
         >
           <!-- Header -->
           <div
-            class="px-4 md:px-6 lg:px-8 py-5 flex items-center justify-between bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm sticky top-0 z-20 transition-colors duration-300"
+            class="px-4 md:px-6 lg:px-8 py-5 flex items-center justify-between bg-surface/80 backdrop-blur-sm sticky top-0 z-20 transition-colors duration-300"
           >
             <div class="flex items-center gap-4">
               <!-- Sidebar Toggle -->
               <button
-                class="text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 p-2 rounded-xl transition-all"
+                class="text-content-muted hover:text-content-primary hover:bg-surface-hover p-2 rounded-xl transition-all"
                 onclick={() => (isSidebarOpen = !isSidebarOpen)}
                 aria-label="Toggle Sidebar"
               >
@@ -470,7 +470,7 @@
 
           <!-- Content -->
           <div
-            class="flex-1 overflow-hidden relative flex flex-col items-center bg-white dark:bg-slate-900 transition-colors duration-300"
+            class="flex-1 overflow-hidden relative flex flex-col items-center bg-surface transition-colors duration-300"
           >
             <div class="w-full h-full flex flex-col p-0 md:p-2 lg:p-4 relative">
               {#if query.isError}
@@ -498,7 +498,7 @@
 
                 <!-- Loading Overlay -->
                 <div
-                  class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-white/50 dark:bg-slate-900/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
+                  class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-surface/50 z-10 transition-opacity duration-300 delay-100 flex flex-col pointer-events-none"
                   class:opacity-0={!query.isFetching}
                   class:opacity-100={query.isFetching}
                 >
@@ -555,7 +555,7 @@
 
               <!-- Tagline -->
               <p
-                class="text-lg md:text-xl text-slate-900 dark:text-slate-100 font-normal tracking-normal"
+                class="text-lg md:text-xl text-content-primary font-normal tracking-normal"
                 style="font-family: 'Manrope', sans-serif;"
               >
                 Lightning fast calendar & notes, powered by AI
@@ -569,7 +569,7 @@
           >
             {#each features as feature}
               <div
-                class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
+                class="bg-surface/80 backdrop-blur-sm p-6 rounded-2xl border border-border-base shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
               >
                 <div
                   class="w-12 h-12 {feature.bgColor} rounded-xl flex items-center justify-center mb-4 {feature.iconColor}"
@@ -589,14 +589,10 @@
                     />
                   </svg>
                 </div>
-                <h3
-                  class="font-bold text-lg text-slate-900 dark:text-white mb-2"
-                >
+                <h3 class="font-bold text-lg text-content-primary mb-2">
                   {feature.title}
                 </h3>
-                <p
-                  class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed"
-                >
+                <p class="text-content-secondary text-sm leading-relaxed">
                   {feature.desc}
                 </p>
               </div>
@@ -623,7 +619,7 @@
               <span>{i18n.t('common_ui.kakaoStart')}</span>
             </button>
 
-            <span class="text-sm text-slate-400 font-medium tracking-wide">
+            <span class="text-sm text-content-muted font-medium tracking-wide">
               &copy; 2026 Gravex.app
             </span>
           </div>

@@ -11,21 +11,22 @@
   }
 
   .btn-default {
-    @apply btn-base text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800;
+    @apply btn-base text-content-secondary hover:bg-surface-hover;
   }
 
   .btn-primary {
-    @apply btn-base text-white bg-slate-900 hover:bg-black shadow-lg shadow-slate-200 hover:shadow-xl transform active:scale-95 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white dark:shadow-none;
+    @apply btn-base text-brand-text bg-brand-box hover:bg-brand-hover shadow-lg shadow-slate-200 dark:shadow-none hover:shadow-xl transform active:scale-95;
   }
 
   .btn-danger {
-    @apply btn-base text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20;
+    @apply btn-base text-content-muted hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20;
   }
 }
 
 @tailwind utilities;
 
 :root {
+  /* Fonts */
   font-family:
     'Pretendard Variable',
     'Pretendard',
@@ -42,6 +43,66 @@
     'Segoe UI Emoji',
     'Segoe UI Symbol',
     sans-serif;
+
+  /* Semantic Colors - Light (Default) */
+  --c-bg-page: #f8fafc;
+  /* slate-50 */
+  --c-bg-surface: #ffffff;
+  /* white */
+  --c-bg-surface-hover: #f1f5f9;
+  /* slate-100 */
+
+  --c-text-primary: #0f172a;
+  /* slate-900 */
+  --c-text-secondary: #334155;
+  /* slate-700 */
+  --c-text-muted: #94a3b8;
+  /* slate-400 */
+
+  --c-border-base: #e2e8f0;
+  /* slate-200 */
+
+  /* Primary Action */
+  --c-primary-bg: #0f172a;
+  /* slate-900 */
+  --c-primary-text: #ffffff;
+  /* white */
+  --c-primary-hover: #000000;
+  /* black */
+
+  /* Modal Shadow */
+  --c-shadow-modal: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+.dark {
+  /* Semantic Colors - Dark */
+  --c-bg-page: #020617;
+  /* slate-950 */
+  --c-bg-surface: #0f172a;
+  /* slate-900 */
+  --c-bg-surface-hover: #1e293b;
+  /* slate-800 */
+
+  --c-text-primary: #ffffff;
+  /* white */
+  --c-text-secondary: #e2e8f0;
+  /* slate-200 */
+  --c-text-muted: #94a3b8;
+  /* slate-400 */
+
+  --c-border-base: #1e293b;
+  /* slate-800 */
+
+  /* Primary Action */
+  --c-primary-bg: #f1f5f9;
+  /* slate-100 */
+  --c-primary-text: #0f172a;
+  /* slate-900 */
+  --c-primary-hover: #ffffff;
+  /* white */
+
+  /* Modal Shadow - White Glow */
+  --c-shadow-modal: 0 0 15px rgba(255, 255, 255, 0.1);
 }
 
 h1,

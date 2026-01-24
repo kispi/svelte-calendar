@@ -32,15 +32,15 @@
 </script>
 
 <div class="p-6">
-  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-2">{title}</h3>
-  <p class="text-slate-500 dark:text-slate-400 whitespace-pre-line mb-6">
+  <h3 class="text-lg font-bold text-content-primary mb-2">{title}</h3>
+  <p class="text-content-muted whitespace-pre-line mb-6">
     {message}
   </p>
 
   <div class="mb-6">
     <label
       for="confirm-input"
-      class="block text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2"
+      class="block text-xs font-bold text-content-muted uppercase tracking-wider mb-2"
     >
       {i18n.t('confirmDanger.typeToConfirm', { word: confirmText })}
     </label>
@@ -50,7 +50,7 @@
       bind:value={input}
       onkeydown={handleKeydown}
       placeholder={confirmText}
-      class="w-full px-3 py-2 border-2 border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white bg-white dark:bg-slate-950 focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/10 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600"
+      class="w-full px-3 py-2 border-2 border-border-base rounded-lg text-content-primary bg-surface focus:border-gravex-primary-500/50 focus:ring-4 focus:ring-gravex-primary-500/10 outline-none transition-all placeholder:text-content-muted"
     />
   </div>
 

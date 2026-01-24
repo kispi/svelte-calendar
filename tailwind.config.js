@@ -16,7 +16,29 @@ export default {
           700: '#4338CA',
           800: '#3730A3',
           900: '#312E81'
+        },
+        // Semantic System
+        page: 'var(--c-bg-page)',
+        surface: {
+          DEFAULT: 'var(--c-bg-surface)',
+          hover: 'var(--c-bg-surface-hover)'
+        },
+        content: {
+          primary: 'var(--c-text-primary)',
+          secondary: 'var(--c-text-secondary)',
+          muted: 'var(--c-text-muted)'
+        },
+        border: {
+          base: 'var(--c-border-base)'
+        },
+        brand: {
+          box: 'var(--c-primary-bg)',
+          text: 'var(--c-primary-text)',
+          hover: 'var(--c-primary-hover)'
         }
+      },
+      boxShadow: {
+        'modal': 'var(--c-shadow-modal)'
       }
     }
   },

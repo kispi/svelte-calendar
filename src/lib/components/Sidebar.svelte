@@ -150,11 +150,10 @@
     }
   }
 
-  const handleKeydown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      saveEdit()
-    } else if (e.key === 'Escape') {
+  const handleWindowKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
       editingId = null
+      isCreating = false
     }
   }
 
@@ -195,8 +194,10 @@
   })
 </script>
 
+<svelte:window onkeydown={handleWindowKeydown} />
+
 <div
-  class="w-full h-full flex flex-col p-4 {className} bg-slate-50 dark:bg-slate-950 transition-colors duration-300"
+  class="w-full h-full flex flex-col p-4 {className} bg-page transition-colors duration-300"
 >
   <!-- Navigation -->
   <div class="mb-6 space-y-1">
@@ -207,8 +208,8 @@
       }}
       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {activeTab ===
       'calendar'
-        ? 'bg-white dark:bg-slate-800 text-gravex-primary-600 dark:text-gravex-primary-400 shadow-sm dark:shadow-none font-bold'
-        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 font-medium'}"
+        ? 'bg-surface text-gravex-primary-600 dark:text-gravex-primary-400 shadow-sm dark:shadow-none font-bold'
+        : 'text-content-secondary hover:bg-surface-hover/50 hover:text-content-primary font-medium'}"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -242,8 +243,8 @@
       }}
       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all {activeTab ===
       'notes'
-        ? 'bg-white dark:bg-slate-800 text-gravex-primary-600 dark:text-gravex-primary-400 shadow-sm dark:shadow-none font-bold'
-        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-200 font-medium'}"
+        ? 'bg-surface text-gravex-primary-600 dark:text-gravex-primary-400 shadow-sm dark:shadow-none font-bold'
+        : 'text-content-secondary hover:bg-surface-hover/50 hover:text-content-primary font-medium'}"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -264,16 +265,18 @@
     </button>
   </div>
 
-  <div class="h-px bg-slate-800/50 mb-6 mx-2"></div>
+  <div class="h-px bg-border-base/50 mb-6 mx-2"></div>
 
   <!-- Calendars Header -->
   <div class="flex items-center justify-between mb-4 px-3">
-    <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+    <h2
+      class="text-[10px] font-bold text-content-muted uppercase tracking-widest"
+    >
       {i18n.t('nav.myCalendars')}
     </h2>
     <div class="flex items-center gap-2">
       <button
-        class="text-slate-400 hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+        class="text-content-muted hover:text-gravex-primary-600 dark:hover:text-gravex-primary-400 transition-colors p-1.5 rounded-lg hover:bg-surface-hover"
         onclick={() => (isCreating = !isCreating)}
         title="Add Calendar"
       >
@@ -298,13 +301,13 @@
   {#if isCreating}
     <form
       onsubmit={handleCreate}
-      class="mb-4 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700/50 animate-in slide-in-from-top-2 fade-in duration-200 mx-2"
+      class="mb-4 bg-surface p-3 rounded-xl shadow-lg border border-border-base animate-in slide-in-from-top-2 fade-in duration-200 mx-2"
     >
       <input
         type="text"
         bind:value={newCalendarName}
         placeholder={i18n.t('sidebar.calendarNamePlaceholder')}
-        class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
+        class="w-full text-sm font-medium bg-transparent border-b border-border-base focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-content-muted text-content-primary"
         use:focusNode
       />
 
@@ -312,7 +315,7 @@
         {#each PRESET_COLORS as color}
           <button
             type="button"
-            class="w-4 h-4 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-slate-800 ring-slate-400 dark:ring-slate-700"
+            class="w-4 h-4 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-surface ring-content-muted"
             style="background-color: {color}; transform: {newCalendarColor ===
             color
               ? 'scale(1.2)'
@@ -327,7 +330,7 @@
         <button
           type="button"
           onclick={() => (isCreating = false)}
-          class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+          class="text-[10px] uppercase font-bold text-content-muted hover:text-content-secondary transition-colors"
         >
           {i18n.t('common.cancel')}
         </button>
@@ -345,7 +348,7 @@
   {#if query.isLoading}
     <div class="space-y-2 px-3">
       {#each { length: 3 } as _}
-        <Skeleton class="h-6 w-full bg-slate-200 dark:bg-slate-800" />
+        <Skeleton class="h-6 w-full bg-border-base" />
       {/each}
     </div>
   {:else if query.data}
@@ -354,36 +357,35 @@
         <div class="relative">
           {#if editingId === cal.id}
             <!-- Backdrop for closing -->
-            <div
-              class="fixed inset-0 z-40 bg-transparent"
+            <button
+              type="button"
+              class="fixed inset-0 z-40 bg-transparent w-full h-full cursor-default block border-none outline-none"
               onclick={() => (editingId = null)}
-              aria-hidden="true"
-            ></div>
+              aria-label={i18n.t('common.cancel')}
+            ></button>
 
             <!-- Floating Edit Form -->
             <div
-              class="absolute left-0 top-full z-50 w-full mt-1 bg-white dark:bg-slate-800 p-3 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700/50 animate-in fade-in slide-in-from-top-1 duration-200"
+              class="absolute left-0 top-full z-50 w-full mt-1 bg-surface p-3 rounded-xl shadow-xl border border-border-base animate-in fade-in slide-in-from-top-1 duration-200"
             >
               <form
                 onsubmit={(e) => {
                   e.preventDefault()
                   saveEdit()
                 }}
-                onclick={(e) => e.stopPropagation()}
               >
                 <input
                   type="text"
                   bind:value={editName}
-                  class="w-full text-sm font-medium bg-transparent border-b border-slate-300 dark:border-slate-600 focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-slate-900 dark:text-white"
+                  class="w-full text-sm font-medium bg-transparent border-b border-border-base focus:border-gravex-primary-500 outline-none pb-1 mb-3 placeholder:text-content-muted text-content-primary"
                   use:focusNode
-                  onkeydown={handleKeydown}
                 />
 
                 <div class="flex flex-wrap gap-1.5 mb-3">
                   {#each PRESET_COLORS as color}
                     <button
                       type="button"
-                      class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-white dark:ring-offset-slate-800 ring-slate-400 dark:ring-slate-700"
+                      class="w-3.5 h-3.5 rounded-full transition-transform hover:scale-110 focus:ring-2 ring-offset-1 ring-offset-surface ring-content-muted"
                       style="background-color: {color}; transform: {editColor ===
                       color
                         ? 'scale(1.2)'
@@ -397,7 +399,7 @@
                 <div class="flex justify-end gap-2">
                   <button
                     type="button"
-                    class="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    class="text-[10px] uppercase font-bold text-content-muted hover:text-content-secondary transition-colors"
                     onclick={() => (editingId = null)}
                   >
                     {i18n.t('common.cancel')}
@@ -415,9 +417,9 @@
 
           <!-- View Item -->
           <div
-            class="group flex items-center justify-between py-2 px-3 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800/40 transition-all {editingId ===
+            class="group flex items-center justify-between py-2 px-3 rounded-lg hover:bg-surface-hover/50 transition-all {editingId ===
             cal.id
-              ? 'bg-slate-100 dark:bg-slate-800/60'
+              ? 'bg-surface-hover/80'
               : ''}"
           >
             <label
@@ -451,7 +453,7 @@
               </div>
 
               <span
-                class="text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-slate-200 truncate h-5 leading-tight block transition-colors w-full"
+                class="text-sm font-medium text-content-secondary group-hover:text-content-primary truncate h-5 leading-tight block transition-colors w-full"
                 title={cal.name}>{cal.name}</span
               >
             </label>
@@ -462,7 +464,7 @@
             >
               {#if cal.role === 'owner'}
                 <button
-                  class="text-slate-600 hover:text-white p-1"
+                  class="text-content-muted hover:text-content-primary p-1"
                   onclick={(e) => {
                     e.stopPropagation()
                     startEdit(cal)
@@ -487,7 +489,7 @@
                 </button>
                 {#if !cal.isPrimary}
                   <button
-                    class="text-slate-600 hover:text-red-400 p-1"
+                    class="text-content-muted hover:text-red-400 p-1"
                     onclick={(e) => {
                       e.stopPropagation()
                       handleDelete(cal.id, cal.name)
@@ -528,13 +530,11 @@
 
   <!-- Footer Actions -->
   {#if !children}
-    <div
-      class="mt-auto pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col gap-1"
-    >
+    <div class="mt-auto pt-6 border-t border-border-base flex flex-col gap-1">
       {#if activeTab === 'calendar'}
         <button
           onclick={onImport}
-          class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+          class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -556,7 +556,7 @@
 
         <button
           onclick={onExport}
-          class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+          class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -579,7 +579,7 @@
 
       <button
         onclick={onLocaleChange}
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
       >
         <div
           class="w-4 h-4 flex items-center justify-center grayscale opacity-70"
@@ -599,7 +599,7 @@
             document.documentElement.classList.remove('dark')
           }
         }}
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -642,7 +642,7 @@
 
       <button
         onclick={onSignOut}
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-white dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 transition-colors mt-2"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-content-secondary hover:text-content-primary hover:bg-surface-hover transition-colors mt-2"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -689,7 +689,9 @@
         <span class="text-sm font-medium">{i18n.t('nav.deleteAccount')}</span>
       </button>
 
-      <div class="mt-4 px-2 text-center text-xs text-slate-700 font-medium">
+      <div
+        class="mt-4 px-2 text-center text-xs text-content-secondary font-medium"
+      >
         &copy; 2026 Gravex.app
       </div>
     </div>

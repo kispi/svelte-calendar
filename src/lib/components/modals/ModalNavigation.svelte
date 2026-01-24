@@ -16,7 +16,7 @@
       id: 'naver',
       name: 'Naver Map',
       icon: 'N', // You can replace with SVG
-      color: 'bg-[#03C75A] text-white',
+      color: 'bg-surface border border-border-base text-content-secondary',
       // Naver: Search by name (which usually finds the place better than coords)
       url: `https://map.naver.com/p/search/${encodeURIComponent(name)}`
     },
@@ -34,8 +34,7 @@
       id: 'google',
       name: 'Google Maps',
       icon: 'G',
-      color:
-        'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200',
+      color: 'bg-surface border border-border-base text-content-secondary',
       // Google: Search by name near the coordinates
       url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(name)}&query_place_id=`
     }
@@ -50,7 +49,7 @@
 </script>
 
 <div class="p-6 text-center">
-  <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-6">
+  <h3 class="text-lg font-bold text-content-primary mb-6">
     {i18n.t('navigation.title')}
   </h3>
 

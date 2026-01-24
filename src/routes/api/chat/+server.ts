@@ -106,11 +106,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
                 },
                 startTime: {
                   type: SchemaType.STRING,
-                  description: 'Start time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                  description:
+                    'Start time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss). The server time is strictly UTC, so if an offset is not provided, it will be recognized as UTC.'
                 },
                 endTime: {
                   type: SchemaType.STRING,
-                  description: 'End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss)'
+                  description:
+                    'End time in ISO 8601 format (YYYY-MM-DDTHH:mm:ss). The server time is strictly UTC, so if an offset is not provided, it will be recognized as UTC.'
                 },
                 location: {
                   type: SchemaType.STRING,
@@ -186,6 +188,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         - **Filtering**: To find "most expensive" or "cheapest", retrieve the events, parse the costs from descriptions, and sort them yourself.
 
         # Event Creation Rules
+        - **Timezone**: The server's timezone is **UTC**. When parsing relative times (e.g., '6pm'), be aware that without a timezone offset, it will be treated as UTC. If the user implies a local time (e.g. KST), please include the timezone offset in the ISO string.
         - **Recurrence**: If the user mentions repetition (e.g., "Every Monday", "Monthly on the 1st"), generate a standard **RRULE string** (e.g., 'FREQ=WEEKLY;BYDAY=MO') and pass it to the 'recurrenceRule' parameter.
         - **Intent**: You should infer the intent to create an event even if the user doesn't say "create" explicitly (e.g., "Dinner with Mom next Friday at 7pm", "Register gym schedule every Mon/Wed").
         - **One-off vs Recurring**: If no recurrence is implied, leave 'recurrenceRule' empty.

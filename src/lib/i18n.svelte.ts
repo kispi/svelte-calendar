@@ -250,6 +250,16 @@ const translations = {
         placeDesc: '손쉽게 장소를 검색하고, 네이버/카카오/구글 지도로 바로 확인하세요!'
       }
     },
+    chatbot: {
+      placeholder: '무엇이든 물어보세요!',
+      placeholder_loading: '생각중입니다... 잠시만요!',
+      thinking: '답변을 작성중입니다...',
+      error:
+        '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
+      greeting:
+        '안녕하세요! 무엇을 도와드릴까요?\n\n📅 **일정 관리**\n"내일 오후 2시 미팅 잡아줘"\n"매주 월요일 아침 9시 팀 회의 등록해줘"\n"다음 주 일정 브리핑해줘"\n\n📝 **메모 검색**\n"지난달 프로젝트 회의록 찾아줘"\n"여행 계획 메모 보여줘"\n\n이 외에도 궁금한 점이 있다면 편하게 물어보세요! 🤖',
+      title: 'Assistant'
+    },
     recurrence: {
       label: '반복',
       none: '반복 없음',
@@ -285,16 +295,6 @@ const translations = {
       longDate: 'YYYY년 M월 D일',
       longDateWithDay: 'YYYY년 M월 D일 (ddd)'
     }
-  },
-  chatbot: {
-    placeholder: '무엇이든 물어보세요!',
-    placeholder_loading: '생각중입니다... 잠시만요!',
-    thinking: '답변을 작성중입니다...',
-    error:
-      '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
-    greeting:
-      '안녕하세요! 무엇을 도와드릴까요?\n\n📅 **일정 관리**\n"내일 오후 2시 미팅 잡아줘"\n"매주 월요일 아침 9시 팀 회의 등록해줘"\n"다음 주 일정 브리핑해줘"\n\n📝 **메모 검색**\n"지난달 프로젝트 회의록 찾아줘"\n"여행 계획 메모 보여줘"\n\n이 외에도 궁금한 점이 있다면 편하게 물어보세요! 🤖',
-    title: 'Assistant'
   }
 }
 

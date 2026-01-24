@@ -369,11 +369,7 @@
 </script>
 
 <svelte:head>
-  <title>
-    {metadata.getPageTitle(
-      settings.lastActiveTab === 'calendar' ? 'Calendar' : 'Notes'
-    )}
-  </title>
+  <title>Scheduly | Gravex.app</title>
   <meta name="description" content={metadata.description} />
 
   <!-- Open Graph / Social Media -->
@@ -558,16 +554,27 @@
         >
           <!-- Hero Text -->
           <div class="space-y-6">
-            <div class="space-y-2">
-              <h1
-                class="text-5xl md:text-7xl font-extrabold tracking-tight text-gradient-brand pb-2"
-              >
-                Swiftly
-              </h1>
+            <div class="space-y-4 flex flex-col items-center">
+              <!-- Title with Logo -->
+              <div class="flex items-center gap-4 md:gap-6">
+                <img
+                  src="/favicon_transparent.png"
+                  alt="Scheduly Logo"
+                  class="w-16 h-16 md:w-20 md:h-20 drop-shadow-lg transform transition-transform duration-300 hover:scale-110"
+                />
+                <h1
+                  class="text-5xl md:text-7xl font-extrabold tracking-tight text-gradient-brand"
+                >
+                  Scheduly
+                </h1>
+              </div>
+
+              <!-- Tagline -->
               <p
-                class="text-lg md:text-xl text-indigo-600 dark:text-indigo-400 font-bold tracking-wide"
+                class="text-lg md:text-xl text-slate-900 dark:text-slate-100 font-normal tracking-normal"
+                style="font-family: 'Manrope', sans-serif;"
               >
-                ⚡ Lightning-fast smart calendar & notes.
+                Lightning fast calendar & notes, powered by AI
               </p>
             </div>
           </div>
@@ -633,7 +640,7 @@
             </button>
 
             <span class="text-sm text-slate-400 font-medium tracking-wide">
-              Swiftly by Gravex.app
+              Scheduly | Gravex.app
             </span>
           </div>
         </div>

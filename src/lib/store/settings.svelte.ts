@@ -76,6 +76,12 @@ const createSettings = () => {
     set theme(value: 'light' | 'dark') {
       data.theme = value
       save()
+    },
+    reset() {
+      data = { ...DEFAULT_SETTINGS }
+      if (browser) {
+        localStorage.removeItem('settings')
+      }
     }
   }
 }

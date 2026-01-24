@@ -173,6 +173,7 @@
 
         const res = await fetch(`/api/users/${userId}`, { method: 'DELETE' })
         if (res.ok) {
+          settings.reset()
           window.location.href = '/'
         } else {
           logger.error('Failed to delete account')

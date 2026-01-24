@@ -31,7 +31,7 @@
   }
 </script>
 
-<div class="p-6 max-w-md">
+<div class="p-6">
   <div class="flex items-center gap-3 mb-4 text-red-600 dark:text-red-400">
     <svg
       xmlns="http://www.w3.org/2000/svg"

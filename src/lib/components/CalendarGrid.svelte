@@ -340,7 +340,6 @@
       // 2. Calendar Visibility Check
       if (
         event.calendarId &&
-        visibleCalendarIds.length > 0 &&
         !visibleCalendarIds.includes(event.calendarId) &&
         !isSystemEvent(event) // Always show system events (holidays)
       ) {

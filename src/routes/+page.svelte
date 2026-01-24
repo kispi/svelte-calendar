@@ -55,18 +55,32 @@
   }))
 
   // Auto-select all calendars if empty state (first load)
+  let hasInitializedVisibility = $state(false)
+
+  // Auto-select all calendars if empty state or cleanup invalid IDs
   $effect(() => {
-    if (
-      calendarsQuery.data &&
-      settings.visibleCalendarIds.length === 0 &&
-      isReady
-    ) {
-      const primary = calendarsQuery.data.find((c: any) => c.isPrimary)
-      if (primary) {
-        settings.visibleCalendarIds = [primary.id]
+    if (calendarsQuery.data && isReady) {
+      const allIds = calendarsQuery.data.map((c: any) => c.id)
+
+      // Filter out IDs that don't exist anymore
+      const validIds = settings.visibleCalendarIds.filter((id) =>
+        allIds.includes(id)
+      )
+
+      if (!hasInitializedVisibility) {
+        // First load: If empty, default to primary or all
+        if (validIds.length === 0) {
+          const primary = calendarsQuery.data.find((c: any) => c.isPrimary)
+          settings.visibleCalendarIds = primary ? [primary.id] : allIds
+        } else if (validIds.length !== settings.visibleCalendarIds.length) {
+          settings.visibleCalendarIds = validIds
+        }
+        hasInitializedVisibility = true
       } else {
-        // Fallback: Select all calendars
-        settings.visibleCalendarIds = calendarsQuery.data.map((c: any) => c.id)
+        // Subsequent updates: Just cleanup invalid IDs, but DO NOT force select if empty
+        if (validIds.length !== settings.visibleCalendarIds.length) {
+          settings.visibleCalendarIds = validIds
+        }
       }
     }
   })
@@ -75,9 +89,19 @@
     if (visible) {
       settings.visibleCalendarIds = [...settings.visibleCalendarIds, id]
     } else {
-      settings.visibleCalendarIds = settings.visibleCalendarIds.filter(
+      const nextIds = settings.visibleCalendarIds.filter(
         (cid: string) => cid !== id
       )
+      settings.visibleCalendarIds = nextIds
+
+      if (nextIds.length === 0) {
+        toast.info(
+          i18n.locale === 'kr'
+            ? '모든 캘린더를 해제하면 아무 일정도 보이지 않습니다 😢'
+            : 'No events will be visible if all calendars are unchecked 😢',
+          { position: 'bottom', duration: 3000 }
+        )
+      }
     }
   }
 

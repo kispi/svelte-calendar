@@ -23,7 +23,6 @@ This is a calendar scheduler & note-taking web application built with SvelteKit,
   - **Naming Convention**: Table names and columns MUST use `snake_case`.
   - **Date Types**: Use `Date` objects for `datetime`/`timestamp` columns in Drizzle (Drizzle handles conversion to/from MySQL format automatically).
 - **Date Handling**: `dayjs`.
-- **Components**: `flatpickr` for date inputs.
 - **Client State**:
   - `@tanstack/svelte-query` for data fetching and caching.
   - **Settings Store**: Use `src/lib/settings.svelte.ts` for user preferences (tabs, locale, visibility). ? DO NOT use `localStorage` directly in components.

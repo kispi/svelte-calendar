@@ -1,7 +1,6 @@
 <script lang="ts">
   import { enhance } from '$app/forms'
   import { untrack } from 'svelte'
-  import { flatpicker } from '$lib/actions/flatpickr'
   import { autoResize } from '$lib/actions/autoResize'
   import { createDebounce } from '$lib/debounce'
   import ModalConfirm from './ModalConfirm.svelte'
@@ -124,31 +123,33 @@
   }
 
   $effect(() => {
-    if (event) {
-      title = event.title
-      description = event.description || ''
-      location = event.location || ''
-      locationAddress = event.locationAddress || ''
-      placeId = event.placeId || ''
-      lat = event.lat || null
-      lng = event.lng || null
-      type = event.type || 'schedule'
-      const start = event.startTime ? dayjs(event.startTime) : dayjs()
-      const end = event.endTime ? dayjs(event.endTime) : start.add(1, 'hour')
-      baseDate = start.format('YYYY-MM-DD')
-      startTime = start.format('HH:mm')
-      endTime = end.format('HH:mm')
-      calendarId = event.calendarId || ''
-      recurrenceRule = event.recurrenceRule || ''
-    } else if (selectedDate) {
-      baseDate = selectedDate.format('YYYY-MM-DD')
-      startTime = '09:00'
-      endTime = '10:00'
+    untrack(() => {
+      if (event) {
+        title = event.title
+        description = event.description || ''
+        location = event.location || ''
+        locationAddress = event.locationAddress || ''
+        placeId = event.placeId || ''
+        lat = event.lat || null
+        lng = event.lng || null
+        type = event.type || 'schedule'
+        const start = event.startTime ? dayjs(event.startTime) : dayjs()
+        const end = event.endTime ? dayjs(event.endTime) : start.add(1, 'hour')
+        baseDate = start.format('YYYY-MM-DD')
+        startTime = start.format('HH:mm')
+        endTime = end.format('HH:mm')
+        calendarId = event.calendarId || ''
+        recurrenceRule = event.recurrenceRule || ''
+      } else if (selectedDate) {
+        baseDate = selectedDate.format('YYYY-MM-DD')
+        startTime = '09:00'
+        endTime = '10:00'
 
-      title = ''
-      description = ''
-      type = 'schedule'
-    }
+        title = ''
+        description = ''
+        type = 'schedule'
+      }
+    })
   })
 
   // Set default calendar if creating new event and calendars are loaded

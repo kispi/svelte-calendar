@@ -32,25 +32,41 @@
   let hourContainer = $state<HTMLElement>()
   let minuteContainer = $state<HTMLElement>()
 
-  const scrollToCurrent = async () => {
-    await tick()
+  $effect(() => {
+    parseTime(value)
+    // Only scroll if containers are ready.
+    // We use tick to ensure DOM is ready.
+    tick().then(() => {
+      scrollToCurrent()
+    })
+  })
+
+  const ITEM_HEIGHT = 40
+
+  const scrollToCurrent = () => {
     if (hourContainer) {
-      const el = hourContainer.querySelector(
-        `[data-value="${hour}"]`
-      ) as HTMLElement
-      if (el) {
-        hourContainer.scrollTop =
-          el.offsetTop - hourContainer.clientHeight / 2 + el.clientHeight / 2
-      }
+      hourContainer.scrollTop = hour * ITEM_HEIGHT
     }
     if (minuteContainer) {
-      const el = minuteContainer.querySelector(
-        `[data-value="${minute}"]`
-      ) as HTMLElement
-      if (el) {
-        minuteContainer.scrollTop =
-          el.offsetTop - minuteContainer.clientHeight / 2 + el.clientHeight / 2
+      // Find index of current minute (0, 5, ... -> 0, 1, ...)
+      const mIndex = minutes.indexOf(minute)
+      if (mIndex !== -1) {
+        minuteContainer.scrollTop = mIndex * ITEM_HEIGHT
       }
+    }
+  }
+
+  const handleScroll = (e: Event, type: 'hour' | 'minute') => {
+    const target = e.target as HTMLElement
+    // Calculate index based on scroll position
+    const index = Math.round(target.scrollTop / ITEM_HEIGHT)
+
+    if (type === 'hour') {
+      const newHour = hours[index]
+      if (newHour !== undefined) hour = newHour
+    } else {
+      const newMinute = minutes[index]
+      if (newMinute !== undefined) minute = newMinute
     }
   }
 
@@ -85,13 +101,14 @@
     <!-- Hours -->
     <div
       bind:this={hourContainer}
-      class="flex-1 overflow-y-auto scrollbar-hide py-[92px] text-center scroll-smooth snap-y snap-mandatory relative z-10"
+      onscroll={(e) => handleScroll(e, 'hour')}
+      class="flex-1 overflow-y-auto scrollbar-hide py-[92px] text-center snap-y snap-mandatory relative z-10"
     >
       {#each hours as h}
         <button
           type="button"
           data-value={h}
-          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium
+          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium transition-transform
               {hour === h
             ? 'text-content-primary font-bold scale-110'
             : 'text-content-muted hover:text-content-secondary'}"
@@ -113,13 +130,14 @@
     <!-- Minutes -->
     <div
       bind:this={minuteContainer}
-      class="flex-1 overflow-y-auto scrollbar-hide py-[92px] text-center scroll-smooth snap-y snap-mandatory relative z-10"
+      onscroll={(e) => handleScroll(e, 'minute')}
+      class="flex-1 overflow-y-auto scrollbar-hide py-[92px] text-center snap-y snap-mandatory relative z-10"
     >
       {#each minutes as m}
         <button
           type="button"
           data-value={m}
-          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium
+          class="snap-center h-10 flex items-center justify-center w-full text-lg font-medium transition-transform
               {minute === m
             ? 'text-content-primary font-bold scale-110'
             : 'text-content-muted hover:text-content-secondary'}"

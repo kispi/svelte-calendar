@@ -556,6 +556,7 @@
         class="
                     min-h-[80px] border-b border-r border-border-base p-2
                     cursor-pointer relative
+                    outline-none
                     {day.isSame(monthStart, 'month')
           ? 'bg-surface hover:bg-gray-50 dark:hover:bg-white/[0.02]'
           : 'bg-gray-50/30 dark:bg-white/[0.01] text-content-muted opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-white/[0.02]'}

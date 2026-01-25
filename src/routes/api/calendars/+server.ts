@@ -2,7 +2,7 @@ import { db } from '$lib/server/db'
 import { calendar, calendarMember } from '$lib/server/db/schema'
 import { logger } from '$lib/logger'
 import { json, error } from '@sveltejs/kit'
-import { eq, and, or, isNotNull } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import type { RequestHandler } from './$types'
 
 export const GET: RequestHandler = async ({ locals }) => {

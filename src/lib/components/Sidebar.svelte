@@ -367,7 +367,7 @@
   {#if query.isLoading}
     <div class="space-y-2 px-3">
       {#each { length: 3 } as _}
-        <Skeleton class="h-6 w-full bg-border-base" />
+        <Skeleton class="h-6 w-full" />
       {/each}
     </div>
   {:else if query.data}

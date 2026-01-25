@@ -21,7 +21,7 @@
 
 <div class="p-6">
   <h3 class="text-lg font-bold text-content-primary mb-2">{title}</h3>
-  <p class="text-content-muted whitespace-pre-line mb-6">
+  <p class="text-content-primary whitespace-pre-line mb-6">
     {message}
   </p>
 

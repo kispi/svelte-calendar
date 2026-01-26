@@ -184,7 +184,11 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
         # Event Creation Rules
         - **Timezone**: The server's timezone is **UTC**. When parsing relative times (e.g., '6pm'), be aware that without a timezone offset, it will be treated as UTC. If the user implies a local time (e.g. KST), please include the timezone offset in the ISO string.
-        - **Recurrence**: If the user mentions repetition (e.g., "Every Monday", "Monthly on the 1st"), generate a standard **RRULE string** (e.g., 'FREQ=WEEKLY;BYDAY=MO') and pass it to the 'recurrenceRule' parameter.
+        - **Recurrence**:
+          - **NEVER use 'BYDAY'**. Our system does not support complex recurrence with 'BYDAY'.
+          - Use ONLY simple frequencies like 'FREQ=WEEKLY', 'FREQ=DAILY', 'FREQ=MONTHLY'.
+          - If the user asks for multiple days (e.g., "Every Mon and Wed"), **YOU MUST only create ONE of them** (e.g. only Monday) using 'FREQ=WEEKLY'.
+          - Then, explicitly tell the user: "System policy allows registering only one recurrence pattern at a time. I have registered the [Day] schedule first. Please ask me to register the other days separately."
         - **Intent**: You should infer the intent to create an event even if the user doesn't say "create" explicitly (e.g., "Dinner with Mom next Friday at 7pm", "Register gym schedule every Mon/Wed").
         - **One-off vs Recurring**: If no recurrence is implied, leave 'recurrenceRule' empty.
   

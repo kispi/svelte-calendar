@@ -337,9 +337,7 @@
         <textarea
           bind:value={inputMessage}
           onkeydown={handleKeydown}
-          placeholder={isLoading
-            ? i18n.t('chatbot.placeholder_loading')
-            : i18n.t('chatbot.placeholder')}
+          placeholder={i18n.t('chatbot.placeholder')}
           rows="1"
           disabled={isLoading}
           class="w-full bg-[var(--c-bg-page)] border border-border-base rounded-md px-4 py-2.5 text-sm text-content-primary outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"

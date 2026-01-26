@@ -32,36 +32,46 @@
     {
       title: i18n.t('common_ui.features.speed'),
       desc: i18n.t('common_ui.features.speedDesc'),
-      iconColor: 'text-yellow-600 dark:text-yellow-400',
-      bgColor: 'bg-yellow-100 dark:bg-yellow-900/50',
+      cardClass:
+        'bg-white/80 backdrop-blur-md border border-indigo-50 shadow-sm hover:shadow-xl hover:bg-white dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10',
+      iconClass:
+        'text-yellow-600 bg-yellow-100/50 dark:text-yellow-400 dark:bg-yellow-400/10',
       path: 'M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z'
     },
     {
       title: i18n.t('common_ui.features.ai'),
       desc: i18n.t('common_ui.features.aiDesc'),
-      iconColor: 'text-purple-600 dark:text-purple-400',
-      bgColor: 'bg-purple-100 dark:bg-purple-900/50',
+      cardClass:
+        'bg-white/80 backdrop-blur-md border border-indigo-50 shadow-sm hover:shadow-xl hover:bg-white dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10',
+      iconClass:
+        'text-purple-600 bg-purple-100/50 dark:text-purple-400 dark:bg-purple-400/10',
       path: 'M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z'
     },
     {
       title: i18n.t('common_ui.features.place'),
       desc: i18n.t('common_ui.features.placeDesc'),
-      iconColor: 'text-amber-600 dark:text-amber-400',
-      bgColor: 'bg-amber-100 dark:bg-amber-900/50',
+      cardClass:
+        'bg-white/80 backdrop-blur-md border border-indigo-50 shadow-sm hover:shadow-xl hover:bg-white dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10',
+      iconClass:
+        'text-amber-700 bg-amber-100/50 dark:text-amber-400 dark:bg-amber-400/10',
       path: 'M15 10.5a3 3 0 11-6 0 3 3 0 016 0z M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'
     },
     {
       title: i18n.t('common_ui.features.portability'),
       desc: i18n.t('common_ui.features.portabilityDesc'),
-      iconColor: 'text-emerald-600 dark:text-emerald-400',
-      bgColor: 'bg-emerald-100 dark:bg-emerald-900/50',
+      cardClass:
+        'bg-white/80 backdrop-blur-md border border-indigo-50 shadow-sm hover:shadow-xl hover:bg-white dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10',
+      iconClass:
+        'text-emerald-600 bg-emerald-100/50 dark:text-emerald-400 dark:bg-emerald-400/10',
       path: 'M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5'
     },
     {
       title: i18n.t('common_ui.features.privacy'),
       desc: i18n.t('common_ui.features.privacyDesc'),
-      iconColor: 'text-indigo-600 dark:text-indigo-400',
-      bgColor: 'bg-indigo-100 dark:bg-indigo-900/50',
+      cardClass:
+        'bg-white/80 backdrop-blur-md border border-indigo-50 shadow-sm hover:shadow-xl hover:bg-white dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10',
+      iconClass:
+        'text-indigo-600 bg-indigo-100/50 dark:text-indigo-400 dark:bg-indigo-400/10',
       path: 'M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z'
     }
   ])
@@ -567,10 +577,10 @@
           >
             {#each features as feature}
               <div
-                class="bg-surface/80 backdrop-blur-sm p-6 rounded-2xl border border-border-base shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300"
+                class="p-6 rounded-2xl border shadow-sm hover:shadow-lg hover:scale-105 transition-all duration-300 {feature.cardClass}"
               >
                 <div
-                  class="w-12 h-12 {feature.bgColor} rounded-xl flex items-center justify-center mb-4 {feature.iconColor}"
+                  class="w-12 h-12 rounded-xl flex items-center justify-center mb-4 {feature.iconClass}"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

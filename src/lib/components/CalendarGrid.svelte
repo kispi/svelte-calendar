@@ -597,14 +597,14 @@
           </div>
         </div>
 
-        <div class="space-y-1 overflow-y-auto max-h-[80px] custom-scrollbar">
+        <div class="overflow-y-auto max-h-[80px] custom-scrollbar">
           {#each normalEvents as calEvent}
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             {@const color = getEventColor(calEvent.calendarId)}
             <button
               type="button"
-              class="w-full text-left px-1 py-0.5 text-xs font-semibold rounded-[2px] truncate cursor-pointer hover:bg-surface-hover"
+              class="w-full text-left px-1 py-1 text-xs font-semibold rounded-[4px] truncate cursor-pointer hover:bg-gray-200 dark:hover:bg-white/10"
               style={color ? `color: ${color};` : 'color: #64748b;'}
               onclick={(e) => {
                 e.stopPropagation()

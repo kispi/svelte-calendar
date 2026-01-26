@@ -30,7 +30,7 @@ const translations = {
       export: 'Export',
       deleteAccount: 'Delete Account',
       deleteAccountConfirm:
-        'All events and notes will be deleted.\nYou can rejoin with the same account, but events and notes cannot be restored.\nWe recommend making a backup of your data by "Exporting" before deleting your account.',
+        'All events and notes will be deleted.\nYou can rejoin with the same email, but events and notes cannot be restored.\nWe recommend making a backup of your data by "Exporting" before deleting your account.',
       deleteAccountTitle: 'Delete Account',
       deleteAccountPhrase: 'DELETE ACCOUNT',
       deleteAccountInputLabel: 'Type "{text}" to confirm'
@@ -92,20 +92,19 @@ const translations = {
       kakaoStart: 'Start with Kakao',
       features: {
         speed: 'Blazing Fast',
-        speedDesc: 'Tired of slow, bloated calendar apps? Experience instant loading and smooth interactions.',
+        speedDesc: 'No more slow, bloated calendar apps.',
         privacy: 'Safe to leave',
-        privacyDesc: 'Complete account deletion supported.',
+        privacyDesc: 'Complete account deletion, no data left.',
         portability: 'No platform lock-in!',
-        portabilityDesc: 'Easy .ics import/export. (ex: Google, Kakao, Apple...) Switch platforms anytime without lock-in.',
+        portabilityDesc: 'Easy .ics export/import with Google, Kakao, Apple Calendar',
         ai: 'AI Assistant',
-        aiDesc: 'Create, query, and manage your schedule with AI chat.',
+        aiDesc: 'Create, query, and manage your schedule with AI chat or voice!',
         place: 'Place Search & Maps',
         placeDesc: 'Search places easily and check them on Naver, Kakao, or Google Maps!'
       }
     },
     chatbot: {
-      placeholder: 'Ask me anything!',
-      placeholder_loading: 'Thinking... hold on!',
+      placeholder: 'Ask me about your schedule!',
       thinking: 'Thinking...',
       error: 'The model is currently busy. Please try again in a moment.',
       greeting:
@@ -171,7 +170,7 @@ const translations = {
       export: '내보내기',
       deleteAccount: '계정 삭제',
       deleteAccountConfirm:
-        '등록한 모든 일정과 노트가 삭제됩니다.\n동일한 계정으로 재가입은 가능하지만, 삭제된 데이터는 복구할 수 없습니다.\n계정 삭제 전 "내보내기"를 하여 일정을 백업해두시기를 권장합니다.',
+        '등록한 모든 일정과 노트가 삭제됩니다.\n동일한 이메일로 재가입은 가능하지만, 삭제된 데이터는 복구할 수 없습니다.\n계정 삭제 전 "내보내기"를 하여 일정을 백업해두시기를 권장합니다.',
       deleteAccountTitle: '계정 삭제',
       deleteAccountPhrase: '계정 삭제',
       deleteAccountInputLabel: '아래 입력창에 "{text}"를 입력하세요'
@@ -239,21 +238,20 @@ const translations = {
       kakaoStart: '카카오로 시작하기',
       features: {
         speed: '압도적인 속도',
-        speedDesc: '느리고 무거운 캘린더 앱에 지치셨나요? 즉각적인 로딩과 부드러운 인터랙션을 경험하세요.',
+        speedDesc: '느리고 무거운 캘린더 앱은 이제 그만!',
         privacy: '떠나실때도 안전하게',
-        privacyDesc: '계정 삭제 시 모든 데이터가 즉시 파기됩니다.',
-        portability: '플랫폼 종속 걱정이 없어요!',
-        portabilityDesc: '쓰던 플랫폼(ex: 구글, 카카오, 애플...)의 .ics 캘린더 파일을 그대로 가져오고, 언제든 다시 내보낼 수 있습니다.',
+        privacyDesc: '계정 삭제 시 모든 데이터가 즉시 완전히 삭제됩니다.',
+        portability: '플랫폼 종속이 없어요!',
+        portabilityDesc: '구글, 카카오, 애플 등 다른 플랫폼의 .ics 캘린더 파일을 그대로 내보내고, 가져오세요!',
         ai: '스마트한 AI 비서',
-        aiDesc: '채팅으로 일정을 등록하고 물어보세요!',
+        aiDesc: '채팅/음성으로 일정을 등록하고 물어보세요!',
         place: '장소 검색 & 지도 연동',
         placeDesc: '손쉽게 장소를 검색하고, 네이버/카카오/구글 지도로 바로 확인하세요!'
       }
     },
     chatbot: {
-      placeholder: '무엇이든 물어보세요!',
-      placeholder_loading: '생각중입니다... 잠시만요!',
-      thinking: '답변을 작성중입니다...',
+      placeholder: '일정 관련 질문을 해주세요!',
+      thinking: '생각중입니다...',
       error:
         '현재 사용량이 많아 모델이 응답할 수 없습니다. 잠시 후 다시 시도해 주세요.',
       greeting:

@@ -387,7 +387,7 @@
 </svelte:head>
 
 <main
-  class="h-screen flex flex-col relative overflow-hidden bg-page selection:bg-gravex-primary-500/30"
+  class="h-[100dvh] flex flex-col relative overflow-hidden bg-page selection:bg-gravex-primary-500/30"
 >
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">
@@ -524,7 +524,7 @@
     </div>
   {:else}
     <div
-      class="h-screen w-full overflow-y-auto overflow-x-hidden bg-gradient-to-br from-indigo-50 to-white dark:from-slate-950 dark:to-slate-900 block"
+      class="h-[100dvh] w-full overflow-y-auto overflow-x-hidden bg-gradient-to-br from-indigo-50 to-white dark:from-slate-950 dark:to-slate-900 block"
     >
       <div
         class="min-h-full flex flex-col items-center justify-start md:justify-center px-6 py-24 md:p-6 relative"

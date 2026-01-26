@@ -405,7 +405,7 @@
             aria-hidden="true"
           ></div>
           <div
-            class="absolute inset-y-0 left-0 w-56 bg-page-sidebar shadow-2xl"
+            class="absolute inset-y-0 left-0 w-56 bg-page-sidebar shadow-2xl border-r border-border-base"
           >
             <Sidebar
               visibleCalendarIds={settings.visibleCalendarIds}

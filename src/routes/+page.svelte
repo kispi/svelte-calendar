@@ -388,6 +388,7 @@
 
 <main
   class="h-[100dvh] flex flex-col relative overflow-hidden bg-page selection:bg-gravex-primary-500/30"
+  style:padding-bottom="env(safe-area-inset-bottom)"
 >
   {#if data.session}
     <div class="flex-1 flex overflow-hidden">

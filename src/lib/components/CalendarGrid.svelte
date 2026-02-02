@@ -554,9 +554,9 @@
       {@const normalEvents = dayEvents.filter((e) => !isSystemEvent(e))}
       <div
         class="
-                    min-h-[80px] border-b border-r border-border-base p-2
+                    border-b border-r border-border-base p-2
                     cursor-pointer relative
-                    outline-none
+                    outline-none h-full flex flex-col overflow-hidden
                     {day.isSame(monthStart, 'month')
           ? 'bg-surface hover:bg-gray-50 dark:hover:bg-white/[0.02]'
           : 'bg-gray-50/30 dark:bg-white/[0.01] text-content-muted opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-white/[0.02]'}
@@ -566,7 +566,7 @@
         onclick={() => onDateClick(day)}
         onkeydown={(e) => e.key === 'Enter' && onDateClick(day)}
       >
-        <div class="flex justify-between items-start mb-1 max-w-full">
+        <div class="flex justify-between items-start mb-1 max-w-full shrink-0">
           <div class="flex items-center min-w-0 flex-1">
             <span
               class="
@@ -597,7 +597,7 @@
           </div>
         </div>
 
-        <div class="overflow-y-auto max-h-[80px] custom-scrollbar">
+        <div class="flex-1 overflow-y-auto custom-scrollbar min-h-0">
           {#each normalEvents as calEvent}
             <!-- svelte-ignore a11y_interactive_supports_focus -->
             <!-- svelte-ignore a11y_click_events_have_key_events -->

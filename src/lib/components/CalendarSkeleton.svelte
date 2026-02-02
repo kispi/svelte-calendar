@@ -39,9 +39,11 @@
   <!-- Grid -->
   <div class="grid grid-cols-7 auto-rows-fr h-full overflow-hidden">
     {#each skeletonDays as _}
-      <div class="border-b border-r border-border-base p-2 min-h-[80px]">
-        <Skeleton class="h-6 w-6 rounded-full mb-2" />
-        <div class="space-y-1">
+      <div
+        class="border-b border-r border-border-base p-2 h-full flex flex-col"
+      >
+        <Skeleton class="h-6 w-6 rounded-full mb-2 shrink-0" />
+        <div class="space-y-1 flex-1">
           <Skeleton class="h-4 w-full" />
           <Skeleton class="h-4 w-2/3" />
         </div>

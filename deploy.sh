@@ -26,6 +26,6 @@ echo "🏗️ Building project..."
 npm run build
 
 echo "🔄 Restarting application with PM2..."
-pm2 restart svelte-calendar || pm2 start build/index.js --name svelte-calendar --node-args="-r dotenv/config"
+pm2 restart svelte-calendar || pm2 start npm --name "svelte_calendar" -- run start
 
 echo "✅ Deployment finished successfully!"

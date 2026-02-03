@@ -175,6 +175,24 @@
     refetchOnWindowFocus: false
   }))
 
+  let showLoadingOverlay = $state(false)
+
+  $effect(() => {
+    let timer: ReturnType<typeof setTimeout>
+
+    if (query.isFetching) {
+      timer = setTimeout(() => {
+        showLoadingOverlay = true
+      }, 100)
+    } else {
+      showLoadingOverlay = false
+    }
+
+    return () => {
+      clearTimeout(timer)
+    }
+  })
+
   const handleDateClick = async (date: any) => {
     if (!data.session) {
       openLoginPopup()
@@ -508,8 +526,8 @@
                 <!-- Loading Overlay -->
                 <div
                   class="absolute inset-0 p-4 md:p-6 lg:p-8 bg-surface/50 z-10 flex flex-col pointer-events-none"
-                  class:opacity-0={!query.isFetching}
-                  class:opacity-100={query.isFetching}
+                  class:opacity-0={!showLoadingOverlay}
+                  class:opacity-100={showLoadingOverlay}
                 >
                   <CalendarSkeleton />
                 </div>

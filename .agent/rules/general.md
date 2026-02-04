@@ -37,6 +37,7 @@ This is a calendar scheduler & note-taking web application built with SvelteKit,
 - **Imports**: Use `$lib` aliases.
 - **Type Safety**: Use JSDoc annotations strictly for checking.
 - **Async/Await**: Handle all DB operations asynchronously.
+- **Use custom components**: Use <Dropdown /> instead of <select>, <ModalAlert /> instead of alert(...), etc.
 - **Formatting**:
   - **Strings**: Use single quotes (`'`) whenever possible (e.g., imports, attribute values).
   - **Semicolons**: Do NOT use semicolons at the end of statements.

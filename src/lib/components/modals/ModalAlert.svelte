@@ -1,34 +1,30 @@
 <script lang="ts">
   import { i18n } from '$lib/i18n.svelte.js'
 
-  interface ConfirmProps {
+  interface AlertProps {
     title?: string
-    message?: string
+    message: string
     confirmText?: string
-    cancelText?: string
-    confirmClass?: string
     close?: (value?: boolean) => void
   }
 
   let {
-    title = i18n.t('common.confirm'),
-    message = i18n.t('event.deleteConfirm'),
+    title = undefined,
+    message,
     confirmText = i18n.t('common.confirm'),
-    cancelText = i18n.t('common.cancel'),
     close = () => {}
-  }: ConfirmProps = $props()
+  }: AlertProps = $props()
 </script>
 
 <div class="p-6">
-  <h3 class="text-lg font-bold text-content-primary mb-2">{title}</h3>
+  {#if title}
+    <h3 class="text-lg font-bold text-content-primary mb-2">{title}</h3>
+  {/if}
   <p class="text-content-primary whitespace-pre-line mb-6">
     {message}
   </p>
 
   <div class="flex justify-end gap-3">
-    <button type="button" onclick={() => close(false)} class="btn-default">
-      {cancelText}
-    </button>
     <button type="button" onclick={() => close(true)} class="btn-primary">
       {confirmText}
     </button>

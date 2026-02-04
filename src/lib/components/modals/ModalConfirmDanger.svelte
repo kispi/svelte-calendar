@@ -62,7 +62,7 @@
       type="button"
       onclick={() => close(true)}
       disabled={!isMatch}
-      class="btn-primary shadow-lg transition-all transform active:scale-95 disabled:opacity-60"
+      class="btn-primary disabled:opacity-60"
     >
       {actionText}
     </button>

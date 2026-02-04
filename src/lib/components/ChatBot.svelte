@@ -3,6 +3,8 @@
   import dayjs from 'dayjs'
   import { i18n } from '$lib/i18n.svelte.js'
   import { logger } from '$lib/logger'
+  import { modal } from '$lib/modal.svelte.js'
+  import ModalAlert from './modals/ModalAlert.svelte'
 
   interface ChatProps {
     onMoveToDate: (date: string) => void
@@ -148,7 +150,10 @@
       (window as any).webkitSpeechRecognition
 
     if (!SpeechRecognition) {
-      alert('Your browser does not support Speech Recognition.')
+      modal.show(ModalAlert, {
+        title: i18n.t('chatbot.browser_not_supported_title'),
+        message: i18n.t('chatbot.browser_not_supported')
+      })
       return
     }
 
@@ -173,7 +178,10 @@
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error', event.error)
       if (event.error === 'not-allowed') {
-        alert(i18n.t('chatbot.mic_permission_denied'))
+        modal.show(ModalAlert, {
+          title: i18n.t('chatbot.mic_access_denied_title'),
+          message: i18n.t('chatbot.mic_permission_denied')
+        })
       }
       // If error (e.g. no speech), just reset
       isListening = false

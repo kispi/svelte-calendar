@@ -6,18 +6,14 @@
   import { toast } from '$lib/toast.svelte.js'
   import { modal } from '$lib/modal.svelte.js'
   import ModalEvent from '$lib/components/modals/ModalEvent.svelte'
-  import ModalLocale from '$lib/components/modals/ModalLocale.svelte'
   import ModalConfirm from '$lib/components/modals/ModalConfirm.svelte'
   import ModalImportCalendar from '$lib/components/modals/ModalImportCalendar.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import CalendarSkeleton from '$lib/components/CalendarSkeleton.svelte'
   import NotesView from '$lib/components/note/NotesView.svelte'
   import dayjs from 'dayjs'
-  import {
-    createQuery,
-    useQueryClient,
-    keepPreviousData
-  } from '@tanstack/svelte-query'
+  import { useCalendars, useQueryClient } from '$lib/hooks/useCalendars'
+  import { useEvents } from '$lib/hooks/useEvents'
   import { signIn, signOut } from '@auth/sveltekit/client'
   import type { PageData } from './$types'
   import { logger } from '$lib/logger'
@@ -92,16 +88,7 @@
   const queryClient = useQueryClient()
 
   // TanStack Query for calendars
-  const calendarsQuery = createQuery(() => ({
-    queryKey: ['calendars'],
-    queryFn: async () => {
-      const res = await fetch('/api/calendars')
-      if (!res.ok) throw new Error('Failed to fetch calendars')
-      return res.json()
-    },
-    enabled: !!data.session,
-    refetchOnWindowFocus: false
-  }))
+  const calendarsQuery = useCalendars()
 
   // Auto-select all calendars if empty state (first load)
   let hasInitializedVisibility = $state(false)
@@ -159,20 +146,10 @@
   })
 
   // TanStack Query for events - Svelte 5 requires a functional options getter
-  const query = createQuery(() => ({
-    queryKey: ['events', fetchRange],
-    queryFn: async () => {
-      const params = new URLSearchParams({
-        start: fetchRange.start,
-        end: fetchRange.end
-      })
-      const res = await fetch(`/api/events?${params}`)
-      if (!res.ok) throw new Error('Failed to fetch events')
-      return res.json()
-    },
-    enabled: !!data.session && settings.lastActiveTab === 'calendar' && isReady,
-    placeholderData: keepPreviousData,
-    refetchOnWindowFocus: false
+  const query = useEvents(() => ({
+    start: fetchRange.start,
+    end: fetchRange.end,
+    enabled: !!data.session && settings.lastActiveTab === 'calendar' && isReady
   }))
 
   let showLoadingOverlay = $state(false)

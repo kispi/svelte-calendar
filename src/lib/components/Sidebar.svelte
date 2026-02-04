@@ -6,7 +6,7 @@
   import { modal } from '$lib/modal.svelte.js'
   import ModalConfirm from './modals/ModalConfirm.svelte'
   import ModalConfirmDanger from './modals/ModalConfirmDanger.svelte'
-  import { createQuery, useQueryClient } from '@tanstack/svelte-query'
+  import { useCalendars, useQueryClient } from '$lib/hooks/useCalendars'
   import { logger } from '$lib/logger'
 
   import Skeleton from '$lib/components/ui/Skeleton.svelte'
@@ -40,14 +40,7 @@
   const queryClient = useQueryClient()
 
   // Fetch Calendars
-  const query = createQuery(() => ({
-    queryKey: ['calendars'],
-    queryFn: async () => {
-      const res = await fetch('/api/calendars')
-      if (!res.ok) throw new Error('Failed to fetch calendars')
-      return res.json()
-    }
-  }))
+  const query = useCalendars()
 
   let isCreating = $state(false)
   let newCalendarName = $state('')

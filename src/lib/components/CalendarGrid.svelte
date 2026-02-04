@@ -377,10 +377,10 @@
   })
 </script>
 
-<div class="h-full flex flex-col bg-surface">
+<div class="h-full flex flex-col bg-surface min-h-0">
   <!-- Header -->
   <div
-    class="px-4 py-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-4"
+    class="px-4 py-4 md:px-6 flex flex-col md:flex-row items-center justify-between gap-4 shrink-0"
   >
     <div class="relative z-20">
       <button
@@ -534,7 +534,9 @@
   </div>
 
   <!-- Weekdays -->
-  <div class="grid grid-cols-7 border-b border-border-base bg-surface-hover/50">
+  <div
+    class="grid grid-cols-7 border-b border-border-base bg-surface-hover/50 shrink-0"
+  >
     {#each weekdays as day}
       <div
         class="py-4 text-center text-xs font-black text-content-muted uppercase tracking-widest"
@@ -546,7 +548,8 @@
 
   <!-- Days Grid -->
   <div
-    class="grid grid-cols-7 auto-rows-fr h-full overflow-hidden border-l border-border-base"
+    class="grid grid-cols-7 flex-1 min-h-0 overflow-auto border-l border-border-base"
+    style="grid-auto-rows: minmax(100px, 1fr);"
   >
     {#each days as day}
       {@const dayEvents = getEventsForDay(day)}
@@ -556,7 +559,7 @@
         class="
                     border-b border-r border-border-base p-2
                     cursor-pointer relative
-                    outline-none h-full flex flex-col overflow-hidden
+                    outline-none flex flex-col overflow-hidden
                     {day.isSame(monthStart, 'month')
           ? 'bg-surface hover:bg-gray-50 dark:hover:bg-white/[0.02]'
           : 'bg-gray-50/30 dark:bg-white/[0.01] text-content-muted opacity-60 hover:opacity-100 hover:bg-gray-50 dark:hover:bg-white/[0.02]'}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { enhance } from '$app/forms'
   import { untrack } from 'svelte'
-  import { autoResize } from '$lib/actions/autoResize'
+  import { autoResize } from '$lib/utils/autoResize'
   import { createDebounce } from '$lib/debounce'
   import ModalConfirm from './ModalConfirm.svelte'
   import ModalNavigation from './ModalNavigation.svelte'
@@ -9,7 +9,7 @@
   import dayjs from 'dayjs'
   import { modal } from '$lib/modal.svelte.js'
   import { i18n } from '$lib/i18n.svelte.js'
-  import { createQuery } from '@tanstack/svelte-query'
+  import { useCalendars } from '$lib/hooks/useCalendars'
   import { logger } from '$lib/logger'
   import ModalTimePicker from './ModalTimePicker.svelte'
 
@@ -58,15 +58,7 @@
   }
 
   // Fetch Calendars
-  const calendarsQuery = createQuery(() => ({
-    queryKey: ['calendars'],
-    queryFn: async () => {
-      const res = await fetch('/api/calendars')
-      if (!res.ok) throw new Error('Failed to fetch calendars')
-      const data = await res.json()
-      return data
-    }
-  }))
+  const calendarsQuery = useCalendars()
 
   const performSearch = async (query: string) => {
     if (!query.trim()) {

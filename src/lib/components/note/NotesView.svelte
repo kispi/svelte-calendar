@@ -1,6 +1,6 @@
 <script lang="ts">
   import { untrack } from 'svelte'
-  import { createQuery, useQueryClient } from '@tanstack/svelte-query'
+  import { useNotes, useQueryClient } from '$lib/hooks/useNotes'
   import NoteList from './NoteList.svelte'
   import NoteEditor from './NoteEditor.svelte'
   import { modal } from '$lib/modal.svelte.js'
@@ -17,14 +17,7 @@
     settings.lastNoteId = activeNoteId
   })
 
-  const notesQuery = createQuery(() => ({
-    queryKey: ['notes'],
-    queryFn: async () => {
-      const res = await fetch('/api/notes')
-      if (!res.ok) throw new Error('Failed to fetch notes')
-      return res.json()
-    }
-  }))
+  const notesQuery = useNotes()
 
   let activeNote = $derived(
     notesQuery.data?.find((n: any) => n.id === activeNoteId) || null

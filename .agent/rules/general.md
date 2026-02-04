@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # AI Agent Rules & Guidelines
 
 ## 1. Project Overview
@@ -11,12 +15,12 @@ This is a calendar scheduler & note-taking web application built with SvelteKit,
 
 - **Framework**: SvelteKit (App Router)
 - **UI Engine**: Svelte 5 (Runes mode ONLY).
-  - ?�� NO legacy stores (`writable`, `readable`).
-  - ??USE `$state`, `$derived`, `$effect`, `$props`.
+  - ❌ NO legacy stores (`writable`, `readable`).
+  - ✅ USE `$state`, `$derived`, `$effect`, `$props`.
 - **Styling**: Tailwind CSS (v3).
   - Custom colors defined in `tailwind.config.js` (`gravex-primary`).
   - **Dark Mode Strategy**:
-    - ? **Semantic Styling**: Use CSS variables (e.g., `bg-[var(--c-bg-surface)]`) or Tailwind extensions that map to them. Avoid hardcoding colors like `bg-slate-800` for surfaces.
+    - ⚡ **Semantic Styling**: Use CSS variables (e.g., `bg-[var(--c-bg-surface)]`) or Tailwind extensions that map to them. Avoid hardcoding colors like `bg-slate-800` for surfaces.
     - **Elevation**: Use brighter backgrounds for higher elevations in dark mode.
     - **Borders**: Use 1px borders to separate layers in dark mode where shadows fail.
 - **Database**: Drizzle ORM + MySQL.
@@ -25,7 +29,7 @@ This is a calendar scheduler & note-taking web application built with SvelteKit,
 - **Date Handling**: `dayjs`.
 - **Client State**:
   - `@tanstack/svelte-query` for data fetching and caching.
-  - **Settings Store**: Use `src/lib/settings.svelte.ts` for user preferences (tabs, locale, visibility). ? DO NOT use `localStorage` directly in components.
+  - **Settings Store**: Use `src/lib/settings.svelte.ts` for user preferences (tabs, locale, visibility). ⚠️ DO NOT use `localStorage` directly in components.
 
 ## 3. Coding Conventions
 

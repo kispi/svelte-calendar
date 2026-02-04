@@ -62,8 +62,7 @@
   // Format header date
   let headerDateDisplay = $derived.by(() => {
     // Force reactivity on locale change
-    const locale = i18n.locale
-    const d = currentDate.locale(i18n.dayjsLocale)
+    const d = currentDate.locale(i18n.locale)
     return d.format(i18n.t('formats.monthYear'))
   })
 

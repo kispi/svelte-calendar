@@ -159,7 +159,7 @@
 
     isVoiceCancelled = false
     recognition = new SpeechRecognition()
-    recognition.lang = i18n.locale === 'kr' ? 'ko-KR' : 'en-US'
+    recognition.lang = i18n.locale === 'ko' ? 'ko-KR' : 'en-US'
     recognition.interimResults = true
     recognition.maxAlternatives = 1
 

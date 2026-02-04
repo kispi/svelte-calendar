@@ -1,5 +1,6 @@
 <script lang="ts">
   import { i18n } from '$lib/i18n.svelte.js'
+  import type { Locale } from '$lib/i18n.svelte.js'
 
   interface LocaleModalProps {
     close: (value: any) => void
@@ -8,16 +9,16 @@
   let { close }: LocaleModalProps = $props()
 
   const options: {
-    code: 'kr' | 'en'
+    code: Locale
     label: string
     sub: string
     icon: string
   }[] = [
-    { code: 'kr', label: 'South Korea', sub: '한국', icon: '🇰🇷' },
+    { code: 'ko', label: 'South Korea', sub: '한국', icon: '🇰🇷' },
     { code: 'en', label: 'United States', sub: 'United States', icon: '🇺🇸' }
   ]
 
-  const handleSelect = (code: 'en' | 'kr') => {
+  const handleSelect = (code: Locale) => {
     i18n.setLocale(code)
     close(true)
   }

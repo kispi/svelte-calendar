@@ -27,9 +27,7 @@
   }
 
   const getMonthName = (idx: number) => {
-    // Force reactivity when locale changes
-    const _ = i18n.locale
-    return dayjs().month(idx).locale(i18n.dayjsLocale).format('MMMM')
+    return dayjs().month(idx).locale(i18n.locale).format('MMMM')
   }
 </script>
 

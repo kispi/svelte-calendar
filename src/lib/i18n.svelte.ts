@@ -4,7 +4,7 @@ import 'dayjs/locale/ko'
 import 'dayjs/locale/en'
 import { settings } from '$lib/store/settings.svelte.js'
 
-type Locale = 'en' | 'kr'
+export type Locale = 'ko' | 'en'
 
 const translations = {
   en: {
@@ -157,7 +157,7 @@ const translations = {
       longDateWithDay: 'MMMM D, YYYY (ddd)'
     }
   },
-  kr: {
+  ko: {
     common: {
       cancel: '취소',
       save: '저장',
@@ -328,12 +328,8 @@ class I18nState {
     return settings.locale
   }
 
-  get dayjsLocale() {
-    return this.locale === 'kr' ? 'ko' : 'en'
-  }
-
   get isYearFirst() {
-    return this.locale === 'kr'
+    return this.locale === 'ko'
   }
 
   isCurrent(locale: string) {
@@ -346,11 +342,11 @@ class I18nState {
   }
 
   toggleLocale() {
-    this.setLocale(this.locale === 'kr' ? 'en' : 'kr')
+    this.setLocale(this.locale === 'ko' ? 'en' : 'ko')
   }
 
   updateDayjs() {
-    dayjs.locale(this.locale === 'kr' ? 'ko' : 'en')
+    dayjs.locale(this.locale === 'ko' ? 'ko' : 'en')
   }
 
   t(path: string, params: Record<string, string | number> = {}) {

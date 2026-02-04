@@ -1,9 +1,10 @@
 import { browser } from '$app/environment'
+import type { Locale } from '$lib/i18n.svelte'
 
 export interface SettingsData {
   lastActiveTab: 'calendar' | 'notes'
   visibleCalendarIds: string[]
-  locale: 'en' | 'kr'
+  locale: Locale
   lastNoteId: string | null
   theme: 'light' | 'dark'
 }
@@ -24,14 +25,19 @@ const createSettings = () => {
     if (saved) {
       try {
         const parsed = JSON.parse(saved)
+        // Force 'ko' if locale is missing or invalid
+        if (!['ko', 'en'].includes(parsed.locale)) {
+          parsed.locale = 'ko'
+          localStorage.setItem('settings', JSON.stringify({ ...DEFAULT_SETTINGS, ...parsed }))
+        }
         data = { ...DEFAULT_SETTINGS, ...parsed }
       } catch (e) {
         console.error('Failed to parse settings', e)
       }
     } else {
-      // Init locale from system if no settings ever existed
-      const sysLang = navigator.language.startsWith('ko') ? 'kr' : 'en'
-      data.locale = sysLang
+      // Init locale to 'ko' if no settings ever existed
+      data.locale = 'ko'
+      localStorage.setItem('settings', JSON.stringify(data))
     }
   }
 
@@ -59,7 +65,7 @@ const createSettings = () => {
     get locale() {
       return data.locale
     },
-    set locale(value: 'en' | 'kr') {
+    set locale(value: Locale) {
       data.locale = value
       save()
     },

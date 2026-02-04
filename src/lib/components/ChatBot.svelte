@@ -131,9 +131,75 @@
     }
   }
 
+  // Voice Recognition Logic
+  let isListening = $state(false)
+  let recognition: any = null
+  let isVoiceCancelled = false
+
+  const toggleVoiceInput = () => {
+    if (isListening) {
+      // Manual stop by user -> treats as "finished speaking" -> send
+      recognition?.stop()
+      return
+    }
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition
+
+    if (!SpeechRecognition) {
+      alert('Your browser does not support Speech Recognition.')
+      return
+    }
+
+    isVoiceCancelled = false
+    recognition = new SpeechRecognition()
+    recognition.lang = i18n.locale === 'kr' ? 'ko-KR' : 'en-US'
+    recognition.interimResults = true
+    recognition.maxAlternatives = 1
+
+    recognition.onstart = () => {
+      isListening = true
+      inputMessage = ''
+    }
+
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join('')
+      inputMessage = transcript
+    }
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error', event.error)
+      if (event.error === 'not-allowed') {
+        alert(i18n.t('chatbot.mic_permission_denied'))
+      }
+      // If error (e.g. no speech), just reset
+      isListening = false
+    }
+
+    recognition.onend = () => {
+      isListening = false
+      if (!isVoiceCancelled && inputMessage.trim()) {
+        sendMessage(true)
+      }
+    }
+
+    recognition.start()
+  }
+
+  const cancelVoiceInput = () => {
+    isVoiceCancelled = true
+    recognition?.stop()
+    inputMessage = ''
+    isListening = false
+  }
+
   // ... (sendMessage and other functions remain)
 
-  const sendMessage = async () => {
+  const sendMessage = async (isVoiceInput: boolean | Event = false) => {
+    const isVoice = isVoiceInput === true
     if (!inputMessage.trim() || isLoading) return
 
     const userMsg = { role: 'user', parts: [{ text: inputMessage }] }
@@ -152,7 +218,8 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: currentMessages,
-          clientDate: dayjs().toISOString() // Pass client local time
+          clientDate: dayjs().toISOString(), // Pass client local time
+          isVoice
         })
       })
 
@@ -278,7 +345,7 @@
       </div>
       <button
         onclick={() => (isOpen = false)}
-        aria-label="Close Chat"
+        aria-label={i18n.t('chatbot.close')}
         class="text-white/80 hover:text-white p-1 rounded-md cursor-pointer"
         onmousedown={(e) => e.stopPropagation()}
       >
@@ -332,36 +399,99 @@
     </div>
 
     <!-- Input -->
-    <div class="p-4 bg-[var(--c-surface-1)] border-t border-border-base">
-      <div class="relative flex items-center gap-2">
-        <textarea
-          bind:value={inputMessage}
-          onkeydown={handleKeydown}
-          placeholder={i18n.t('chatbot.placeholder')}
-          rows="1"
-          disabled={isLoading}
-          class="w-full bg-[var(--c-bg-page)] border border-border-base rounded-md px-4 py-2.5 text-sm text-content-primary outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed"
-        ></textarea>
-        <button
-          onclick={sendMessage}
-          disabled={!inputMessage.trim() || isLoading}
-          aria-label="Send Message"
-          class="bg-gravex-primary-600 hover:bg-gravex-primary-700 disabled:bg-slate-300 text-white p-2.5 rounded-md shadow-sm active:scale-95 shrink-0"
+    <div
+      class="p-4 bg-[var(--c-surface-1)] border-t border-border-base min-h-[80px] flex items-center justify-center"
+    >
+      {#if isListening}
+        <!-- Voice Mode UI -->
+        <div
+          in:fade={{ duration: 150 }}
+          class="flex items-center justify-center w-full"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            ><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg
+          <button
+            onclick={toggleVoiceInput}
+            aria-label={i18n.t('chatbot.stop_voice')}
+            class="relative w-12 h-12 flex items-center justify-center rounded-full bg-red-500 text-white shadow-lg transform hover:scale-105 transition-all"
           >
-        </button>
-      </div>
+            <span
+              class="absolute inset-0 bg-red-400 opacity-50 animate-ping rounded-full"
+            ></span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path
+                d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"
+              /><path d="M19 10v2a7 7 0 0 1-14 0v-2" /><line
+                x1="12"
+                x2="12"
+                y1="19"
+                y2="22"
+              /></svg
+            >
+          </button>
+        </div>
+      {:else}
+        <!-- Standard Text Mode UI -->
+        <div class="relative flex items-center gap-2 w-full">
+          <button
+            onclick={toggleVoiceInput}
+            aria-label={i18n.t('chatbot.start_voice')}
+            class="p-2.5 rounded-md shadow-sm transition-all duration-300 relative overflow-hidden shrink-0 bg-[var(--c-surface-2)] text-content-primary hover:bg-[var(--c-bg-subtle)] border border-border-base group"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="text-slate-500 group-hover:text-gravex-primary-500 transition-colors"
+            >
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+              <line x1="12" x2="12" y1="19" y2="22" />
+            </svg>
+          </button>
+
+          <textarea
+            bind:value={inputMessage}
+            onkeydown={handleKeydown}
+            placeholder={i18n.t('chatbot.placeholder')}
+            rows="1"
+            disabled={isLoading}
+            class="w-full bg-[var(--c-bg-page)] border border-border-base rounded-md px-4 py-2.5 text-sm text-content-primary outline-none focus:border-gravex-primary-400 focus:ring-1 focus:ring-gravex-primary-200 resize-none max-h-32 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+          ></textarea>
+          <button
+            onclick={sendMessage}
+            disabled={!inputMessage.trim() || isLoading}
+            aria-label={i18n.t('chatbot.send')}
+            class="bg-gravex-primary-600 hover:bg-gravex-primary-700 disabled:bg-slate-300 text-white p-2.5 rounded-md shadow-sm active:scale-95 shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              ><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg
+            >
+          </button>
+        </div>
+      {/if}
     </div>
 
     <!-- Resize Handle -->
@@ -395,6 +525,7 @@
   <div class="relative">
     <button
       onclick={toggleChat}
+      aria-label={isOpen ? i18n.t('chatbot.close') : i18n.t('chatbot.open')}
       class="pointer-events-auto bg-gravex-primary-600 hover:bg-gravex-primary-700 text-white w-12 h-12 flex items-center justify-center p-0 rounded-full shadow-2xl transform hover:scale-110 active:rotate-12 group relative"
     >
       {#if isOpen}

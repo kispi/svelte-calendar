@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
 
   const userId = session.user.id
-  const { messages, clientDate } = await request.json()
+  const { messages, clientDate, isVoice } = await request.json()
   const startTime = new Date()
   let responseText = ''
   let functionCallsLog: any[] = []
@@ -360,7 +360,8 @@ export const POST: RequestHandler = async ({ request, locals }) => {
         model: 'gemini-3-flash-preview',
         startTime,
         duration,
-        isSuccess: isSuccess ? 1 : 0
+        isSuccess: isSuccess ? 1 : 0,
+        isVoice: isVoice ? 1 : 0
       })
       .catch((err) => {
         logger.error('Failed to save chat log', { error: err })

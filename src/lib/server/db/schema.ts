@@ -178,6 +178,7 @@ export const chatLog = mysqlTable('chat_logs', {
   startTime: datetime('start_time'),
   duration: int('duration'), // in milliseconds
   isSuccess: tinyint('is_success').default(1),
+  isVoice: tinyint('is_voice').default(0)
 })
 
 export type ChatLog = InferSelectModel<typeof chatLog>

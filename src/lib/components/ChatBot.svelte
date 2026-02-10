@@ -451,7 +451,7 @@
           <button
             onclick={toggleVoiceInput}
             aria-label={i18n.t('chatbot.start_voice')}
-            class="p-2.5 rounded-md shadow-sm transition-all duration-300 relative overflow-hidden shrink-0 bg-[var(--c-surface-2)] text-content-primary hover:bg-[var(--c-bg-subtle)] border border-border-base group"
+            class="p-2.5 rounded-md shadow-sm transition-all duration-300 relative overflow-hidden shrink-0 bg-[var(--c-surface-2)] text-content-primary hover:bg-gravex-primary-50 dark:hover:bg-gravex-primary-900/30 border border-border-base group"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -463,7 +463,7 @@
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
-              class="text-slate-500 group-hover:text-gravex-primary-500 transition-colors"
+              class="text-gravex-primary-600 dark:text-gravex-primary-400 group-hover:scale-110 transition-transform duration-200"
             >
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
               <path d="M19 10v2a7 7 0 0 1-14 0v-2" />

@@ -77,7 +77,10 @@ const translations = {
       loginRequired: 'Login required',
       popupBlocked: 'Please allow popups for this site',
       importSuccess: 'Successfully imported {count} events!',
-      importError: 'Failed to import events'
+      importError: 'Failed to import events',
+      titleRequired: 'Title is required',
+      eventCreated: 'Event created successfully',
+      eventUpdated: 'Event updated successfully'
     },
     locale: {
       title: 'Language Settings',
@@ -233,7 +236,10 @@ const translations = {
       loginRequired: '로그인이 필요합니다',
       popupBlocked: '사이트의 팝업 차단을 해제해 주세요',
       importSuccess: '{count}개의 일정을 성공적으로 가져왔습니다!',
-      importError: '일정 가져오기에 실패했습니다'
+      importError: '일정 가져오기에 실패했습니다',
+      titleRequired: '제목을 입력해주세요',
+      eventCreated: '일정이 생성되었습니다',
+      eventUpdated: '일정이 수정되었습니다'
     },
     locale: {
       title: '언어 설정',

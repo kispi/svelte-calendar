@@ -623,9 +623,13 @@
               <span>{i18n.t('common_ui.kakaoStart')}</span>
             </button>
 
-            <span class="text-sm text-content-muted font-medium tracking-wide">
+            <a
+              href="https://gravex.app"
+              target="_blank"
+              class="text-sm text-content-muted font-medium tracking-wide hover:text-content-primary transition-colors"
+            >
               &copy; 2026 Gravex.app
-            </span>
+            </a>
           </div>
         </div>
       </div>

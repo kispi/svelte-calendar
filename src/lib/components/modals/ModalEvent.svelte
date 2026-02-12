@@ -12,6 +12,7 @@
   import { useCalendars } from '$lib/hooks/useCalendars'
   import { logger } from '$lib/logger'
   import ModalTimePicker from './ModalTimePicker.svelte'
+  import { toast } from '$lib/toast.svelte.js'
 
   interface ModalProps {
     event?: any
@@ -253,6 +254,14 @@
       const isDelete = action.search.includes('delete')
       const isUpdate = action.search.includes('update')
 
+      // Validate Title
+      const titleVal = formData.get('title')?.toString().trim()
+      if (!isDelete && !titleVal) {
+        toast.error(i18n.t('toast.titleRequired'), { position: 'top' })
+        cancel()
+        return
+      }
+
       const currentType = formData.get('type')
       const startRaw = formData.get('startTime')
       const endRaw = formData.get('endTime')
@@ -308,6 +317,7 @@
           .then(async (res) => {
             if (res.ok) {
               const updatedEvent = await res.json()
+              toast.success(i18n.t('toast.eventUpdated'), { position: 'top' })
               close({ success: true, event: updatedEvent })
             } else {
               const err = await res.json()
@@ -351,6 +361,7 @@
           .then(async (res) => {
             if (res.ok) {
               const newEvent = await res.json()
+              toast.success(i18n.t('toast.eventCreated'), { position: 'top' })
               close({ success: true, event: newEvent })
             } else {
               const err = await res.json()
@@ -388,7 +399,6 @@
         name="title"
         id="title"
         bind:value={title}
-        required
         class="w-full text-2xl font-black text-content-primary bg-transparent border-b-2 border-transparent focus:border-gravex-primary-500 outline-none placeholder:text-content-muted pb-2"
         placeholder={i18n.t('event.title')}
         aria-label={i18n.t('event.title')}

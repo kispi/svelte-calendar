@@ -701,11 +701,13 @@
         <span class="text-sm font-medium">{i18n.t('nav.deleteAccount')}</span>
       </button>
 
-      <div
-        class="mt-4 px-2 text-center text-xs text-content-secondary font-medium"
+      <a
+        href="https://gravex.app"
+        target="_blank"
+        class="mt-4 px-2 text-center text-xs text-content-secondary font-medium hover:text-content-primary block transition-colors"
       >
         &copy; 2026 Gravex.app
-      </div>
+      </a>
     </div>
   {/if}
 </div>

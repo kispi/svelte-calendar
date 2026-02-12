@@ -548,7 +548,7 @@
   <!-- Days Grid -->
   <div
     class="grid grid-cols-7 flex-1 min-h-0 overflow-auto border-l border-border-base"
-    style="grid-auto-rows: minmax(100px, 1fr);"
+    style="grid-auto-rows: 1fr;"
   >
     {#each days as day}
       {@const dayEvents = getEventsForDay(day)}
